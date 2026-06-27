@@ -1,0 +1,287 @@
+:root {
+    --animate-duration: 300ms;
+}
+
+
+@layer utilities {
+
+    [class*="animate-"] {
+        animation-duration: var(--tw-duration, 360ms);
+        animation-delay: var(--tw-animation-delay, 0s);
+        animation-fill-mode: forwards;
+    }
+
+
+    @keyframes blurred-in {
+        0% {
+            backdrop-filter: blur(5rem);
+        }
+        100% {
+            backdrop-filter: blur(5rem);
+        }
+    }
+    .animate-blurred-in {
+        animation-name: blurred-in;
+    }
+
+    @keyframes blurred-out {
+        0% {
+            backdrop-filter: blur(0);
+        }
+        100% {
+            backdrop-filter: blur(5rem);
+        }
+    }
+    .animate-blurred-out {
+        animation-name: blurred-out;
+        animation-duration: var(--tw-duration, 300ms);
+    }
+
+
+
+    @keyframes backdrop-blurred-in {
+        0% {
+            backdrop-filter: blur(0);
+        }
+        100% {
+            backdrop-filter: blur(5rem);
+        }
+    }
+    .animate-backdrop-blurred-in {
+        animation-name: backdrop-blurred-in;
+        animation-duration: var(--tw-duration, 300ms);
+    }
+
+    @keyframes backdrop-blurred-out {
+        0% {
+            backdrop-filter: blur(5rem);
+        }
+        100% {
+            backdrop-filter: blur(0);
+        }
+    }
+    .animate-backdrop-blurred-out {
+        animation-name: backdrop-blurred-out;
+    }
+
+    @keyframes progress {
+        0% {
+            transform: translateX(-100%);
+        }
+        50% {
+            transform: translateX(0%);
+        }
+        100% {
+            transform: translateX(100%);
+        }
+    }
+
+    .animate-progress-infinite {
+        animation-name: progress;
+        animation-duration: 1.5s;
+        animation-iteration-count: infinite;
+        animation-timing-function: ease-in-out;
+        animation-delay: var(--tw-animation-delay);
+    }
+
+    .animate-infinite {
+        animation-iteration-count: infinite !important;
+    }
+
+    .slow-motion {
+        animation-duration: 10s !important;
+    }
+
+    @keyframes slide-in-up {
+        0% {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slide-in-down {
+        0% {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .animate-slide-in-up {
+        animation: slide-in-up var(--animate-duration) ease-out forwards;
+        animation-delay: var(--tw-animation-delay);
+    }
+
+    .animate-slide-in-down {
+        animation: slide-in-down var(--animate-duration) ease-out forwards;
+        animation-delay: var(--tw-animation-delay);
+    }
+
+
+    @keyframes slide-out-up {
+        0% {
+            transform: translateY(100%);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 0;
+        }
+    }
+
+    @keyframes slide-out-down {
+        0% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+    }
+
+    .animate-slide-out-up {
+        animation: slide-out-up var(--animate-duration) ease-out forwards;
+        animation-delay: var(--tw-animation-delay);
+    }
+
+    .animate-slide-out-down {
+        animation: slide-out-down var(--animate-duration) ease-out forwards;
+        animation-delay: var(--tw-animation-delay);
+    }
+
+
+    @keyframes slide-bottom-to-top-back {
+        0% {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        50% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+    }
+
+    @keyframes slide-top-to-bottom-back {
+        0% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        50% {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slide-left-to-right-back {
+        0% {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+        50% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        100% {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+    }
+
+    @keyframes slide-right-to-left-back {
+        0% {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        50% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        100% {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+
+    .animate-slide-bottom-to-top-back {
+        animation: slide-bottom-to-top-back var(--animate-duration) ease-out;
+        animation-delay: var(--tw-animation-delay);
+    }
+
+    .animate-slide-top-to-bottom-back {
+        animation: slide-top-to-bottom-back var(--animate-duration) ease-out;
+        animation-delay: var(--tw-animation-delay);
+    }
+
+    .animate-slide-left-to-right-back {
+        animation: slide-left-to-right-back var(--animate-duration) ease-out;
+        animation-delay: var(--tw-animation-delay);
+    }
+
+    .animate-slide-right-to-left-back {
+        animation: slide-right-to-left-back var(--animate-duration) ease-out;
+        animation-delay: var(--tw-animation-delay);
+    }
+
+    @keyframes zoom-in {
+        0% {
+            transform: scale(.9);
+            opacity: 0;
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+    @keyframes zoom-out {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+        100% {
+            transform: scale(.9);
+            opacity: 0;
+        }
+    }
+    .animate-zoom-in {
+        animation: zoom-in var(--animate-duration) ease-out forwards;
+        animation-delay: var(--tw-animation-delay);
+    }
+
+    .animate-zoom-out {
+        animation: zoom-out var(--animate-duration) ease-out forwards;
+        animation-delay: var(--tw-animation-delay);
+    }
+
+
+    .animate-progressing-x {
+        animation: progressing-x var(--animate-duration) ease-out forwards;
+        animation-delay: var(--tw-animation-delay);
+    }
+
+    @keyframes progressing-x {
+        0% {
+            width: 0;
+            opacity: .8;
+        }
+        100% {
+            width: 100%;
+            opacity: 1;
+        }
+    }
+}
