@@ -1,0 +1,28 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "radix-nova",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/app/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "rtl": false,
+  "menuColor": "default",
+  "menuAccent": "subtle",
+  "aliases": {
+    "components": "@/core/presentation",
+    "utils": "@/core/infrastructure/utilities/utils",
+    "ui": "@/core/presentation/ui",
+    "lib": "@/core/infrastructure/utilities",
+    "hooks": "@/core/presentation/hooks"
+  },
+  "registries": {
+    "@8starlabs-ui": "https://ui.8starlabs.com/r/{name}.json",
+    "@abui": "https://abui.io/r/{name}.json"
+  }
+}
