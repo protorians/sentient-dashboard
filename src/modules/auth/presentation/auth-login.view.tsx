@@ -6,23 +6,26 @@ import {AuthSessionView} from "@/modules/auth/presentation/auth-session.view";
 import {ThemeLogo} from "@/core/presentation/themes/logo.theme";
 import {AppConfig} from "@/core/domain/config/app.config";
 import {FormScreen} from "@/core/presentation/FormScreen";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {AuthSessionService} from "@/modules/auth/application/service/auth-session.service";
 
 export function AuthLoginView() {
-    const {getCurrentUser} = authUserConnectedStore()
+    const {getCurrentUser} = authUserConnectedStore();
+    const [pending, setPending] = useState<boolean>(false)
 
     useEffect(() => {
+        setPending(true)
         AuthSessionService.fetchAvailableSessions()
-            .then(data=>{
+            .then(data => {
                 console.log('fetchAvailableSessions', data)
             })
-            .catch(err=>{
+            .catch(err => {
                 console.error(err)
             })
+            .finally(() => setPending(false))
     }, [])
 
-    if (getCurrentUser) {
+    if (pending) {
         return (
             <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
                 <AuthSessionView/>
@@ -31,8 +34,8 @@ export function AuthLoginView() {
     }
 
     return (
-        <FormScreen>
-            <LoginForm />
+        <FormScreen hideSideImage={false}>
+            <LoginForm/>
         </FormScreen>
     )
 }

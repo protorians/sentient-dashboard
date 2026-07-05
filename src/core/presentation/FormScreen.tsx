@@ -7,24 +7,29 @@ import Link from "next/link";
 import {motion} from "framer-motion";
 
 export interface FormScreenProps extends React.HTMLAttributes<HTMLDivElement> {
+    hideSideImage?: boolean;
 }
 
 const COPYRIGHT_YEAR = new Intl.DateTimeFormat('fr-FR', {year: 'numeric'}).format(new Date());
 
-export function FormScreen({className, children, ...props}: FormScreenProps) {
+export function FormScreen({className, children, hideSideImage, ...props}: FormScreenProps) {
     return (
         <div {...props} className={cn("flex min-h-svh items-center justify-center bg-background p-4 md:p-10", className,)}>
             <motion.div
                 layoutId="form-card"
-                className="relative w-full max-w-225 min-h-150 grid lg:grid-cols-[1.15fr_0.85fr] rounded-[32px] overflow-hidden bg-background border border-white/5">
+                className={cn(
+                    "relative w-full max-w-225 min-h-150 rounded-[32px] overflow-hidden bg-background border border-white/5",
+                    hideSideImage && "flex flex-col justify-center",
+                    !hideSideImage && "grid lg:grid-cols-[1.15fr_0.85fr]"
+                    )}>
                 {/* Left side (Form) */}
-                <div className="flex flex-col justify-between gap-8 p-8 md:p-12">
+                <div className="flex flex-col justify-between gap-8 p-8 md:p-12 ">
                     <div className="flex items-center justify-between w-full">
                         <div className="flex items-center gap-2">
                             <motion.div
                                 layoutId="form-logo-container"
-                                className="size-16 rounded-full  flex items-center justify-center">
-                                <ThemeLogo variant="icon" className="size-16 object-contain brightness-0 invert"/>
+                                className="w-full max-w-80 rounded-full  flex items-center justify-center">
+                                <ThemeLogo variant="banner" className=" object-contain brightness-0 invert"/>
                             </motion.div>
                             {/*<span className="font-bold text-sm text-white">Sentient</span>*/}
                         </div>
@@ -44,7 +49,7 @@ export function FormScreen({className, children, ...props}: FormScreenProps) {
                     </motion.div>
                 </div>
                 {/* Right side (Image with curvy separator) */}
-                <motion.div
+                {!hideSideImage && (<motion.div
                     layoutId="form-right-side"
                     className="relative hidden lg:block overflow-hidden">
                     <motion.img
@@ -67,7 +72,7 @@ export function FormScreen({className, children, ...props}: FormScreenProps) {
                         className="absolute bottom-8 right-8 text-white select-none ">
                         <ThemeLogo variant="icon" className="h-8 w-auto object-contain brightness-0 invert"/>
                     </motion.div>
-                </motion.div>
+                </motion.div>)}
             </motion.div>
         </div>
     )

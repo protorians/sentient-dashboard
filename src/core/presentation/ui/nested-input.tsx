@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import {cn} from "@/core/infrastructure/utilities/utils"
+import {useMemo, useId} from "react";
 
 export type NestedInputColoring = 'error' | 'success' | 'warning' | 'info' | 'disabled' | 'ghost';
 
@@ -24,30 +25,48 @@ const coloringClassname: Record<NestedInputColoring, string> = {
 
 const NestedInput = React.forwardRef<HTMLInputElement, NestedInputProps>(
     ({label, icon, className, id, input, color, ...props}, ref) => {
+        const reactId = useId();
+        const _id = useMemo(() => id || label?.toLowerCase().replace(/ /g, '-') || reactId, [id, label, reactId]);
+
+        const {
+            type,
+            placeholder,
+            required,
+            value,
+            onChange,
+            className: inputClassName,
+            ...inputProps
+        } = input || {};
 
         return (
             <div {...props}
+                 suppressHydrationWarning
                  className={cn(
                      "relative flex flex-col justify-center rounded-xl bg-background border border-border/30 px-4 py-2.5 text-left focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent transition-all w-full",
                      coloringClassname[color || 'ghost'] || ''
                  )}>
                 <label
-                    htmlFor={id}
+                    htmlFor={_id}
                     className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground select-none flex items-center gap-1"
                 >
                     {label}
-                    {input?.required && <span className="text-destructive">*</span>}
+                    {required && <span className="text-destructive">*</span>}
                 </label>
                 <div className="flex items-center justify-between gap-2 mt-0.5">
                     <input
                         ref={ref}
-                        id={id}
-                        required={input?.required}
+                        id={_id}
+                        type={type}
+                        placeholder={placeholder}
+                        required={required}
+                        value={value}
+                        onChange={onChange}
                         className={cn(
                             "w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground/30",
+                            inputClassName,
                             className,
                         )}
-                        {...input || {}}
+                        {...inputProps}
                     />
                     {icon && <div
                         className="text-muted-foreground select-none flex items-center justify-center shrink-0">{icon}</div>}

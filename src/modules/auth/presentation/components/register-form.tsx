@@ -4,7 +4,8 @@ import {cn} from "@/core/infrastructure/utilities/utils"
 import {Button} from "@/core/presentation/ui/button"
 import {FieldGroup} from "@/core/presentation/ui/field"
 import {NestedInput} from "@/core/presentation/ui/nested-input"
-import {User, Mail, Eye, EyeOff} from "lucide-react"
+import {NestedPhoneInput} from "@/core/presentation/ui/nested-phone-input"
+import {User, Mail, Eye, EyeOff, Building} from "lucide-react"
 import Link from "next/link"
 import {useEffect, useState} from "react"
 import {SignUpDataset} from "@/modules/auth/infrastructure/dataset/sign-up.dataset"
@@ -14,7 +15,7 @@ import {AuthSessionService} from "@/modules/auth/application/service/auth-sessio
 import { toast } from "sonner";
 
 export function RegisterForm({className, ...props}: React.ComponentProps<"form">) {
-    const {setter, getter, dataset, consolidate} = SignUpDataset()
+    const {setter, getter, consolidate} = SignUpDataset()
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
@@ -32,8 +33,9 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
             }
 
             const response = await AuthSessionService.signUp({
-                firstname: data.firstname!,
-                lastname: data.lastname!,
+                first_names: data.first_names!,
+                last_name: data.last_name!,
+                organization: data.organization!,
                 email: data.email!,
                 password: data.password!,
                 password_confirmation: data.password_confirmation!,
@@ -44,17 +46,6 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
             console.error('Login Error', error)
         }
     }
-
-    useEffect(() => {
-        console.log('dataset changed', dataset)
-
-        if (dataset.password) {
-            if (dataset.password !== dataset.password_confirmation) {
-
-            }
-        }
-
-    }, [dataset])
 
     return (
         <motion.div
@@ -80,30 +71,43 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
 
                     <div className="grid grid-cols-2 gap-4 w-full">
                         <NestedInput
-                            id="firstname"
+                            id="first_names"
                             label="Prénom(s)"
                             input={{
                                 type: "text",
                                 placeholder: "Ex: John",
                                 required: true,
-                                value: getter('firstname') || '',
-                                onChange: e => setter('firstname', e.target.value)
+                                value: getter('first_names') || '',
+                                onChange: e => setter('first_names', e.target.value)
                             }}
                             icon={<User className="size-4 text-muted-foreground/60"/>}
                         />
                         <NestedInput
-                            id="lastname"
+                            id="last_name"
                             label="Nom de famille"
                             input={{
                                 type: "text",
                                 placeholder: "Ex: Doe",
                                 required: true,
-                                value: getter('lastname') || '',
-                                onChange: e => setter('lastname', e.target.value)
+                                value: getter('last_name') || '',
+                                onChange: e => setter('last_name', e.target.value)
                             }}
                             icon={<User className="size-4 text-muted-foreground/60"/>}
                         />
                     </div>
+
+                    <NestedInput
+                        id="organization"
+                        label="organization"
+                        input={{
+                            type: "text",
+                            placeholder: "Ex: Ma Société",
+                            required: true,
+                            value: getter('organization') || '',
+                            onChange: e => setter('organization', e.target.value)
+                        }}
+                        icon={<Building className="size-4 text-muted-foreground/60"/>}
+                    />
 
                     <NestedInput
                         id="email"
@@ -116,6 +120,17 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
                             onChange: e => setter('email', e.target.value)
                         }}
                         icon={<Mail className="size-4 text-muted-foreground/60"/>}
+                    />
+
+                    <NestedPhoneInput
+                        id="phone"
+                        label="Numéro de téléphone"
+                        value={getter('phone') || ''}
+                        onChange={value => setter('phone', value)}
+                        input={{
+                            placeholder: "6 12 34 56 78",
+                            required: true,
+                        }}
                     />
 
                     <NestedInput
