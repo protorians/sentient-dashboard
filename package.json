@@ -1,6 +1,6 @@
 {
   "name": "@protorians/sentient-dashboard",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
   "description": "Frontend for Sentient",
   "engines": {
@@ -11,7 +11,8 @@
     "build": "next build",
     "start": "next start -p 5010",
     "test": "vitest",
-    "test:watch": "vitest --watch"
+    "test:watch": "vitest --watch",
+    "version:sync": "bun run ./scripts/update-version.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
