@@ -75,4 +75,8 @@ export class FetchService {
         return await this.request('patch', `${uri}`, data, config);
     }
 
+    static async delete<T = any>(uri: string, data?: Record<string, any>, config?: AxiosRequestConfig<any> | undefined): Promise<AxiosResponse<T, any, {}>> {
+        return await this.request('delete', `${uri}`, data, config);
+    }
+
 }

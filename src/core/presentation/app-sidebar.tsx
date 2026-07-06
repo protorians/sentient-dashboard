@@ -15,7 +15,23 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/core/presentation/ui/sidebar"
-import { LayoutDashboardIcon, ListIcon, ChartBarIcon, FolderIcon, UsersIcon, CameraIcon, FileTextIcon, Settings2Icon, CircleHelpIcon, SearchIcon, DatabaseIcon, FileChartColumnIcon, FileIcon, CommandIcon } from "lucide-react"
+import {
+  LayoutDashboardIcon,
+  ListIcon,
+  ChartBarIcon,
+  FolderIcon,
+  UsersIcon,
+  CameraIcon,
+  FileTextIcon,
+  Settings2Icon,
+  CircleHelpIcon,
+  SearchIcon,
+  DatabaseIcon,
+  FileChartColumnIcon,
+  FileIcon,
+  CommandIcon,
+  VideoIcon, GalleryHorizontalIcon, FilesIcon
+} from "lucide-react"
 import {ThemeLogo} from "@/core/presentation/themes/logo.theme";
 
 const data = {
@@ -34,32 +50,72 @@ const data = {
       ),
     },
     {
-      title: "Lifecycle",
-      url: "#",
+      title: "Centre de control",
+      url: "/access-control",
       icon: (
         <ListIcon
         />
       ),
     },
     {
-      title: "Analytics",
-      url: "#",
+      title: "Facturations",
+      url: "/billing",
       icon: (
         <ChartBarIcon
         />
       ),
     },
     {
-      title: "Projects",
-      url: "#",
+      title: "Blog",
+      url: "/blog",
       icon: (
         <FolderIcon
         />
       ),
     },
     {
-      title: "Team",
-      url: "#",
+      title: "CRM",
+      url: "/crm",
+      icon: (
+        <UsersIcon
+        />
+      ),
+    },
+    {
+      title: "Utilisateurs",
+      url: "/users",
+      icon: (
+        <UsersIcon
+        />
+      ),
+    },
+    {
+      title: "Organisations",
+      url: "/organizations",
+      icon: (
+        <UsersIcon
+        />
+      ),
+    },
+    {
+      title: "Projet",
+      url: "/project-management",
+      icon: (
+        <UsersIcon
+        />
+      ),
+    },
+    {
+      title: "Restaurant",
+      url: "/restaurant",
+      icon: (
+        <UsersIcon
+        />
+      ),
+    },
+    {
+      title: "Stock",
+      url: "/stock-management",
       icon: (
         <UsersIcon
         />
@@ -151,26 +207,34 @@ const data = {
   ],
   documents: [
     {
-      name: "Data Library",
-      url: "#",
+      name: "Vidéos",
+      url: "/media-library/videos",
       icon: (
-        <DatabaseIcon
+        <VideoIcon
         />
       ),
     },
     {
-      name: "Reports",
-      url: "#",
+      name: "Images",
+      url: "/media-library/images",
+      icon: (
+        <GalleryHorizontalIcon
+        />
+      ),
+    },
+    {
+      name: "Documents",
+      url: "/media-library/documents",
+      icon: (
+        <FilesIcon
+        />
+      ),
+    },
+    {
+      name: "Rapports",
+      url: "/reports",
       icon: (
         <FileChartColumnIcon
-        />
-      ),
-    },
-    {
-      name: "Word Assistant",
-      url: "#",
-      icon: (
-        <FileIcon
         />
       ),
     },
@@ -183,12 +247,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
+            <SidebarMenuButton size={"lg"}
               asChild
               className="data-[slot=sidebar-menu-button]:p-2!"
             >
               <a href="#">
-                <ThemeLogo variant={'banner'} className="h-10 w-auto" />
+                <ThemeLogo variant={'banner'} className="h-18 w-auto" />
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
