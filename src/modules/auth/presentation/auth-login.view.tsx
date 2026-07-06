@@ -7,7 +7,7 @@ import {ThemeLogo} from "@/core/presentation/themes/logo.theme";
 import {AppConfig} from "@/core/domain/config/app.config";
 import {FormScreen} from "@/core/presentation/FormScreen";
 import {useEffect, useState} from "react";
-import {AuthSessionService} from "@/modules/auth/application/service/auth-session.service";
+import {AuthService} from "@/modules/auth/application/service/auth.service";
 
 export function AuthLoginView() {
     const {getCurrentUser} = authUserConnectedStore();
@@ -15,7 +15,7 @@ export function AuthLoginView() {
 
     useEffect(() => {
         setPending(true)
-        AuthSessionService.fetchAvailableSessions()
+        AuthService.fetchAvailableSessions()
             .then(data => {
                 console.log('fetchAvailableSessions', data)
             })

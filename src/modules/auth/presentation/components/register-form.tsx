@@ -10,7 +10,7 @@ import Link from "next/link"
 import {useEffect, useState} from "react"
 import {SignUpDataset} from "@/modules/auth/infrastructure/dataset/sign-up.dataset"
 import {motion} from "framer-motion"
-import {AuthSessionService} from "@/modules/auth/application/service/auth-session.service";
+import {AuthService} from "@/modules/auth/application/service/auth.service";
 
 import { toast } from "sonner";
 
@@ -32,7 +32,7 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
                 return;
             }
 
-            const response = await AuthSessionService.signUp({
+            const response = await AuthService.signUp({
                 first_names: data.first_names!,
                 last_name: data.last_name!,
                 organization: data.organization!,

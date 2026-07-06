@@ -8,10 +8,6 @@ const instance = new CacheStorageCapability<AuthCacheInterface>(AuthConfig.Stora
 
 export class AuthUserService {
 
-    static getAuthCache(): AuthCacheInterface {
-        return instance.toObject();
-    }
-
     static getUser(): UserInterface | null {
         return instance.get('user') ?? null;
     }

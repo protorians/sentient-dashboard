@@ -9,7 +9,7 @@ import Link from "next/link"
 import {useState} from "react"
 import {SignInDataset} from "@/modules/auth/infrastructure/dataset/sign-in.dataset"
 import {motion} from "framer-motion"
-import {AuthSessionService} from "@/modules/auth/application/service/auth-session.service";
+import {AuthService} from "@/modules/auth/application/service/auth.service";
 
 export function LoginForm({className, ...props}: React.ComponentProps<"form">) {
     const {setter, getter, dataset, consolidate} = SignInDataset()
@@ -22,7 +22,7 @@ export function LoginForm({className, ...props}: React.ComponentProps<"form">) {
             // consolidate() validates and will toast + throw if invalid
             const data = consolidate();
 
-            const response = await AuthSessionService.signIn({
+            const response = await AuthService.signIn({
                 username: data.email!,
                 password: data.password!,
             })

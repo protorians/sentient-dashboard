@@ -6,7 +6,7 @@ import {
 } from "@/modules/auth/domain/interface/session.interface";
 
 
-export class AuthSessionService extends FetchService {
+export class AuthService extends FetchService {
     static async fetchAvailableSessions() {
         const token = AuthUserService.getToken();
 
@@ -20,5 +20,13 @@ export class AuthSessionService extends FetchService {
 
     static async signUp(payload: CreateUserAccountInterface) {
         return await this.post(`/auth/sign-up`, payload)
+    }
+
+    static async checkPhone(phone: string) {
+        return await this.get(`/auth/sign-up/check-phone`, { phone })
+    }
+
+    static async verifyPhone(payload: { phone: string; code: string }) {
+        return await this.post(`/auth/sign-up/check-phone`, payload)
     }
 }

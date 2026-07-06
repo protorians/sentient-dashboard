@@ -25,7 +25,7 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { SignUpDataset } from "@/modules/auth/infrastructure/dataset/sign-up.dataset"
 import { motion, AnimatePresence } from "framer-motion"
-import { AuthSessionService } from "@/modules/auth/application/service/auth-session.service"
+import { AuthService } from "@/modules/auth/application/service/auth.service"
 import { FetchService } from "@/core/infrastructure/utilities/fetch.service"
 import { toast } from "sonner"
 import {
@@ -160,7 +160,7 @@ export function RegisterFormStepper({ className, ...props }: React.ComponentProp
 
     setLoading(true)
     try {
-      const response = await AuthSessionService.signUp({
+      const response = await AuthService.signUp({
         username: getter('username'),
         email: getter('email')!,
         password: getter('password')!,
