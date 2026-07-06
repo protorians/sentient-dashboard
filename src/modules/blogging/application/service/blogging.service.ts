@@ -18,6 +18,10 @@ export class BloggingService extends FetchService {
         return await this.get(`/posts/category/${categoryId}`);
     }
 
+    static async getAnalytics() {
+        return await this.get('/posts/analytics');
+    }
+
     static async getPostById(id: string) {
         return await this.get(`/posts/${id}`);
     }

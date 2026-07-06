@@ -8,4 +8,8 @@ export class NotificationsService extends FetchService {
     static async markAsRead(id: string) {
         return await this.patch(`/notifications/${id}/read`);
     }
+
+    static async getAnalytics() {
+        return await this.get('/notifications/analytics');
+    }
 }

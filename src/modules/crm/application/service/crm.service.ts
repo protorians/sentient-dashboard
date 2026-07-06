@@ -31,4 +31,8 @@ export class CrmService extends FetchService {
     static async createReminder(payload: any) {
         return await this.post('/crm/reminders', payload);
     }
+
+    static async getAnalytics() {
+        return await this.get('/crm/analytics');
+    }
 }

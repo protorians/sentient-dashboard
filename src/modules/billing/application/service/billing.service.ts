@@ -35,4 +35,8 @@ export class BillingService extends FetchService {
     static async getInvoiceById(id: string) {
         return await this.get(`/billing/invoices/${id}`);
     }
+
+    static async getAnalytics() {
+        return await this.get('/billing/analytics');
+    }
 }

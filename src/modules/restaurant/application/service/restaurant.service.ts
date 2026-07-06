@@ -66,4 +66,8 @@ export class RestaurantService extends FetchService {
     static async getReports(orgId: string) {
         return await this.get(`/restaurant/reports/${orgId}`);
     }
+
+    static async getAnalytics() {
+        return await this.get('/restaurant/analytics');
+    }
 }

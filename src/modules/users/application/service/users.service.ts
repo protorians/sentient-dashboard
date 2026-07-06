@@ -10,6 +10,10 @@ export class UsersService extends FetchService {
         return await this.get(`/users/${id}`);
     }
 
+    static async getAnalytics() {
+        return await this.get('/users/analytics');
+    }
+
     // User Preferences
     static async createPreference(payload: any) {
         return await this.post('/user-preferences/', payload);
@@ -38,5 +42,9 @@ export class UsersService extends FetchService {
 
     static async getMyActivities() {
         return await this.get('/user-activities/me');
+    }
+
+    static async getActivityAnalytics() {
+        return await this.get('/user-activities/analytics');
     }
 }

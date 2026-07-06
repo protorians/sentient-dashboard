@@ -22,4 +22,8 @@ export class StockService extends FetchService {
     static async createMovement(payload: any) {
         return await this.post('/stock/movements', payload);
     }
+
+    static async getAnalytics() {
+        return await this.get('/stock/analytics');
+    }
 }

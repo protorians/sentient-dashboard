@@ -10,6 +10,10 @@ export class ProjectManagementService extends FetchService {
         return await this.get('/project-managementprojects');
     }
 
+    static async getGlobalAnalytics() {
+        return await this.get('/project-managementanalytics');
+    }
+
     static async getProjectById(id: string) {
         return await this.get(`/project-managementprojects/${id}`);
     }

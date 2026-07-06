@@ -15,11 +15,11 @@ export class AuthService extends FetchService {
     }
 
     static async signIn(payload: CreateUserSessionInterface) {
-        return await this.post(`/auth/sign-in`, payload)
+        return await this.post(`/auth/sign-in/`, payload)
     }
 
     static async signUp(payload: CreateUserAccountInterface) {
-        return await this.post(`/auth/sign-up`, payload)
+        return await this.post(`/auth/sign-up/`, payload)
     }
 
     static async checkPhone(phone: string) {
