@@ -2766,6 +2766,54 @@
         <option name="homepage" value="https://sveltebits.xyz" />
         <option name="urlTemplate" value="https://sveltebits.xyz/r/{name}.json" />
       </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-ericts" />
+        <option name="name" value="Ericts" />
+        <option name="namespace" value="@ericts" />
+        <option name="baseUrl" value="https://ui.ericts.com/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Motion-focused shadcn-compatible components, hooks, and blocks for polished React interfaces." />
+        <option name="homepage" value="https://ui.ericts.com" />
+        <option name="urlTemplate" value="https://ui.ericts.com/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-mozaika" />
+        <option name="name" value="Mozaika" />
+        <option name="namespace" value="@mozaika" />
+        <option name="baseUrl" value="https://mozaika.design/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Design systems measured from real product UIs — color roles, typography and spacing as themes installable with the shadcn CLI. Free open shelf; companion MCP server for AI coding agents." />
+        <option name="homepage" value="https://mozaika.design" />
+        <option name="urlTemplate" value="https://mozaika.design/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-nusaiba" />
+        <option name="name" value="Nusaiba" />
+        <option name="namespace" value="@nusaiba" />
+        <option name="baseUrl" value="https://nusaiba.dev/r/base-nova" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Motion-first shadcn marketing blocks for landing pages — heroes, pricing, FAQs, footers, and more. Built on base-nova with intentional animation and CLI install." />
+        <option name="homepage" value="https://nusaiba.dev" />
+        <option name="urlTemplate" value="https://nusaiba.dev/r/base-nova/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-pulld" />
+        <option name="name" value="Pulld" />
+        <option name="namespace" value="@pulld" />
+        <option name="baseUrl" value="https://pulld.pages.dev/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Typed, accessible, theme-aware React/Tailwind components installable by the shadcn CLI or your AI coding agent. Free atoms plus composed Pro blocks." />
+        <option name="homepage" value="https://pulld.pages.dev" />
+        <option name="urlTemplate" value="https://pulld.pages.dev/r/{name}.json" />
+      </RegistryConfigState>
     </registryConfigs>
   </component>
 </project>
