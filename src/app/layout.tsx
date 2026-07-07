@@ -2,7 +2,8 @@ import {Manrope} from "next/font/google";
 import {cn} from "@/core/infrastructure/utilities/utils";
 import "./globals.css";
 import {TooltipProvider} from "@/core/presentation/ui/tooltip"
-import {Toaster} from "sonner";
+import {Toaster} from "@/core/presentation/ui/sonner";
+import {AuthProvider} from "@/modules/auth/presentation/components/auth-provider";
 
 const manrope = Manrope({subsets: ['latin'], variable: '--font-sans'});
 
@@ -21,9 +22,11 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
             <link rel="stylesheet" href="/assets/fonts/uicons/solid-rounded/all.css"/>
         </head>
         <body>
-        <TooltipProvider>
-            {children}
-        </TooltipProvider>
+        <AuthProvider>
+            <TooltipProvider>
+                {children}
+            </TooltipProvider>
+        </AuthProvider>
         <Toaster />
         </body>
         </html>
