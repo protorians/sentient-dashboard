@@ -1,0 +1,47 @@
+[
+  {
+    "id": "role-1",
+    "name": "Administrateur",
+    "description": "Accès complet à toutes les ressources du système",
+    "domain": "Global",
+    "usersCount": 3,
+    "status": "Active",
+    "createdAt": "2024-01-01"
+  },
+  {
+    "id": "role-2",
+    "name": "Gestionnaire de Restaurant",
+    "description": "Peut gérer les menus, les commandes et le personnel du restaurant",
+    "domain": "Restaurant",
+    "usersCount": 12,
+    "status": "Active",
+    "createdAt": "2024-01-15"
+  },
+  {
+    "id": "role-3",
+    "name": "Comptable",
+    "description": "Accès aux modules de facturation et rapports financiers",
+    "domain": "Billing",
+    "usersCount": 5,
+    "status": "Active",
+    "createdAt": "2024-02-01"
+  },
+  {
+    "id": "role-4",
+    "name": "Client",
+    "description": "Accès limité aux commandes personnelles et profil",
+    "domain": "CRM",
+    "usersCount": 1250,
+    "status": "Active",
+    "createdAt": "2024-01-01"
+  },
+  {
+    "id": "role-5",
+    "name": "Modérateur",
+    "description": "Peut valider les articles de blog et commentaires",
+    "domain": "Blogging",
+    "usersCount": 8,
+    "status": "Inactive",
+    "createdAt": "2024-03-10"
+  }
+]
