@@ -28,11 +28,17 @@ export class FetchService {
     static async request(method: string, uri: string, data?: Record<string, any>, config?: AxiosRequestConfig<any> | undefined): Promise<AxiosResponse<any, any, {}>> {
         const isGetMethod = method.toLowerCase() === 'get'
         const token = AuthUserService.getToken();
+        const device = AuthUserService.getDevice();
+        const apiKey = AuthUserService.getApiKey();
+        const organization = AuthUserService.getCurrentOrganization();
         const headers = {
             "X-timestamp": (new Date()).toString(),
             "Content-Type": "application/json",
             "Accept": "*",
-            ...(token ? {"Authorization": `Bearer ${token}`} : {})
+            ...(token ? {"Authorization": `Bearer ${token}`} : {}),
+            ...(device ? {"X-Device": device} : {}),
+            ...(apiKey ? {"X-API-KEY": apiKey} : {}),
+            ...(organization ? {"X-Organization-Id": organization.id} : {})
         }
         let url = `${this.baseUrl}${uri}`;
 
@@ -49,6 +55,8 @@ export class FetchService {
             url = `${url}${queryString.toString()}`;
             data = undefined;
         }
+
+        console.log("HEADERS:", headers)
 
         try {
             return this.instance.request({method, data, url, headers});

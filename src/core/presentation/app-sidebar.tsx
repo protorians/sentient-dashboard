@@ -30,9 +30,14 @@ import {
   FileChartColumnIcon,
   FileIcon,
   CommandIcon,
-  VideoIcon, GalleryHorizontalIcon, FilesIcon
+  VideoIcon, GalleryHorizontalIcon, FilesIcon, ShieldIcon
 } from "lucide-react"
 import {ThemeLogo} from "@/core/presentation/themes/logo.theme";
+import {useModuleStore} from "@/core/infrastructure/stores/module.store";
+import DefaultModules from "@/modules/available";
+import {DynamicIcon} from "@/core/presentation/components/dynamic-icon";
+import {ComponentIcon} from "lucide-react";
+import {useAuth} from "@/modules/auth/presentation/hooks/use-auth";
 
 const data = {
   user: {
@@ -40,88 +45,7 @@ const data = {
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "#",
-      icon: (
-        <LayoutDashboardIcon
-        />
-      ),
-    },
-    {
-      title: "Centre de control",
-      url: "/access-control",
-      icon: (
-        <ListIcon
-        />
-      ),
-    },
-    {
-      title: "Facturations",
-      url: "/billing",
-      icon: (
-        <ChartBarIcon
-        />
-      ),
-    },
-    {
-      title: "Blog",
-      url: "/blog",
-      icon: (
-        <FolderIcon
-        />
-      ),
-    },
-    {
-      title: "CRM",
-      url: "/crm",
-      icon: (
-        <UsersIcon
-        />
-      ),
-    },
-    {
-      title: "Utilisateurs",
-      url: "/users",
-      icon: (
-        <UsersIcon
-        />
-      ),
-    },
-    {
-      title: "Organisations",
-      url: "/organizations",
-      icon: (
-        <UsersIcon
-        />
-      ),
-    },
-    {
-      title: "Projet",
-      url: "/project-management",
-      icon: (
-        <UsersIcon
-        />
-      ),
-    },
-    {
-      title: "Restaurant",
-      url: "/restaurant",
-      icon: (
-        <UsersIcon
-        />
-      ),
-    },
-    {
-      title: "Stock",
-      url: "/stock-management",
-      icon: (
-        <UsersIcon
-        />
-      ),
-    },
-  ],
+  navMain: [],
   navClouds: [
     {
       title: "Capture",
@@ -242,6 +166,46 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { modules } = useModuleStore();
+  const { user: authUser } = useAuth();
+  const [mounted, setMounted] = React.useState(false);
+
+  const user = React.useMemo(() => ({
+    name: authUser?.username || authUser?.userData?.firstname || "Utilisateur",
+    email: authUser?.email || "No email",
+    avatar: "/avatars/shadcn.jpg", // Fallback avatar
+  }), [authUser]);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const dynamicNavMain = React.useMemo(() => {
+    const modulesToUse = mounted ? modules : DefaultModules;
+    return modulesToUse
+      .filter((m) => m.isEnabled)
+      .map((m) => ({
+        title: m.name,
+        url: m.url,
+        icon: <DynamicIcon name={m.icon} />,
+      }));
+  }, [modules, mounted]);
+
+  const navSecondaryWithModules = React.useMemo(() => {
+    const items = [...data.navSecondary];
+    if (!items.find(i => i.title === "Modules")) {
+      items.push({
+        title: "Modules",
+        url: "/modules",
+        icon: (
+          <ComponentIcon
+          />
+        ),
+      });
+    }
+    return items;
+  }, [modules]);
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -259,12 +223,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={dynamicNavMain} />
         <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavSecondary items={navSecondaryWithModules} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   )

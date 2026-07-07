@@ -1,5 +1,5 @@
 
-export interface AuthResponseInterface<T>{
+export interface FetchResponseInterface<T>{
     data: T;
     error?: boolean;
     message?: string;
