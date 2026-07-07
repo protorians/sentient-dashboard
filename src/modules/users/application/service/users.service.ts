@@ -1,4 +1,5 @@
 import {FetchService} from "@/core/infrastructure/utilities/fetch.service";
+import {UserAnalyticsInterface} from "@/modules/users/domain/users.interface";
 
 export class UsersService extends FetchService {
     // Users
@@ -11,7 +12,7 @@ export class UsersService extends FetchService {
     }
 
     static async getAnalytics() {
-        return await this.get('/users/analytics');
+        return await this.get<UserAnalyticsInterface>('/users/analytics');
     }
 
     // User Preferences
