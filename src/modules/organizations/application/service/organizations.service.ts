@@ -1,4 +1,6 @@
 import {FetchService} from "@/core/infrastructure/utilities/fetch.service";
+import {FetchResponseInterface} from "@/core/domain/typing/response";
+import {OrganizationApiAccessResponseInterface} from "@/modules/organizations/domain/entities/organization.interface";
 
 export class OrganizationsService extends FetchService {
     // Organizations
@@ -44,6 +46,10 @@ export class OrganizationsService extends FetchService {
 
     static async getApiKeys(id: string) {
         return await this.get(`/organizations/${id}/api-keys`);
+    }
+
+    static async getApiAccess(id: string) {
+        return await this.get<FetchResponseInterface<OrganizationApiAccessResponseInterface>>(`/organizations/public/${id}/api/access`);
     }
 
     static async deleteApiKey(keyId: string) {
