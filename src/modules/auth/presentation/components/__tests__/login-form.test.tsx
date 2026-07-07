@@ -6,37 +6,20 @@ import { SignUpDataset } from '@/modules/auth/infrastructure/dataset/sign-up.dat
 
 describe('Dataset Validation System', () => {
   describe('SignInDataset', () => {
-    it('should validate required email field', () => {
+    it('should validate required identifier field', () => {
       const { result } = renderHook(() => SignInDataset())
       const validation = result.current.validate()
       expect(validation.valid).toBe(false)
-      expect(validation.errors.email).toBeDefined()
-    })
-
-    it('should validate email format', () => {
-      const { result } = renderHook(() => SignInDataset())
-      result.current.setter('email', 'invalid-email')
-      const validation = result.current.validate()
-      expect(validation.valid).toBe(false)
-      expect(validation.errors.email).toContain('invalide')
+      expect(validation.errors.identifier).toBeDefined()
     })
 
     it('should pass validation with valid data', () => {
       const { result } = renderHook(() => SignInDataset())
-      result.current.setter('email', 'test@example.com')
+      result.current.setter('identifier', 'test@example.com')
       result.current.setter('password', 'password123')
       const validation = result.current.validate()
       expect(validation.valid).toBe(true)
       expect(validation.errors).toEqual({})
-    })
-
-    it('should validate password length', () => {
-      const { result } = renderHook(() => SignInDataset())
-      result.current.setter('email', 'test@example.com')
-      result.current.setter('password', '123')
-      const validation = result.current.validate()
-      expect(validation.valid).toBe(false)
-      expect(validation.errors.password).toContain('trop court')
     })
   })
 
@@ -45,17 +28,23 @@ describe('Dataset Validation System', () => {
       const { result } = renderHook(() => SignUpDataset())
       const validation = result.current.validate()
       expect(validation.valid).toBe(false)
-      expect(validation.errors.firstname).toBeDefined()
-      expect(validation.errors.lastname).toBeDefined()
+      expect(validation.errors.first_names).toBeDefined()
+      expect(validation.errors.last_name).toBeDefined()
       expect(validation.errors.email).toBeDefined()
       expect(validation.errors.password).toBeDefined()
+      expect(validation.errors.username).toBeDefined()
+      expect(validation.errors.phone).toBeDefined()
     })
 
     it('should pass validation with all valid data', () => {
       const { result } = renderHook(() => SignUpDataset())
-      result.current.setter('firstname', 'John')
-      result.current.setter('lastname', 'Doe')
+      result.current.setter('first_names', 'John')
+      result.current.setter('last_name', 'Doe')
+      result.current.setter('username', 'johndoe')
       result.current.setter('email', 'john@example.com')
+      result.current.setter('phone', '0612345678')
+      result.current.setter('organization', 'Test Org')
+      result.current.setter('otp', '123456')
       result.current.setter('password', 'password123')
       result.current.setter('password_confirmation', 'password123')
       const validation = result.current.validate()

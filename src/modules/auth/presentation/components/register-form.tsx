@@ -5,22 +5,28 @@ import {Button} from "@/core/presentation/ui/button"
 import {FieldGroup} from "@/core/presentation/ui/field"
 import {NestedInput} from "@/core/presentation/ui/nested-input"
 import {NestedPhoneInput} from "@/core/presentation/ui/nested-phone-input"
-import {User, Mail, Eye, EyeOff, Building} from "lucide-react"
+import {User, Mail, Eye, EyeOff, Building, Loader2} from "lucide-react"
 import Link from "next/link"
+import {useRouter} from "next/navigation"
 import {useEffect, useState} from "react"
 import {SignUpDataset} from "@/modules/auth/infrastructure/dataset/sign-up.dataset"
 import {motion} from "framer-motion"
 import {AuthService} from "@/modules/auth/application/service/auth.service";
-
+import {AuthUserService} from "@/modules/auth/application/service/auth-user.service";
+import {authUserConnectedStore} from "@/modules/auth/infrastructure/store/auth-user-connected.store";
 import { toast } from "sonner";
 
 export function RegisterForm({className, ...props}: React.ComponentProps<"form">) {
     const {setter, getter, consolidate} = SignUpDataset()
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+    const router = useRouter()
+    const {setCurrentUser, setOrganizations} = authUserConnectedStore()
 
-    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+        setIsLoading(true)
 
         try {
             // consolidate validates and will toast + throw if invalid
@@ -29,6 +35,7 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
             // check password confirmation match
             if (data.password !== data.password_confirmation) {
                 toast.error('Les mots de passe ne correspondent pas');
+                setIsLoading(false);
                 return;
             }
 
@@ -36,14 +43,31 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
                 first_names: data.first_names!,
                 last_name: data.last_name!,
                 organization: data.organization!,
+                username: data.username!,
                 email: data.email!,
+                phone: data.phone!,
                 password: data.password!,
                 password_confirmation: data.password_confirmation!,
             })
 
-            console.log('AuthSessionService', response.data)
-        } catch (error) {
-            console.error('Login Error', error)
+            const authData = response.data.data;
+
+            if (authData.token && authData.user) {
+                await AuthUserService.setSession(authData);
+                setCurrentUser(authData.user);
+                setOrganizations(authData.organizations || []);
+                toast.success("Inscription réussie");
+                
+                const callbackUrl = new URLSearchParams(window.location.search).get("callbackUrl") || "/dashboard";
+                router.push(`/auth/select-organization?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+            } else {
+                toast.error("Réponse invalide du serveur");
+            }
+        } catch (error: any) {
+            console.error('Registration Error', error)
+            toast.error(error?.response?.data?.message || "Erreur lors de l'inscription");
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -107,6 +131,19 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
                             onChange: e => setter('organization', e.target.value)
                         }}
                         icon={<Building className="size-4 text-muted-foreground/60"/>}
+                    />
+
+                    <NestedInput
+                        id="username"
+                        label="Nom d'utilisateur"
+                        input={{
+                            type: "text",
+                            placeholder: "Ex: johndoe",
+                            required: true,
+                            value: getter('username') || '',
+                            onChange: e => setter('username', e.target.value)
+                        }}
+                        icon={<User className="size-4 text-muted-foreground/60"/>}
                     />
 
                     <NestedInput
@@ -186,9 +223,10 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
                         {/*</Button>*/}
                         <Button
                             type="submit"
+                            disabled={isLoading}
                             className="flex-1 rounded-full text-white font-bold border-none transition-all py-5 shadow-lg shadow-primary/20 cursor-pointer"
                         >
-                            Créer un compte
+                            {isLoading ? <Loader2 className="size-4 animate-spin" /> : "Créer un compte"}
                         </Button>
                     </div>
                 </FieldGroup>

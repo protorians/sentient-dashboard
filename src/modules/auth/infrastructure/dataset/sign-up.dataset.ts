@@ -40,6 +40,7 @@ export const SignUpDataset = createDataset<SignUpDatasetInterface>({
     idVerso: undefined,
     selfie: undefined,
 }, {
+    username: (v) => (!v ? "Nom d'utilisateur requis" : null),
     email: (v) => {
         if (!v) return "Email requis";
         const re = /\S+@\S+\.\S+/;

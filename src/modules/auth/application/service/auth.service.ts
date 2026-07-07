@@ -4,6 +4,8 @@ import {
     type CreateUserAccountInterface,
     type CreateUserSessionInterface
 } from "@/modules/auth/domain/interface/session.interface";
+import {UserAuthResponseInterface} from "@/modules/auth/domain/entities/user-auth.interface";
+import {FetchResponseInterface} from "@/core/domain/typing/response";
 
 
 export class AuthService extends FetchService {
@@ -15,18 +17,18 @@ export class AuthService extends FetchService {
     }
 
     static async signIn(payload: CreateUserSessionInterface) {
-        return await this.post(`/auth/sign-in/`, payload)
+        return await this.post<FetchResponseInterface<UserAuthResponseInterface>>(`/auth/sign-in/`, payload)
     }
 
     static async signUp(payload: CreateUserAccountInterface) {
-        return await this.post(`/auth/sign-up/`, payload)
+        return await this.post<FetchResponseInterface<UserAuthResponseInterface>>(`/auth/sign-up/`, payload)
     }
 
     static async checkPhone(phone: string) {
-        return await this.get(`/auth/sign-up/check-phone`, { phone })
+        return await this.get<FetchResponseInterface<any>>(`/auth/sign-up/check-phone`, {phone})
     }
 
     static async verifyPhone(payload: { phone: string; code: string }) {
-        return await this.post(`/auth/sign-up/check-phone`, payload)
+        return await this.post<FetchResponseInterface<any>>(`/auth/sign-up/check-phone`, payload)
     }
 }

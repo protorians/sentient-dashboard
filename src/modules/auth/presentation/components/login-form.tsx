@@ -4,33 +4,53 @@ import {cn} from "@/core/infrastructure/utilities/utils"
 import {Button} from "@/core/presentation/ui/button"
 import {FieldGroup} from "@/core/presentation/ui/field"
 import {NestedInput} from "@/core/presentation/ui/nested-input"
-import {Mail, Eye, EyeOff} from "lucide-react"
+import {User, Eye, EyeOff, Loader2} from "lucide-react"
 import Link from "next/link"
+import {useRouter} from "next/navigation"
 import {useState} from "react"
 import {SignInDataset} from "@/modules/auth/infrastructure/dataset/sign-in.dataset"
 import {motion} from "framer-motion"
 import {AuthService} from "@/modules/auth/application/service/auth.service";
+import {AuthUserService} from "@/modules/auth/application/service/auth-user.service";
+import {authUserConnectedStore} from "@/modules/auth/infrastructure/store/auth-user-connected.store";
+import {toast} from "sonner";
 
 export function LoginForm({className, ...props}: React.ComponentProps<"form">) {
     const {setter, getter, dataset, consolidate} = SignInDataset()
     const [showPassword, setShowPassword] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+    const router = useRouter()
+    const {setCurrentUser, setOrganizations} = authUserConnectedStore()
 
-    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setIsLoading(true);
 
         try {
             // consolidate() validates and will toast + throw if invalid
             const data = consolidate();
-
             const response = await AuthService.signIn({
-                username: data.email!,
+                username: data.identifier!,
                 password: data.password!,
             })
+            const authData = response.data.data;
 
-            console.log('AuthSessionService', response.data)
-        } catch (error) {
-            // consolidate throws on invalid dataset; keep logging
+            if (authData.token && authData.user) {
+                await AuthUserService.setSession(authData);
+                setCurrentUser(authData.user);
+                setOrganizations(authData.organizations || []);
+                toast.success("Connexion réussie");
+
+                const callbackUrl = new URLSearchParams(window.location.search).get("callbackUrl") || "/dashboard";
+                router.push(`/auth/select-organization?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+            } else {
+                toast.error("Réponse invalide du serveur");
+            }
+        } catch (error: any) {
             console.error('Login Error', error)
+            toast.error(error?.response?.data?.message || "Erreur de connexion");
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -57,17 +77,17 @@ export function LoginForm({className, ...props}: React.ComponentProps<"form">) {
                     </div>
 
                     <NestedInput
-                        id="email"
-                        label="Email"
+                        id="identifier"
+                        label="Email, Nom d'utilisateur ou Téléphone"
                         input={{
-                            type: "email",
-                            placeholder: "email@example.com",
+                            type: "text",
+                            placeholder: "email, username ou 06...",
                             required: true,
-                            value: getter('email') || '',
-                            onChange: e => setter('email', e.target.value),
+                            value: getter('identifier') || '',
+                            onChange: e => setter('identifier', e.target.value),
 
                         }}
-                        icon={<Mail className="size-4 text-muted-foreground/60"/>}
+                        icon={<User className="size-4 text-muted-foreground/60"/>}
                     />
 
                     <NestedInput
@@ -102,9 +122,10 @@ export function LoginForm({className, ...props}: React.ComponentProps<"form">) {
                         {/*</Button>*/}
                         <Button
                             type="submit"
+                            disabled={isLoading}
                             className="flex-1 rounded-full text-white font-bold border-none transition-all py-5 shadow-lg shadow-primary/20 cursor-pointer"
                         >
-                            Se connecter
+                            {isLoading ? <Loader2 className="size-4 animate-spin"/> : "Se connecter"}
                         </Button>
                     </div>
                 </FieldGroup>

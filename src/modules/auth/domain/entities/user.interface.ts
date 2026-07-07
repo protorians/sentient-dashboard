@@ -17,7 +17,7 @@ export interface UserInterface {
     email?: string;
     username: string;
     phone?: string;
-    auditId: string;
+    auditId?: string;
     createdAt?: Date;
     updatedAt?: Date;
     userData?: UserDataInterface;
