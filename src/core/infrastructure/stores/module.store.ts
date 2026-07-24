@@ -12,7 +12,7 @@ interface ModuleState {
     toggleModule: (id: string) => void;
     removeModule: (id: string) => void;
     setModules: (modules: ModuleDeclarationInterface[]) => void;
-    moduleSelected: ModuleDeclarationInterface | null;
+    selectedModule: ModuleDeclarationInterface | null;
     selectModule: (idOrKey: string) => void;
     construct: (idOrKey: string) => ModuleInstanceInterface | null;
 }
@@ -21,7 +21,7 @@ export const useModuleStore = create<ModuleState>()(
     // persist(
     (setState, getState) => ({
         modules: [],
-        moduleSelected: null,
+        selectedModule: null,
         addModule: (module) => setState((state) => ({
             modules: [...state.modules.filter(m => m.id !== module.id), module]
         })),
@@ -43,7 +43,7 @@ export const useModuleStore = create<ModuleState>()(
         selectModule: (idOrKey: string) => {
             const module = getState().modules.find(m => m.id === idOrKey || m.key === idOrKey);
             if (module) {
-                setState({moduleSelected: module});
+                setState({selectedModule: module});
             }
         }
     })
