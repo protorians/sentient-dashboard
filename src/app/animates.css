@@ -72,13 +72,13 @@
             transform: translateX(0%);
         }
         100% {
-            transform: translateX(100%);
+            transform: translateX(200%);
         }
     }
 
     .animate-progress-infinite {
         animation-name: progress;
-        animation-duration: 1.5s;
+        animation-duration: 1s;
         animation-iteration-count: infinite;
         animation-timing-function: ease-in-out;
         animation-delay: var(--tw-animation-delay);
