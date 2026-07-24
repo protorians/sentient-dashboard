@@ -5,7 +5,7 @@ import {ThemeLogo} from "@/core/presentation/system/logo.theme";
 import Link from "next/link";
 import {BellDot, Building2Icon, HomeIcon, UsersIcon} from "lucide-react";
 import {useAuth} from "@/modules/auth/infrastructure/hooks/use-auth";
-import React from "react";
+import React, {useEffect} from "react";
 import {NavUser} from "@/core/presentation/nav-user";
 import {HeaderTasksConnectedUser} from "@/core/presentation/themes/katon/header-tasks-connected-user";
 import {defaultModulesNavConfig} from "@/core/domain/config/modules.config";
@@ -19,6 +19,7 @@ import {Tooltip, TooltipTrigger, TooltipContent} from "@/core/presentation/ui/to
 import {EdgeSection} from "@/core/presentation/themes/katon/edge-section";
 import {ThemeSwitcherButton} from "@/core/presentation/ThemeSwitcherButton";
 import {useModuleStore} from "@/core/infrastructure/stores/module.store";
+import {ModuleMenubar} from "@/core/presentation/module-menubar";
 
 export interface HeaderProps {
     className?: string;
@@ -27,24 +28,22 @@ export interface HeaderProps {
 
 
 export function Header({className, fixed = true}: HeaderProps) {
-    const {modules} = useModuleStore()
-    // const { user: authUser } = useAuth();
-    // const user = React.useMemo(() => ({
-    //   name: authUser?.username || authUser?.userData?.firstname || "Utilisateur",
-    //   email: authUser?.email || "No email",
-    //   avatar: "/avatars/shadcn.jpg", // Fallback avatar
-    // }), [authUser]);
-
+    const {selectedModule} = useModuleStore()
     const organization = AuthUserService.getCurrentOrganization();
 
     return (
         <header className={cn(
-            "w-full h-16 flex items-center gap-4",
+            "w-full h-16 flex items-center gap-4 pl-24",
             fixed ? "fixed top-0 left-0 z-10 [&+*]:mt-16 bg-linear-0 to-background/90" : "",
             className
         )}>
-            <div className="flex-auto flex flex-row items-center justify-start">
 
+            {selectedModule?.name && (<div className="text-base text-primary">
+                {selectedModule?.name}
+            </div>)}
+
+            <div className="flex-auto flex flex-row items-center justify-start">
+                {selectedModule ? <ModuleMenubar module={selectedModule}/> : null}
             </div>
 
             {

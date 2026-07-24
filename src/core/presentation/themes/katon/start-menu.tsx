@@ -42,7 +42,7 @@ export function StartMenuItem(module: ModuleNavigationInterface) {
     )
 
     const isMega = module.dropdown?.type === "mega"
-    const side = isMega ? "top" : "right"
+    // const side = isMega ? "top" : "left"
 
     return (
         <Fragment>
@@ -55,8 +55,9 @@ export function StartMenuItem(module: ModuleNavigationInterface) {
                                     {renderChildren()}
                                 </div>
                             </SheetTrigger>
-                            <SheetContent side={side} className={cn(
-                                isMega && "h-full! max-h-screen! bg-background/50",
+                            <SheetContent side={module.dropdown.side ?? "left"} className={cn(
+                                "w-full",
+                                isMega && "w-full! max-w-screen! md:max-w-[70dvw]! bg-background/80",
                             )}>
                                 <SheetHeader>
                                     <SheetTitle>

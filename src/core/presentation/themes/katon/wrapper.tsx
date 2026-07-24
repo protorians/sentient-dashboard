@@ -10,10 +10,10 @@ export interface WrapperProps {
 export function Wrapper({children}: WrapperProps) {
     return (
         <div className=" max-w-screen w-full h-screen flex flex-row gap-0">
-            <div className="fixed z-10 [&+*]:ml-20 top-0 w-20 flex flex-col h-full gap-0">
-                <div className="w-full">
-                    <Link href={"/public"} className="size-16 p-2">
-                        <ThemeLogo variant={"square"}/>
+            <div className="fixed z-10 [&+*]:ml-20 top-0 bottom-0 w-20 flex flex-col h-full gap-0">
+                <div className="w-full px-3">
+                    <Link href={"/public"} className="px-2">
+                        <ThemeLogo color={"black"} onDark={"white"} variant={"square"}/>
                     </Link>
                 </div>
 
