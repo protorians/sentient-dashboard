@@ -10,7 +10,7 @@ import {useRouter} from "next/navigation"
 import {useState} from "react"
 import {SignInDataset} from "@/modules/auth/infrastructure/dataset/sign-in.dataset"
 import {motion} from "framer-motion"
-import {AuthService} from "@/modules/auth/application/service/auth.service";
+import {AuthApiService} from "@/modules/auth/application/service/auth-api-service";
 import {AuthUserService} from "@/modules/auth/application/service/auth-user.service";
 import {authUserConnectedStore} from "@/modules/auth/infrastructure/store/auth-user-connected.store";
 import {toast} from "sonner";
@@ -29,7 +29,7 @@ export function LoginForm({className, ...props}: React.ComponentProps<"form">) {
         try {
             // consolidate() validates and will toast + throw if invalid
             const data = consolidate();
-            const response = await AuthService.signIn({
+            const response = await AuthApiService.signIn({
                 username: data.identifier!,
                 password: data.password!,
             })
@@ -65,7 +65,7 @@ export function LoginForm({className, ...props}: React.ComponentProps<"form">) {
                 <FieldGroup className="gap-4">
                     <div className="flex flex-col gap-1 text-left w-full mb-4">
                         <span className="text-[10px] font-bold tracking-wider text-primary uppercase">Bon retour</span>
-                        <h1 className="text-3xl font-black text-white tracking-tight">
+                        <h1 className="text-3xl font-black text-foreground tracking-tight">
                             Se connecter<span className="text-primary">.</span>
                         </h1>
                         <p className="text-xs text-muted-foreground mt-1">

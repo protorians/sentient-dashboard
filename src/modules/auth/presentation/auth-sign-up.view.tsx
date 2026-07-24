@@ -1,5 +1,5 @@
 import { RegisterFormStepper } from "@/modules/auth/presentation/components/register-form-stepper";
-import {FormScreen} from "@/core/presentation/FormScreen";
+import {FormScreen} from "@/core/presentation/form-screen";
 
 export function AuthSignUpView() {
     return (

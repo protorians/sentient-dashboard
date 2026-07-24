@@ -1,8 +1,8 @@
 "use client"
 
+import {AuthConfig} from "@/core/domain/config/auth.config";
 import {cn} from "@/core/infrastructure/utilities/utils"
 import {Button} from "@/core/presentation/ui/button"
-import {FieldGroup} from "@/core/presentation/ui/field"
 import {Loader2, Building2, CheckCircle2} from "lucide-react"
 import {useRouter, useSearchParams} from "next/navigation"
 import {useState} from "react"
@@ -10,7 +10,7 @@ import {motion} from "framer-motion"
 import {AuthUserService} from "@/modules/auth/application/service/auth-user.service";
 import {authUserConnectedStore} from "@/modules/auth/infrastructure/store/auth-user-connected.store";
 import {toast} from "sonner";
-import {OrganizationsService} from "@/modules/organizations/application/service/organizations.service";
+import {OrganizationsApiService} from "@/modules/organizations/application/service/organizations-api-service";
 import {OrganizationInterface} from "@/modules/organizations/domain/entities/organization.interface";
 
 export function SelectOrganizationForm({className, ...props}: React.ComponentProps<"div">) {
@@ -30,7 +30,7 @@ export function SelectOrganizationForm({className, ...props}: React.ComponentPro
             setCurrentOrganization(org)
 
             // 2. Rechercher sa clé publique d'API
-            const response = await OrganizationsService.getApiAccess(org.id)
+            const response = await OrganizationsApiService.getApiAccess(org.id)
             const apiKeys = response.data.data
             const publicKey = apiKeys.publicKeys.length > 0 ? apiKeys.publicKeys[0] : null
 
@@ -58,7 +58,7 @@ export function SelectOrganizationForm({className, ...props}: React.ComponentPro
         return (
             <div className="text-center p-6 text-muted-foreground">
                 <p>Aucune organisation disponible.</p>
-                <Button variant="link" onClick={() => router.push("/auth/sign-in")} className="mt-4">
+                <Button variant="link" onClick={() => router.push(`${AuthConfig.routes.login}`)} className="mt-4">
                     Retour à la connexion
                 </Button>
             </div>
@@ -75,7 +75,7 @@ export function SelectOrganizationForm({className, ...props}: React.ComponentPro
 
             <div className="flex flex-col gap-1 text-left w-full mb-4">
                 <span className="text-[10px] font-bold tracking-wider text-primary uppercase">Presque fini</span>
-                <h1 className="text-3xl font-black text-white tracking-tight">
+                <h1 className="text-3xl font-black tracking-tight">
                     Choisir une organisation<span className="text-primary">.</span>
                 </h1>
                 <p className="text-xs text-muted-foreground mt-1">
@@ -98,12 +98,12 @@ export function SelectOrganizationForm({className, ...props}: React.ComponentPro
                     >
                         <div className={cn(
                             "flex h-10 w-10 items-center justify-center rounded-lg",
-                            selectedId === org.id ? "bg-primary text-white" : "bg-muted text-muted-foreground"
+                            selectedId === org.id ? "bg-primary " : "bg-muted text-muted-foreground"
                         )}>
                             <Building2 className="size-5"/>
                         </div>
                         <div className="flex-1">
-                            <h3 className="font-bold text-white text-sm">{org.name}</h3>
+                            <h3 className="font-bold text-sm">{org.name}</h3>
                             <p className="text-[11px] text-muted-foreground line-clamp-1">{org.description}</p>
                         </div>
                         {selectedId === org.id ? (

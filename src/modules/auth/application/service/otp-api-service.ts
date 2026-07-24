@@ -1,6 +1,6 @@
-import {FetchService} from "@/core/infrastructure/utilities/fetch.service";
+import {ApiService} from "@/core/infrastructure/utilities/api-service";
 
-export class OtpService extends FetchService {
+export class OtpApiService extends ApiService {
     static async createOtp(payload: { phone: string; domain?: string }) {
         return await this.post('/otp/create', payload);
     }

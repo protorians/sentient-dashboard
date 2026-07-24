@@ -3,19 +3,18 @@
 import {LoginForm} from "@/modules/auth/presentation/components/login-form";
 import {authUserConnectedStore} from "@/modules/auth/infrastructure/store/auth-user-connected.store";
 import {AuthSessionView} from "@/modules/auth/presentation/auth-session.view";
-import {ThemeLogo} from "@/core/presentation/themes/logo.theme";
+import {ThemeLogo} from "@/core/presentation/system/logo.theme";
 import {AppConfig} from "@/core/domain/config/app.config";
-import {FormScreen} from "@/core/presentation/FormScreen";
+import {FormScreen} from "@/core/presentation/form-screen";
 import {useEffect, useState} from "react";
-import {AuthService} from "@/modules/auth/application/service/auth.service";
+import {AuthApiService} from "@/modules/auth/application/service/auth-api-service";
 
 export function AuthLoginView() {
-    const {getCurrentUser} = authUserConnectedStore();
     const [pending, setPending] = useState<boolean>(false)
 
     useEffect(() => {
         setPending(true)
-        AuthService.fetchAvailableSessions()
+        AuthApiService.fetchAvailableSessions()
             .then(data => {
                 console.log('fetchAvailableSessions', data)
             })

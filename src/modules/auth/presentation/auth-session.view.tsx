@@ -1,6 +1,6 @@
 "use client"
 
-import {Waiting} from "@/core/presentation/Waiting";
+import {Waiting} from "@/core/presentation/waiting";
 
 export function AuthSessionView() {
     return (

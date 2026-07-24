@@ -1,12 +1,12 @@
 import {CacheStorageCapability} from "@/core/infrastructure/capabilities/cache-storage/capability";
 import {AuthCacheInterface} from "@/modules/auth/domain/typing/auth-caches";
-import {AuthConfig} from "@/core/domain/config/auth.config";
 import {CacheStorageType} from "@/core/infrastructure/capabilities/cache-storage/enum";
 import {UserInterface} from "@/modules/auth/domain/entities/user.interface";
 import {UserAuthResponseInterface} from "@/modules/auth/domain/entities/user-auth.interface";
 import {OrganizationInterface} from "@/modules/organizations/domain/entities/organization.interface";
+import {AuthConfig} from "@/core/domain/config/auth.config";
 
-const instance = new CacheStorageCapability<AuthCacheInterface>(AuthConfig.StorageKey, CacheStorageType.LOCAL);
+const instance = new CacheStorageCapability<AuthCacheInterface>(AuthConfig.storages.sessionKey, CacheStorageType.LOCAL);
 
 const setCookie = (name: string, value: string, days = 7) => {
     if (typeof document === 'undefined') return;

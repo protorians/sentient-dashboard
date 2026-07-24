@@ -11,10 +11,11 @@ import {useRouter} from "next/navigation"
 import {useEffect, useState} from "react"
 import {SignUpDataset} from "@/modules/auth/infrastructure/dataset/sign-up.dataset"
 import {motion} from "framer-motion"
-import {AuthService} from "@/modules/auth/application/service/auth.service";
+import {AuthApiService} from "@/modules/auth/application/service/auth-api-service";
 import {AuthUserService} from "@/modules/auth/application/service/auth-user.service";
 import {authUserConnectedStore} from "@/modules/auth/infrastructure/store/auth-user-connected.store";
 import { toast } from "sonner";
+import {AuthConfig} from "@/core/domain/config/auth.config";
 
 export function RegisterForm({className, ...props}: React.ComponentProps<"form">) {
     const {setter, getter, consolidate} = SignUpDataset()
@@ -39,7 +40,7 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
                 return;
             }
 
-            const response = await AuthService.signUp({
+            const response = await AuthApiService.signUp({
                 first_names: data.first_names!,
                 last_name: data.last_name!,
                 organization: data.organization!,
@@ -87,7 +88,7 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
                         </h1>
                         <p className="text-xs text-muted-foreground mt-1">
                             Déjà membre ?{" "}
-                            <Link href="/auth/sign-in" className="text-primary hover:underline font-semibold">
+                            <Link href={`${AuthConfig.routes.login}`} className="text-primary hover:underline font-semibold">
                                 Se connecter
                             </Link>
                         </p>

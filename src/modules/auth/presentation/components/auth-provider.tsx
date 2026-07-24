@@ -4,8 +4,9 @@ import React, { useEffect, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { authUserConnectedStore } from "@/modules/auth/infrastructure/store/auth-user-connected.store"
 import { AuthUserService } from "@/modules/auth/application/service/auth-user.service"
-import { AuthService } from "@/modules/auth/application/service/auth.service"
+import { AuthApiService } from "@/modules/auth/application/service/auth-api-service"
 import { AuthSessionView } from "@/modules/auth/presentation/auth-session.view"
+import {AuthConfig} from "@/core/domain/config/auth.config";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { setCurrentUser, setOrganizations, setCurrentOrganization, getCurrentUser } = authUserConnectedStore()
@@ -27,7 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setOrganizations(organizations)
           if (currentOrganization) setCurrentOrganization(currentOrganization)
           try {
-            const response = await AuthService.fetchAvailableSessions()
+            const response = await AuthApiService.fetchAvailableSessions()
             // Si l'API renvoie des données utilisateur fraîches, on les met à jour
             if (response && response.data) {
                 // Adapter selon la réponse de l'API
@@ -56,8 +57,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const currentOrganization = AuthUserService.getCurrentOrganization()
       const isAuthRoute = pathname.startsWith('/auth')
 
+      if (!token && !isAuthRoute) {
+        router.push(`${AuthConfig.routes.login}?callbackUrl=${encodeURIComponent(pathname)}`)
+        return
+      }
+
       if (token && !currentOrganization && !isAuthRoute && pathname !== '/') {
-        router.push(`/auth/select-organization?callbackUrl=${encodeURIComponent(pathname)}`)
+        router.push(`${AuthConfig.routes.selectOrganization}?callbackUrl=${encodeURIComponent(pathname)}`)
       }
     }
   }, [isInitialized, pathname, router])
