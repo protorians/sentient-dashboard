@@ -1,8 +1,8 @@
-import {FetchService} from "@/core/infrastructure/utilities/fetch.service";
+import {ApiService} from "@/core/infrastructure/utilities/api-service";
 import {FetchResponseInterface} from "@/core/domain/typing/response";
 import {OrganizationApiAccessResponseInterface} from "@/modules/organizations/domain/entities/organization.interface";
 
-export class OrganizationsService extends FetchService {
+export class OrganizationsApiService extends ApiService {
     // Organizations
     static async create(payload: any) {
         return await this.post('/organizations/', payload);

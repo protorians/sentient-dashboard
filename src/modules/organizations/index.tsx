@@ -1,4 +1,4 @@
-import {OrganizationsService} from "@/modules/organizations/application/service/organizations.service";
+import {OrganizationsApiService} from "@/modules/organizations/application/service/organizations-api-service";
 import {ModuleDeclarationInterface} from "@/core/domain/entities/module.interface";
 import {OrganizationsWidget} from "@/modules/organizations/presentation/widgets/organizations.widget";
 
@@ -13,7 +13,7 @@ const organizationsModule: ModuleDeclarationInterface = {
         analytics: OrganizationsWidget
     },
     service: {
-        fetch: OrganizationsService
+        fetch: OrganizationsApiService
     },
     url: '/organizations',
     isEnabled: true,
