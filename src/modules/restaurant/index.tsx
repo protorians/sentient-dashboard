@@ -1,4 +1,4 @@
-import {RestaurantService} from "@/modules/restaurant/application/service/restaurant.service";
+import {RestaurantApiService} from "@/modules/restaurant/application/service/restaurant-api-service";
 import {ModuleDeclarationInterface} from "@/core/domain/entities/module.interface";
 import {RestaurantWidget} from "@/modules/restaurant/presentation/widgets/restaurant.widget";
 
@@ -13,7 +13,7 @@ const restaurantModule: ModuleDeclarationInterface = {
         analytics: RestaurantWidget
     },
     service: {
-        fetch: RestaurantService
+        fetch: RestaurantApiService
     },
     url: '/restaurant',
     isEnabled: true,

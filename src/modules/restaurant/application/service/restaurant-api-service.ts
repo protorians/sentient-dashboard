@@ -1,6 +1,6 @@
-import {FetchService} from "@/core/infrastructure/utilities/fetch.service";
+import {ApiService} from "@/core/infrastructure/utilities/api-service";
 
-export class RestaurantService extends FetchService {
+export class RestaurantApiService extends ApiService {
     // Dishes
     static async createDish(payload: any) {
         return await this.post('/restaurant/dishes', payload);
