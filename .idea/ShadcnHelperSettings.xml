@@ -2814,6 +2814,150 @@
         <option name="homepage" value="https://pulld.pages.dev" />
         <option name="urlTemplate" value="https://pulld.pages.dev/r/{name}.json" />
       </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-approvals-ui" />
+        <option name="name" value="Approvals-ui" />
+        <option name="namespace" value="@approvals-ui" />
+        <option name="baseUrl" value="https://approvals-ui.vercel.app/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Approval workflow components for React Flow: quorum gates, amount thresholds, a policy lint (segregation of duties, single approver on high value), and plain-language editing behind a human review gate." />
+        <option name="homepage" value="https://approvals-ui.vercel.app" />
+        <option name="urlTemplate" value="https://approvals-ui.vercel.app/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-threecn" />
+        <option name="name" value="Threecn" />
+        <option name="namespace" value="@threecn" />
+        <option name="baseUrl" value="https://threecn.dev/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="3D scenes for shadcn/ui. Theme-aware React Three Fiber components, one command away." />
+        <option name="homepage" value="https://threecn.dev" />
+        <option name="urlTemplate" value="https://threecn.dev/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-vllnt-ui" />
+        <option name="name" value="Vllnt-ui" />
+        <option name="namespace" value="@vllnt-ui" />
+        <option name="baseUrl" value="https://ui.vllnt.com/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="VLLNT UI — agent-first React components for AI-native products, from UI primitives to finance and ops domains. Accessible, Radix + Tailwind, you own the code." />
+        <option name="homepage" value="https://ui.vllnt.com" />
+        <option name="urlTemplate" value="https://ui.vllnt.com/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-cnippet" />
+        <option name="name" value="Cnippet" />
+        <option name="namespace" value="@cnippet" />
+        <option name="baseUrl" value="https://ui.cnippet.dev/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Cnippet UI is a production-ready, curated set of accessible and composable React components—built with Base UI and Tailwind CSS. Copy, paste, and ship stunning interfaces faster." />
+        <option name="homepage" value="https://ui.cnippet.dev/" />
+        <option name="urlTemplate" value="https://ui.cnippet.dev/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-dkmediaviewer" />
+        <option name="name" value="Dkmediaviewer" />
+        <option name="namespace" value="@dkmediaviewer" />
+        <option name="baseUrl" value="https://diklein.com/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="A minimalist, performant, and elegant photo and video viewer for React. Masonry grid, fly-in lightbox, a crossfading carousel, captions and camera EXIF data." />
+        <option name="homepage" value="https://diklein.com/dkmediaviewer" />
+        <option name="urlTemplate" value="https://diklein.com/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-seamui" />
+        <option name="name" value="Seamui" />
+        <option name="namespace" value="@seamui" />
+        <option name="baseUrl" value="https://seamui.dev/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Own-your-code components rebuilt on Base UI with a motion.dev feel layer — springs, touch feedback, and depth — plus an agent-workbench tier (composer, voice, status, connectors) for AI-era interfaces." />
+        <option name="homepage" value="https://seamui.dev" />
+        <option name="urlTemplate" value="https://seamui.dev/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-tuiparts" />
+        <option name="name" value="Tuiparts" />
+        <option name="namespace" value="@tuiparts" />
+        <option name="baseUrl" value="https://tuiparts.sh/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="OpenTUI recipes, made simple. Ready to use, customizable terminal UI recipes for Core, React, and Solid." />
+        <option name="homepage" value="https://tuiparts.sh" />
+        <option name="urlTemplate" value="https://tuiparts.sh/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-aniui" />
+        <option name="name" value="Aniui" />
+        <option name="namespace" value="@aniui" />
+        <option name="baseUrl" value="https://aniui.dev/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Beautiful, accessible React Native components (Uniwind or NativeWind) — copy, paste, own the code. 93 components plus pre-built screen blocks, installable with the shadcn CLI." />
+        <option name="homepage" value="https://aniui.dev" />
+        <option name="urlTemplate" value="https://aniui.dev/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-grainly-icons" />
+        <option name="name" value="Grainly-icons" />
+        <option name="namespace" value="@grainly-icons" />
+        <option name="baseUrl" value="https://grainlyicons.abhii.space/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Animated grainy icons" />
+        <option name="homepage" value="https://grainlyicons.abhii.space" />
+        <option name="urlTemplate" value="https://grainlyicons.abhii.space/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-shadcnloaders" />
+        <option name="name" value="Shadcnloaders" />
+        <option name="namespace" value="@shadcnloaders" />
+        <option name="baseUrl" value="https://shadcn-loaders.vercel.app/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="A public registry of shadcn-inspired animated loaders and loading states." />
+        <option name="homepage" value="https://shadcn-loaders.vercel.app" />
+        <option name="urlTemplate" value="https://shadcn-loaders.vercel.app/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-brainless" />
+        <option name="name" value="Brainless" />
+        <option name="namespace" value="@brainless" />
+        <option name="baseUrl" value="https://brainless.swerdlow.dev/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Claude Code, Codex, and Grok interfaces as shadcn components — accessible React terminal-agent UI for docs, demos, and product surfaces." />
+        <option name="homepage" value="https://brainless.swerdlow.dev" />
+        <option name="urlTemplate" value="https://brainless.swerdlow.dev/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-moduix-react" />
+        <option name="name" value="Moduix-react" />
+        <option name="namespace" value="@moduix-react" />
+        <option name="baseUrl" value="https://moduix.dev/r/react" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Ark-first React components, blocks, and themes with native CSS, available as a package or a shadcn-compatible copy-owned registry." />
+        <option name="homepage" value="https://moduix.dev" />
+        <option name="urlTemplate" value="https://moduix.dev/r/react/{name}.json" />
+      </RegistryConfigState>
     </registryConfigs>
   </component>
 </project>
