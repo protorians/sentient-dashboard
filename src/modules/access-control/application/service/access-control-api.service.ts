@@ -1,6 +1,8 @@
-import {FetchService} from "@/core/infrastructure/utilities/fetch.service";
+import {ApiService} from "@/core/infrastructure/utilities/api-service";
+import {FetchResponseInterface} from "@/core/domain/typing/response";
+import {RolesSummaryType} from "@/modules/access-control/domain/entities/roles.interface";
 
-export class AccessControlService extends FetchService {
+export class AccessControlApiService extends ApiService {
     // Roles
     static async createCustomRole(payload: any) {
         return await this.post('/access-control/roles/custom', payload);
@@ -72,7 +74,7 @@ export class AccessControlService extends FetchService {
     }
 
     static async getSummary() {
-        return await this.get('/access-control/summary');
+        return await this.get<FetchResponseInterface<RolesSummaryType>>('/access-control/summary');
     }
 
     // Permissions

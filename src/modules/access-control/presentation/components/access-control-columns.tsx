@@ -32,7 +32,7 @@ export const accessControlSchema = z.object({
 
 export type AccessControlRow = z.infer<typeof accessControlSchema>
 
-export const columns: ColumnDef<AccessControlRow>[] = [
+export const accessControlColumns: ColumnDef<AccessControlRow>[] = [
   {
     accessorKey: "name",
     header: "Nom du Rôle",

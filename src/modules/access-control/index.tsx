@@ -1,4 +1,4 @@
-import {AccessControlService} from "@/modules/access-control/application/service/access-control.service";
+import {AccessControlApiService} from "@/modules/access-control/application/service/access-control-api.service";
 import {ModuleDeclarationInterface} from "@/core/domain/entities/module.interface";
 import {AccessControlWidget} from "@/modules/access-control/presentation/widgets/access-control.widget";
 
@@ -13,7 +13,7 @@ const accessControlModule: ModuleDeclarationInterface = {
         analytics: AccessControlWidget
     },
     service: {
-        fetch: AccessControlService
+        fetch: AccessControlApiService
     },
     url: '/access-control',
     isEnabled: true,
