@@ -29,7 +29,7 @@ export interface ModuleDeclarationInterface {
     service?: {
         fetch?: ApiService
     };
-    url: string; // URL de base pour la navigation
+    uri: string; // URL de base pour la navigation
     isEnabled?: boolean;
     isDefault?: boolean; // Si true, ne peut pas être désactivé ou déplacé
     type: ModuleType;
@@ -38,6 +38,7 @@ export interface ModuleDeclarationInterface {
 
 export interface ModuleNavigationDropdownInterface {
     type: 'mega' | 'default';
+    side?: 'left' | 'right' | 'top' | 'bottom';
     component: (module: ModuleNavigationInterface) => React.ReactNode;
 }
 

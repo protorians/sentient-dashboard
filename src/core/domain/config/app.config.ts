@@ -7,6 +7,7 @@ export const AppConfig = {
     APP_REFRESH_UI: process.env.NEXT_PUBLIC_APP_REFRESH_UI as unknown as number,
     API_HOST: process.env.NEXT_PUBLIC_API_HOST as unknown as string,
     API_TIMEOUT: process.env.NEXT_PUBLIC_API_TIMEOUT as unknown as number,
+    AUTH_CHECK_SESSION_TIMEOUT: process.env.NEXT_PUBLIC_AUTH_CHECK_SESSION_TIMEOUT as unknown as number,
     COPYRIGHT_YEAR: new Intl.DateTimeFormat('fr-FR', {year: 'numeric'}).format(new Date()),
 
 }
