@@ -1,4 +1,4 @@
-import {NotificationsService} from "@/modules/notifications/application/service/notifications.service";
+import {NotificationsApiService} from "@/modules/notifications/application/service/notifications-api-service";
 import {ModuleDeclarationInterface} from "@/core/domain/entities/module.interface";
 import {NotificationsWidget} from "@/modules/notifications/presentation/widgets/notifications.widget";
 
@@ -13,7 +13,7 @@ const notificationsModule: ModuleDeclarationInterface = {
         analytics: NotificationsWidget
     },
     service: {
-        fetch: NotificationsService
+        fetch: NotificationsApiService
     },
     url: '/notifications',
     isEnabled: true,

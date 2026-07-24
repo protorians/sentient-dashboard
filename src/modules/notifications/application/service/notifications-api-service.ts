@@ -1,6 +1,6 @@
-import {FetchService} from "@/core/infrastructure/utilities/fetch.service";
+import {ApiService} from "@/core/infrastructure/utilities/api-service";
 
-export class NotificationsService extends FetchService {
+export class NotificationsApiService extends ApiService {
     static async getAll() {
         return await this.get('/notifications/');
     }
