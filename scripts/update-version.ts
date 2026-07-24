@@ -50,6 +50,7 @@ function determineIncrement(commits: string[]) {
     } else if (
         !increment &&
         commit.startsWith("fix") ||
+        commit.startsWith("refactor") ||
         commit.startsWith("remove")
     ) {
       increment = "patch";
