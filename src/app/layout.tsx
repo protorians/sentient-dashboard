@@ -9,6 +9,7 @@ import {ModulesDefinition} from "@/modules";
 import {QueryProvider} from "@/core/infrastructure/providers/query.provider";
 import {AuthGuard} from "@/modules/auth/presentation/components/auth-guard";
 import {ThemeProvider} from "@/core/infrastructure/providers/theme.provider";
+import {ModulesProvider} from "@/core/infrastructure/providers/modules-provider";
 
 const manrope = Manrope({subsets: ['latin'], variable: '--font-sans'});
 
@@ -32,6 +33,7 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
                 <ModulesDefinition/>
                 <NavigationProgressBar/>
                 <AuthGuard>
+                    <ModulesProvider/>
                     <ThemeProvider/>
                     <TooltipProvider>
                         {children}
