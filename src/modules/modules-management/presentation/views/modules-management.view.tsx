@@ -38,7 +38,7 @@ export function ModulesManagementView() {
         name: "",
         description: "",
         icon: "PackageIcon",
-        url: ""
+        uri: ""
     });
 
     const handleAddModule = (e: React.FormEvent) => {
@@ -55,7 +55,7 @@ export function ModulesManagementView() {
             name: "",
             description: "",
             icon: "PackageIcon",
-            url: "",
+            uri: "",
             type: "EXTERNAL",
             isDefault: false,
             isEnabled: false,
@@ -129,8 +129,8 @@ export function ModulesManagementView() {
                                             <Label htmlFor="url">URL de navigation</Label>
                                             <Input
                                                 id="url"
-                                                value={newModule.url}
-                                                onChange={(e) => setNewModule({...newModule, url: e.target.value})}
+                                                value={newModule.uri}
+                                                onChange={(e) => setNewModule({...newModule, uri: e.target.value})}
                                                 placeholder="/my-module"
                                                 required
                                             />

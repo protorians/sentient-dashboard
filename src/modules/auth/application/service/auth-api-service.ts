@@ -4,17 +4,25 @@ import {
     type CreateUserAccountInterface,
     type CreateUserSessionInterface
 } from "@/modules/auth/domain/interface/session.interface";
-import {UserAuthResponseInterface} from "@/modules/auth/domain/entities/user-auth.interface";
+import {
+    UserAuthResponseInterface,
+    UserAuthSessionCheckingResponseInterface
+} from "@/modules/auth/domain/entities/user-auth.interface";
 import {FetchResponseInterface} from "@/core/domain/typing/response";
 import {AuthConfig} from "@/core/domain/config/auth.config";
+
 
 
 export class AuthApiService extends ApiService {
     static async fetchAvailableSessions() {
         const token = AuthUserService.getToken();
+        const device = AuthUserService.getDevice();
 
         if (!token) return undefined;
-        return this.post(`/auth/sessions`, {token});
+        return this.post<FetchResponseInterface<UserAuthSessionCheckingResponseInterface>>(`/auth/sessions`, {
+            token,
+            device
+        });
     }
 
     static async signIn(payload: CreateUserSessionInterface) {

@@ -15,7 +15,7 @@ const organizationsModule: ModuleDeclarationInterface = {
     service: {
         fetch: OrganizationsApiService
     },
-    url: '/organizations',
+    uri: '/organizations',
     isEnabled: true,
     isDefault: true,
     type: 'INTERNAL',

@@ -7,3 +7,11 @@ export interface UserAuthResponseInterface {
     device: string;
     organizations: OrganizationInterface[]
 }
+
+export interface UserAuthSessionCheckingResponseInterface {
+    "id": string;
+    "device": string;
+    "token": string;
+    "userAgent": string;
+    "expiredAt": string;
+}

@@ -15,7 +15,7 @@ const projectManagementModule: ModuleDeclarationInterface = {
     service: {
         fetch: ProjectManagementApiService
     },
-    url: '/project-management',
+    uri: '/project-management',
     isEnabled: true,
     isDefault: true,
     type: 'INTERNAL',

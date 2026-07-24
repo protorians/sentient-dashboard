@@ -7,7 +7,7 @@ const dashboardModule: ModuleDeclarationInterface = {
     description: 'Tableau de bord principal',
     icon: "LayoutDashboardIcon",
     logo: undefined,
-    url: '/dashboard',
+    uri: '/dashboard',
     isEnabled: true,
     isDefault: true,
     type: 'INTERNAL',

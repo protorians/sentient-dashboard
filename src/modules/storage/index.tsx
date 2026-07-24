@@ -15,7 +15,7 @@ const storageModule: ModuleDeclarationInterface = {
     service: {
         fetch: StorageApiService
     },
-    url: '/storage',
+    uri: '/storage',
     isEnabled: true,
     isDefault: true,
     type: 'INTERNAL',

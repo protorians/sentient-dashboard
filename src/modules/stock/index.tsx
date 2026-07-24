@@ -15,7 +15,7 @@ const stockModule: ModuleDeclarationInterface = {
     service: {
         fetch: StockApiService
     },
-    url: '/stock-management',
+    uri: '/stock-management',
     isEnabled: true,
     isDefault: true,
     type: 'INTERNAL',

@@ -12,7 +12,7 @@ const usersActivitiesModule: ModuleDeclarationInterface = {
     service: {
         fetch: UsersApiService
     },
-    url: '/users-activities',
+    uri: '/users-activities',
     isEnabled: true,
     isDefault: true,
     type: 'INTERNAL',

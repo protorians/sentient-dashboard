@@ -15,7 +15,7 @@ const billingModule: ModuleDeclarationInterface = {
     service: {
         fetch: BillingApiService
     },
-    url: '/billing',
+    uri: '/billing',
     isEnabled: true,
     isDefault: true,
     type: 'INTERNAL',

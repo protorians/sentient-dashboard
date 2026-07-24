@@ -15,7 +15,7 @@ const accessControlModule: ModuleDeclarationInterface = {
     service: {
         fetch: AccessControlApiService
     },
-    url: '/access-control',
+    uri: '/access-control',
     isEnabled: true,
     isDefault: true,
     type: 'INTERNAL',

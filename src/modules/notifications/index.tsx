@@ -15,7 +15,7 @@ const notificationsModule: ModuleDeclarationInterface = {
     service: {
         fetch: NotificationsApiService
     },
-    url: '/notifications',
+    uri: '/notifications',
     isEnabled: true,
     isDefault: true,
     type: 'INTERNAL',

@@ -15,7 +15,7 @@ const restaurantModule: ModuleDeclarationInterface = {
     service: {
         fetch: RestaurantApiService
     },
-    url: '/restaurant',
+    uri: '/restaurant',
     isEnabled: true,
     isDefault: true,
     type: 'INTERNAL',

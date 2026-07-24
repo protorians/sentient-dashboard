@@ -15,7 +15,7 @@ const crmModule: ModuleDeclarationInterface = {
     service: {
         fetch: CrmApiService
     },
-    url: '/crm',
+    uri: '/crm',
     isEnabled: true,
     isDefault: true,
     type: 'INTERNAL',

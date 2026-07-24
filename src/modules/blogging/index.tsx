@@ -15,7 +15,7 @@ const bloggingModule: ModuleDeclarationInterface = {
     service: {
         fetch: BloggingApiService
     },
-    url: '/blog',
+    uri: '/blog',
     isEnabled: true,
     isDefault: true,
     type: 'INTERNAL',
