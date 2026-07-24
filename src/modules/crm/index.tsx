@@ -1,4 +1,4 @@
-import {CrmService} from "@/modules/crm/application/service/crm.service";
+import {CrmApiService} from "@/modules/crm/application/service/crm-api-service";
 import {ModuleDeclarationInterface} from "@/core/domain/entities/module.interface";
 import {CrmWidget} from "@/modules/crm/presentation/widgets/crm.widget";
 
@@ -13,7 +13,7 @@ const crmModule: ModuleDeclarationInterface = {
         analytics: CrmWidget
     },
     service: {
-        fetch: CrmService
+        fetch: CrmApiService
     },
     url: '/crm',
     isEnabled: true,

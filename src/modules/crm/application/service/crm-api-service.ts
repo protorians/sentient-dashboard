@@ -1,6 +1,6 @@
-import {FetchService} from "@/core/infrastructure/utilities/fetch.service";
+import {ApiService} from "@/core/infrastructure/utilities/api-service";
 
-export class CrmService extends FetchService {
+export class CrmApiService extends ApiService {
     // Contacts
     static async createContact(payload: any) {
         return await this.post('/crm/contacts', payload);
