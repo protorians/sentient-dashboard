@@ -1,4 +1,4 @@
-import {StockService} from "@/modules/stock/application/service/stock.service";
+import {StockApiService} from "@/modules/stock/application/service/stock-api-service";
 import {ModuleDeclarationInterface} from "@/core/domain/entities/module.interface";
 import {StockWidget} from "@/modules/stock/presentation/widgets/stock.widget";
 
@@ -13,7 +13,7 @@ const stockModule: ModuleDeclarationInterface = {
         analytics: StockWidget
     },
     service: {
-        fetch: StockService
+        fetch: StockApiService
     },
     url: '/stock-management',
     isEnabled: true,
