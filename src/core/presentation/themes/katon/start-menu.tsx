@@ -19,7 +19,7 @@ import {
 import {CommonClassName} from "@/core/infrastructure/utilities/classname.util";
 
 
-export function HeaderNavigationItem(module: ModuleNavigationInterface) {
+export function StartMenuItem(module: ModuleNavigationInterface) {
     const currentPathname = usePathname()
     const isActive = currentPathname.startsWith(module.url)
 
@@ -86,7 +86,7 @@ export function HeaderNavigationItem(module: ModuleNavigationInterface) {
     )
 }
 
-export function HeaderNavigation() {
+export function StartMenu() {
 
     return (
         <nav
@@ -99,7 +99,7 @@ export function HeaderNavigation() {
             {
                 defaultModulesNavConfig.map((module, index) => {
                     return (
-                        <HeaderNavigationItem key={`default-modules-nav-${index}`} {...module} />
+                        <StartMenuItem key={`default-modules-nav-${index}`} {...module} />
                     )
                 })
             }

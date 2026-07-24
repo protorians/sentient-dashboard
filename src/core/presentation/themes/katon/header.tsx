@@ -11,13 +11,14 @@ import {HeaderTasksConnectedUser} from "@/core/presentation/themes/katon/header-
 import {defaultModulesNavConfig} from "@/core/domain/config/modules.config";
 import {ModuleNavigationInterface} from "@/core/domain/entities/module.interface";
 import {LucideIcon} from "@/core/presentation/icons/lucide";
-import {HeaderNavigation} from "@/core/presentation/themes/katon/header-navigation";
+import {StartMenu} from "@/core/presentation/themes/katon/start-menu";
 import {AuthUserService} from "@/modules/auth/application/service/auth-user.service";
 import {Avatar, AvatarFallback, AvatarImage} from "@/core/presentation/ui/avatar";
 import {CommonClassName} from "@/core/infrastructure/utilities/classname.util";
 import {Tooltip, TooltipTrigger, TooltipContent} from "@/core/presentation/ui/tooltip";
 import {EdgeSection} from "@/core/presentation/themes/katon/edge-section";
 import {ThemeSwitcherButton} from "@/core/presentation/ThemeSwitcherButton";
+import {useModuleStore} from "@/core/infrastructure/stores/module.store";
 
 export interface HeaderProps {
     className?: string;
@@ -26,6 +27,7 @@ export interface HeaderProps {
 
 
 export function Header({className, fixed = true}: HeaderProps) {
+    const {modules} = useModuleStore()
     // const { user: authUser } = useAuth();
     // const user = React.useMemo(() => ({
     //   name: authUser?.username || authUser?.userData?.firstname || "Utilisateur",
@@ -41,7 +43,6 @@ export function Header({className, fixed = true}: HeaderProps) {
             fixed ? "fixed top-0 left-0 z-10 [&+*]:mt-16 bg-linear-0 to-background/90" : "",
             className
         )}>
-
             <div className="flex-auto flex flex-row items-center justify-start">
 
             </div>

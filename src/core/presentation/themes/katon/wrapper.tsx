@@ -1,5 +1,5 @@
 import React from "react";
-import {HeaderNavigation} from "@/core/presentation/themes/katon/header-navigation";
+import {StartMenu} from "@/core/presentation/themes/katon/start-menu";
 import Link from "next/link";
 import {ThemeLogo} from "@/core/presentation/system/logo.theme";
 
@@ -18,7 +18,7 @@ export function Wrapper({children}: WrapperProps) {
                 </div>
 
                 <div className="flex-auto flex flex-col justify-start px-2 mb-20">
-                    <HeaderNavigation/>
+                    <StartMenu/>
                 </div>
             </div>
             <div className="flex flex-col gap-0 flex-auto">
