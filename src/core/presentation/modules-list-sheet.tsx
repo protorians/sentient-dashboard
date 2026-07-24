@@ -23,7 +23,7 @@ export function ModulesListSheet() {
             .filter((m) => m.isEnabled)
             .map((m) => ({
                 title: m.name,
-                url: m.url,
+                url: m.uri,
                 icon: <DynamicIcon name={m.icon}/>,
             }));
     }, [modules, mounted]);
@@ -52,7 +52,7 @@ export function ModulesListSheet() {
                                 </div>
                             </div>
                             <div className="flex flex-row items-start gap-2">
-                                <Link href={module.url}>
+                                <Link href={module.uri}>
                                     <Button variant="outline">
                                         <ExternalLink/>
                                         Ouvrir

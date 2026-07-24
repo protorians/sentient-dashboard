@@ -185,7 +185,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       .filter((m) => m.isEnabled)
       .map((m) => ({
         title: m.name,
-        url: m.url,
+        url: m.uri,
         icon: <DynamicIcon name={m.icon} />,
       }));
   }, [modules, mounted]);
