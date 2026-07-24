@@ -15,14 +15,14 @@ const usersModule: ModuleDeclarationInterface = {
     service: {
         fetch: UsersApiService
     },
-    url: '/users',
+    uri: '/users',
     isEnabled: true,
     isDefault: true,
     type: 'INTERNAL',
     menu: {
         items: [
             {
-                label: 'Fichier',
+                label: 'Utilisateurs',
                 // description: 'Gestion des comptes et activités',
                 icon: "UsersIcon",
                 // action: () => {},
@@ -43,17 +43,30 @@ const usersModule: ModuleDeclarationInterface = {
                         separator: true
                     },
                     {
-                        label: 'Importer',
-                        description: 'Importer des utilisateurs',
-                        icon: "ImportIcon",
-                        action: () => {
-                        }
-                    },
-                    {
                         label: 'Exporter',
                         description: 'Exporter des utilisateurs',
                         icon: "DownloadIcon"
                     }
+                ]
+            },
+            {
+                label: 'Organisations',
+                // description: 'Gestion des comptes et activités',
+                icon: "BuildingIcon",
+                // action: () => {},
+                items: [
+                    {
+                        label: 'Créer',
+                        description: 'Créer une nouvelle organisation',
+                        icon: "PlusIcon",
+                        action: () => {
+                        }
+                    },
+                    {
+                        label: "Voir",
+                        description: 'Voir une organisation',
+                        icon: "EyeIcon"
+                    },
                 ]
             }
         ]
