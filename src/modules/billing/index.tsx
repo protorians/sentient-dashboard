@@ -1,4 +1,4 @@
-import {BillingService} from "@/modules/billing/application/service/billing.service";
+import {BillingApiService} from "@/modules/billing/application/service/billing-api-service";
 import {ModuleDeclarationInterface} from "@/core/domain/entities/module.interface";
 import {BillingWidget} from "@/modules/billing/presentation/widgets/billing.widget";
 
@@ -13,7 +13,7 @@ const billingModule: ModuleDeclarationInterface = {
         analytics: BillingWidget
     },
     service: {
-        fetch: BillingService
+        fetch: BillingApiService
     },
     url: '/billing',
     isEnabled: true,

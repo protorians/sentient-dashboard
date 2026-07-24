@@ -1,6 +1,6 @@
-import {FetchService} from "@/core/infrastructure/utilities/fetch.service";
+import {ApiService} from "@/core/infrastructure/utilities/api-service";
 
-export class BillingService extends FetchService {
+export class BillingApiService extends ApiService {
     // Payment Methods
     static async addPaymentMethod(payload: any) {
         return await this.post('/billing/payment-methods', payload);
