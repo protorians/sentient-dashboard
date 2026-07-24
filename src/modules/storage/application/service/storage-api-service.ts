@@ -1,6 +1,6 @@
-import {FetchService} from "@/core/infrastructure/utilities/fetch.service";
+import {ApiService} from "@/core/infrastructure/utilities/api-service";
 
-export class StorageService extends FetchService {
+export class StorageApiService extends ApiService {
     static async upload(formData: FormData) {
         return await this.post('/storages/upload', formData as any, {
             headers: {

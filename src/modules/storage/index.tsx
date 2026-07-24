@@ -1,4 +1,4 @@
-import {StorageService} from "@/modules/storage/application/service/storage.service";
+import {StorageApiService} from "@/modules/storage/application/service/storage-api-service";
 import {ModuleDeclarationInterface} from "@/core/domain/entities/module.interface";
 import {StorageWidget} from "@/modules/storage/presentation/widgets/storage.widget";
 
@@ -13,7 +13,7 @@ const storageModule: ModuleDeclarationInterface = {
         analytics: StorageWidget
     },
     service: {
-        fetch: StorageService
+        fetch: StorageApiService
     },
     url: '/storage',
     isEnabled: true,
