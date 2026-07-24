@@ -1,5 +1,5 @@
 import {UsersAnalyticsWidget} from "@/modules/users/presentation/widgets/users-analytics.widget";
-import {UsersService} from "@/modules/users/application/service/users.service";
+import {UsersApiService} from "@/modules/users/application/service/users-api-service";
 import {ModuleDeclarationInterface} from "@/core/domain/entities/module.interface";
 
 const usersModule: ModuleDeclarationInterface = {
@@ -13,7 +13,7 @@ const usersModule: ModuleDeclarationInterface = {
         analytics: UsersAnalyticsWidget
     },
     service: {
-        fetch: UsersService
+        fetch: UsersApiService
     },
     url: '/users',
     isEnabled: true,

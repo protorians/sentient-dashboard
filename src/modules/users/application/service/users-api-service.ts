@@ -1,10 +1,13 @@
-import {FetchService} from "@/core/infrastructure/utilities/fetch.service";
+import {ApiService} from "@/core/infrastructure/utilities/api-service";
 import {UserAnalyticsInterface} from "@/modules/users/domain/users.interface";
+import {FetchResponseInterface, PaginationWithSearchOptions} from "@/core/domain/typing/response";
+import {ActivitiesType} from "@/core/domain/entities/activities.interface";
+import {UserInterface} from "@/modules/auth/domain/entities/user.interface";
 
-export class UsersService extends FetchService {
+export class UsersApiService extends ApiService {
     // Users
-    static async getAll() {
-        return await this.get('/users/');
+    static async getAll(options?: PaginationWithSearchOptions) {
+        return await this.get<FetchResponseInterface<UserInterface[]>>('/users/', options);
     }
 
     static async getById(id: string) {
@@ -12,7 +15,7 @@ export class UsersService extends FetchService {
     }
 
     static async getAnalytics() {
-        return await this.get<UserAnalyticsInterface>('/users/analytics');
+        return await this.get<FetchResponseInterface<UserAnalyticsInterface>>('/users/analytics');
     }
 
     // User Preferences
@@ -38,14 +41,24 @@ export class UsersService extends FetchService {
 
     // User Activities
     static async getAllActivities() {
-        return await this.get('/user-activities/');
+        return await this.get<FetchResponseInterface<ActivitiesType>>('/user-activities/');
     }
 
     static async getMyActivities() {
-        return await this.get('/user-activities/me');
+        return await this.get<FetchResponseInterface<ActivitiesType>>('/user-activities/me');
     }
 
     static async getActivityAnalytics() {
         return await this.get('/user-activities/analytics');
+    }
+
+    static async deleteUnique(id: string) {
+        return await this.delete(`/users/delete/${id}`);
+    }
+
+    static async deleteMany(ids: string[]) {
+        return await this.delete(`/users/deleteMany`, {
+            ids: ids
+        });
     }
 }
