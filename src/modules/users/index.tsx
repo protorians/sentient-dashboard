@@ -19,6 +19,45 @@ const usersModule: ModuleDeclarationInterface = {
     isEnabled: true,
     isDefault: true,
     type: 'INTERNAL',
+    menu: {
+        items: [
+            {
+                label: 'Fichier',
+                // description: 'Gestion des comptes et activités',
+                icon: "UsersIcon",
+                // action: () => {},
+                items: [
+                    {
+                        label: 'Créer',
+                        description: 'Créer un nouvel utilisateur',
+                        icon: "PlusIcon",
+                        action: () => {
+                        }
+                    },
+                    {
+                        label: "Voir",
+                        description: 'Voir un utilisateur',
+                        icon: "EyeIcon"
+                    },
+                    {
+                        separator: true
+                    },
+                    {
+                        label: 'Importer',
+                        description: 'Importer des utilisateurs',
+                        icon: "ImportIcon",
+                        action: () => {
+                        }
+                    },
+                    {
+                        label: 'Exporter',
+                        description: 'Exporter des utilisateurs',
+                        icon: "DownloadIcon"
+                    }
+                ]
+            }
+        ]
+    }
 }
 
 export default usersModule
