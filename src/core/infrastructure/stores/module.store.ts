@@ -13,8 +13,8 @@ interface ModuleState {
     removeModule: (id: string) => void;
     setModules: (modules: ModuleDeclarationInterface[]) => void;
     moduleSelected: ModuleDeclarationInterface | null;
-    moduleInstantiate: (idOrKey: string) => ModuleInstanceInterface | null;
     selectModule: (idOrKey: string) => void;
+    construct: (idOrKey: string) => ModuleInstanceInterface | null;
 }
 
 export const useModuleStore = create<ModuleState>()(
@@ -36,7 +36,7 @@ export const useModuleStore = create<ModuleState>()(
             modules: state.modules.filter((m) => m.id !== id || m.isDefault),
         })),
         setModules: (modules) => setState({modules}),
-        moduleInstantiate: (idOrKey: string) => {
+        construct: (idOrKey: string) => {
             const module = getState().modules.find(m => m.id === idOrKey || m.key === idOrKey);
             return (module && module.key) ? new ModuleInstance(module.key) : null;
         },
