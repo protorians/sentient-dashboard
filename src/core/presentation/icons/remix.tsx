@@ -3,7 +3,7 @@
 import {IconKey, IIconExtendedProps} from "@/core/presentation/icons/types";
 import * as Icons from "@remixicon/react";
 import {cn} from "@/core/infrastructure/utilities/utils";
-import {kebabToPascalCase} from "@/core/infrastructure/utilities/strings";
+import {kebabToPascalCase} from "@/core/infrastructure/utilities/strings.util";
 import {toIconKey} from "@/core/infrastructure/utilities/icons";
 
 

@@ -1,6 +1,6 @@
 import {cn} from "@/core/infrastructure/utilities/utils";
 import React from "react";
-import {camelCase} from "@/core/infrastructure/utilities/strings";
+import {camelCase} from "@/core/infrastructure/utilities/strings.util";
 
 export enum FaTypeEnum {
     Solid = 'fas',

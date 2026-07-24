@@ -51,9 +51,9 @@ export function ListItems({items, header, footer, ...props}: ListItemsProps) {
 
 export function ListItem({label, children, ...props}: ListItemProps) {
     return (
-        <Item {...props}>
-            <ItemDescription>{label}</ItemDescription>
-            <ItemContent>{children}</ItemContent>
+        <Item {...props} className="py-1!">
+            <ItemContent  className="py-0!">{label}</ItemContent>
+            <ItemDescription  className="py-0!">{children}</ItemDescription>
         </Item>
     )
 }

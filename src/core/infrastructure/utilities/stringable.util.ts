@@ -1,7 +1,7 @@
 import {IStringablePartialExtended} from "@/core/domain/typing/values";
 
 
-export function stringable(value: IStringablePartialExtended): string | null {
+export function stringableUtil(value: IStringablePartialExtended): string | null {
     if (!value) return null;
     switch (typeof value) {
         case 'object':
@@ -12,5 +12,5 @@ export function stringable(value: IStringablePartialExtended): string | null {
 }
 
 export function isStringable(value: IStringablePartialExtended) {
-    return !!stringable(value)
+    return !!stringableUtil(value)
 }

@@ -21,7 +21,7 @@ import {
   useSidebar,
 } from "@/core/presentation/ui/sidebar"
 import { EllipsisVerticalIcon, CircleUserRoundIcon, CreditCardIcon, BellIcon, LogOutIcon } from "lucide-react"
-import {useAuth} from "@/modules/auth/presentation/hooks/use-auth";
+import {useAuth} from "@/modules/auth/infrastructure/hooks/use-auth";
 
 export function NavUser({
   user,

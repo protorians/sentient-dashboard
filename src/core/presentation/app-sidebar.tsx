@@ -32,12 +32,11 @@ import {
   CommandIcon,
   VideoIcon, GalleryHorizontalIcon, FilesIcon, ShieldIcon
 } from "lucide-react"
-import {ThemeLogo} from "@/core/presentation/themes/logo.theme";
+import {ThemeLogo} from "@/core/presentation/system/logo.theme";
 import {useModuleStore} from "@/core/infrastructure/stores/module.store";
-import DefaultModules from "@/modules/available";
 import {DynamicIcon} from "@/core/presentation/components/dynamic-icon";
 import {ComponentIcon} from "lucide-react";
-import {useAuth} from "@/modules/auth/presentation/hooks/use-auth";
+import {useAuth} from "@/modules/auth/infrastructure/hooks/use-auth";
 
 const data = {
   user: {
@@ -181,7 +180,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, []);
 
   const dynamicNavMain = React.useMemo(() => {
-    const modulesToUse = mounted ? modules : DefaultModules;
+    const modulesToUse = mounted ? modules : [];
     return modulesToUse
       .filter((m) => m.isEnabled)
       .map((m) => ({

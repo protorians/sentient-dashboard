@@ -1,5 +1,5 @@
 import {Fragment} from "react";
-import {ThemeLogoProps} from "@/core/presentation/themes/types";
+import {ThemeLogoProps} from "@/core/presentation/system/types";
 import {cn} from "@/core/infrastructure/utilities/utils";
 import {LogoConfig} from "@/core/domain/config/logo.config";
 import {AppConfig} from "@/core/domain/config/app.config";
@@ -12,7 +12,7 @@ export function ThemeLogo({size, className, color, onDark, variant}: ThemeLogoPr
     return (
         <Fragment>
             <img src={LogoConfig[_variant][color || 'normal']}
-                 className={cn("dark:hidden w-50 h-auto object-contain", _size, className)} alt={AppConfig.APP_NAME}/>
+                 className={cn("dark:hidden block w-50 h-auto object-contain", _size, className)} alt={AppConfig.APP_NAME}/>
             <img src={LogoConfig[_variant][onDark || 'white']}
                  className={cn("dark:block hidden w-50 h-auto object-contain", _size, className)}
                  alt={AppConfig.APP_NAME}/>

@@ -44,7 +44,7 @@ export class StackableCapability<T extends StackableEntityType> implements Stack
 
     toObject(): T {
         const stack: T = {} as T;
-        for (const [key, value] of [...this._stack.entries()]) stack[key] = value;
+        for (const [key, value] of this._stack.entries()) stack[key] = value;
         return stack;
     }
 

@@ -16,12 +16,36 @@ import {EqualIcon, TrendingDownIcon, TrendingUpIcon} from "lucide-react"
 import {Badge} from "@/core/presentation/ui/badge"
 import {cn} from "@/core/infrastructure/utilities/utils"
 import {ListItems, ListItemType} from "@/core/presentation/list-items"
+import {
+    AreaChartWidgetProps,
+    LineChartWidgetProps,
+    PieChartWidgetProps,
+    RadarChartWidgetProps,
+    RadialChartWidgetProps,
+    RadialStackedChartWidgetProps,
+    TooltipChartWidgetProps
+} from "@/core/domain/typing/chart-widgets.types"
+import {AreaWidgetChart} from "@/core/presentation/charts/area-widget.chart"
+import {LineWidgetChart} from "@/core/presentation/charts/line-widget.chart"
+import {PieWidgetChart} from "@/core/presentation/charts/pie-widget.chart"
+import {RadarWidgetChart} from "@/core/presentation/charts/radar-widget.chart"
+import {RadialWidgetChart} from "@/core/presentation/charts/radial-widget.chart"
+import {RadialStackedWidgetChart} from "@/core/presentation/charts/radial-stacked-widget.chart"
+import {TooltipWidgetChart} from "@/core/presentation/charts/tooltip-widget.chart"
+
+export type ChartProps =
+    | ({ variant: 'chart:area' } & AreaChartWidgetProps)
+    | ({ variant: 'chart:line' } & LineChartWidgetProps)
+    | ({ variant: 'chart:pie' } & PieChartWidgetProps)
+    | ({ variant: 'chart:radar' } & RadarChartWidgetProps)
+    | ({ variant: 'chart:radial' } & RadialChartWidgetProps)
+    | ({ variant: 'chart:radial-stacked' } & RadialStackedChartWidgetProps)
+    | ({ variant: 'chart:tooltip' } & TooltipChartWidgetProps);
 
 export interface ModuleWidgetProps {
     title?: ReactNode
     description?: ReactNode
     stats?: StatisticalProps[]
-    chart?: ReactNode
     children?: ReactNode
     footer?: ReactNode
     actions?: ReactNode
@@ -29,7 +53,9 @@ export interface ModuleWidgetProps {
     itemsHeader?: ReactNode
     itemsFooter?: ReactNode
     className?: string
-    contentClassName?: string
+    contentClassName?: string;
+    chartVariant?: 'default' | 'chart:pie' | 'chart:bar' | 'chart:line' | 'chart:area' | 'chart:radar' | 'chart:radial' | 'chart:tooltip' | 'chart:radial-stacked';
+    chart?: AreaChartWidgetProps | LineChartWidgetProps | PieChartWidgetProps | RadarChartWidgetProps | RadialChartWidgetProps | RadialStackedChartWidgetProps | TooltipChartWidgetProps;
 }
 
 export function ModuleWidget(
@@ -37,7 +63,6 @@ export function ModuleWidget(
         title,
         description,
         stats,
-        chart,
         children,
         footer,
         actions,
@@ -45,10 +70,45 @@ export function ModuleWidget(
         itemsHeader,
         itemsFooter,
         className,
-        contentClassName
+        contentClassName,
+        chartVariant,
+        chart
     }: ModuleWidgetProps) {
+
+    const renderChart = () => {
+        if (!chartVariant || chartVariant === 'default' || !chart) return null;
+
+        const commonProps = {
+            ...chart,
+            hideCard: true
+        };
+
+        switch (chartVariant) {
+            case 'chart:area':
+                return <AreaWidgetChart {...commonProps as any} />;
+            case 'chart:line':
+                return <LineWidgetChart {...commonProps as any} />;
+            case 'chart:pie':
+                return <PieWidgetChart {...commonProps as any} />;
+            case 'chart:radar':
+                return <RadarWidgetChart {...commonProps as any} />;
+            case 'chart:radial':
+                return <RadialWidgetChart {...commonProps as any} />;
+            case 'chart:radial-stacked':
+                return <RadialStackedWidgetChart {...commonProps as any} />;
+            case 'chart:tooltip':
+                return <TooltipWidgetChart {...commonProps as any} />;
+            case 'chart:bar':
+                return <TooltipWidgetChart {...commonProps as any} />;
+            default:
+                return null;
+        }
+    }
+
+    const chartContent = renderChart();
+
     return (
-        <Card className={cn("@container/module-widget h-full", className)}>
+        <Card className={cn("@container/module-widget h-full min-h-[40dvh]", className)}>
             {(title || description || actions) && (
                 <CardHeader>
                     <div className="flex flex-col gap-1">
@@ -111,7 +171,7 @@ export function ModuleWidget(
                         ))}
                     </div>
                 )}
-                {chart && <div className="w-full pt-2">{chart}</div>}
+                {chartContent && <div className="w-full pt-2">{chartContent}</div>}
                 {children}
             </CardContent>
 

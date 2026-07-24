@@ -1,8 +1,13 @@
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios";
 import {AppConfig} from "@/core/domain/config/app.config";
 import {AuthUserService} from "@/modules/auth/application/service/auth-user.service";
+import {redirect} from "next/navigation";
+import {AuthConfig} from "@/core/domain/config/auth.config";
+import {toast} from "sonner";
+import {useAuth} from "@/modules/auth/infrastructure/hooks/use-auth";
+import {authLogoutUtil} from "@/modules/auth/infrastructure/utilities/auth-logout.util";
 
-export class FetchService {
+export class ApiService {
 
     protected static _instance: AxiosInstance | undefined;
 
@@ -25,7 +30,7 @@ export class FetchService {
         return this._instance;
     }
 
-    static async request(method: string, uri: string, data?: Record<string, any>, config?: AxiosRequestConfig<any> | undefined): Promise<AxiosResponse<any, any, {}>> {
+    static async request<T>(method: string, uri: string, data?: Record<string, any>, config?: AxiosRequestConfig<any> | undefined): Promise<AxiosResponse<T, any, {}>> {
         const isGetMethod = method.toLowerCase() === 'get'
         const token = AuthUserService.getToken();
         const device = AuthUserService.getDevice();
@@ -40,6 +45,7 @@ export class FetchService {
             ...(apiKey ? {"X-API-KEY": apiKey} : {}),
             ...(organization ? {"X-Organization-Id": organization.id} : {})
         }
+
         let url = `${this.baseUrl}${uri}`;
 
         if (isGetMethod) {
@@ -56,35 +62,64 @@ export class FetchService {
             data = undefined;
         }
 
-        console.log("HEADERS:", headers)
-
         try {
-            return this.instance.request({method, data, url, headers});
-        } catch (e: any) {
-            console.error("Fetch Error", e)
-            throw new Error(e.message || e)
+            return await this.instance.request({method, data, url, headers});
+        } catch (error: any) {
+            this.parseError(error);
+            if (axios.isAxiosError(error) && error.response)
+                await this.checkUnAuthenticationError(error.response);
+            throw error;
         }
 
     }
 
+    protected static async checkUnAuthenticationError<T extends AxiosResponse<any>>(responses: T): Promise<void> {
+        if (typeof responses === 'object') {
+            if (responses.status === 401 || responses.status === 403) {
+                toast.error(`Vous n'êtes pas authorisé à avoir acceder à cette ressource`);
+                await authLogoutUtil();
+                redirect(AuthConfig.routes.login);
+            }
+            if (responses.status === 500) {
+                if ('errorCode' in responses.data) {
+                    const errorCode = parseInt((responses.data['errorCode']).toString());
+                    if (errorCode === 1001) {
+                        toast.error(`Vous devez être connecté pour acceder à cette ressource`);
+                        await authLogoutUtil();
+                        console.log(`Vous devez être connecté pour acceder à cette ressource`);
+                        redirect(AuthConfig.routes.login);
+                    }
+                }
+            }
+        }
+    }
+
+    static parseError(error: any, defaultMessage?: string) {
+        toast.error(
+            (axios.isAxiosError(error) && error.response)
+                ? error.response.data.message
+                : defaultMessage || error.message || "Une erreur est survenue pendant le traitement de la requête"
+        )
+    }
+
     static async post<T = any>(uri: string, data?: Record<string, any>, config?: AxiosRequestConfig<any> | undefined): Promise<AxiosResponse<T, any, {}>> {
-        return await this.request('post', `${uri}`, data, config);
+        return await this.request<T>('post', `${uri}`, data, config);
     }
 
     static async get<T = any>(uri: string, data?: Record<string, any>, config?: AxiosRequestConfig<any> | undefined): Promise<AxiosResponse<T, any, {}>> {
-        return await this.request('get', `${uri}`, data, config);
+        return await this.request<T>('get', `${uri}`, data, config);
     }
 
     static async put<T = any>(uri: string, data?: Record<string, any>, config?: AxiosRequestConfig<any> | undefined): Promise<AxiosResponse<T, any, {}>> {
-        return await this.request('put', `${uri}`, data, config);
+        return await this.request<T>('put', `${uri}`, data, config);
     }
 
     static async patch<T = any>(uri: string, data?: Record<string, any>, config?: AxiosRequestConfig<any> | undefined): Promise<AxiosResponse<T, any, {}>> {
-        return await this.request('patch', `${uri}`, data, config);
+        return await this.request<T>('patch', `${uri}`, data, config);
     }
 
     static async delete<T = any>(uri: string, data?: Record<string, any>, config?: AxiosRequestConfig<any> | undefined): Promise<AxiosResponse<T, any, {}>> {
-        return await this.request('delete', `${uri}`, data, config);
+        return await this.request<T>('delete', `${uri}`, data, config);
     }
 
 }

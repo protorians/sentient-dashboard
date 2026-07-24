@@ -9,7 +9,8 @@ export function getThemeCaches() {
     return instance;
 }
 
-export function getThemeCached() {
+export async function getThemeCached() {
+    await instance.load();
     return instance.toObject();
 }
 

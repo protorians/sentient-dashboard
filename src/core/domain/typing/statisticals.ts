@@ -6,4 +6,6 @@ export interface StatisticalProps{
     devise?: DeviseType;
     trend?: number;
     description?: string;
+    color?: string;
+    fill?: string;
 }
