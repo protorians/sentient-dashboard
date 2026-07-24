@@ -1,4 +1,4 @@
-import {ProjectManagementService} from "@/modules/project-management/application/service/project-management.service";
+import {ProjectManagementApiService} from "@/modules/project-management/application/service/project-management-api.service";
 import {ModuleDeclarationInterface} from "@/core/domain/entities/module.interface";
 import {ProjectsWidget} from "@/modules/project-management/presentation/widgets/projects.widget";
 
@@ -13,7 +13,7 @@ const projectManagementModule: ModuleDeclarationInterface = {
         analytics: ProjectsWidget
     },
     service: {
-        fetch: ProjectManagementService
+        fetch: ProjectManagementApiService
     },
     url: '/project-management',
     isEnabled: true,

@@ -1,6 +1,6 @@
-import {FetchService} from "@/core/infrastructure/utilities/fetch.service";
+import {ApiService} from "@/core/infrastructure/utilities/api-service";
 
-export class ProjectManagementService extends FetchService {
+export class ProjectManagementApiService extends ApiService {
     // Projects
     static async createProject(payload: any) {
         return await this.post('/project-managementprojects', payload);
