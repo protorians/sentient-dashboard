@@ -44,6 +44,7 @@ function determineIncrement(commits: string[]) {
     if (
         commit.startsWith("feat") ||
         commit.startsWith("update") ||
+        commit.startsWith("remove") ||
         commit.startsWith("add")
     ) {
       increment = "minor";
