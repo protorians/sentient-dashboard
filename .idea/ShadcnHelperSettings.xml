@@ -2958,6 +2958,18 @@
         <option name="homepage" value="https://moduix.dev" />
         <option name="urlTemplate" value="https://moduix.dev/r/react/{name}.json" />
       </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-canvas-ui" />
+        <option name="name" value="Canvas-ui" />
+        <option name="namespace" value="@canvas-ui" />
+        <option name="baseUrl" value="https://canvasui.dev/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Creative html-in-canvas components. React, Vue, Svelte, TS." />
+        <option name="homepage" value="https://canvasui.dev/" />
+        <option name="urlTemplate" value="https://canvasui.dev/r/{name}.json" />
+      </RegistryConfigState>
     </registryConfigs>
   </component>
 </project>
