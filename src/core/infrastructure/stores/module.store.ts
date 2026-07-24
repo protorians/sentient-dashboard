@@ -12,8 +12,8 @@ interface ModuleState {
     toggleModule: (id: string) => void;
     removeModule: (id: string) => void;
     setModules: (modules: ModuleDeclarationInterface[]) => void;
-    currentModule: ModuleDeclarationInterface | null;
-    module: (idOrKey: string) => ModuleInstanceInterface | null;
+    moduleSelected: ModuleDeclarationInterface | null;
+    moduleInstantiate: (idOrKey: string) => ModuleInstanceInterface | null;
     selectModule: (idOrKey: string) => void;
 }
 
@@ -21,7 +21,7 @@ export const useModuleStore = create<ModuleState>()(
     // persist(
     (setState, getState) => ({
         modules: [],
-        currentModule: null,
+        moduleSelected: null,
         addModule: (module) => setState((state) => ({
             modules: [...state.modules.filter(m => m.id !== module.id), module]
         })),
@@ -36,14 +36,14 @@ export const useModuleStore = create<ModuleState>()(
             modules: state.modules.filter((m) => m.id !== id || m.isDefault),
         })),
         setModules: (modules) => setState({modules}),
-        module: (idOrKey: string) => {
+        moduleInstantiate: (idOrKey: string) => {
             const module = getState().modules.find(m => m.id === idOrKey || m.key === idOrKey);
             return (module && module.key) ? new ModuleInstance(module.key) : null;
         },
         selectModule: (idOrKey: string) => {
             const module = getState().modules.find(m => m.id === idOrKey || m.key === idOrKey);
             if (module) {
-                setState({currentModule: module});
+                setState({moduleSelected: module});
             }
         }
     })
