@@ -1,4 +1,4 @@
-import {BloggingService} from "@/modules/blogging/application/service/blogging.service";
+import {BloggingApiService} from "@/modules/blogging/application/service/blogging-api-service";
 import {ModuleDeclarationInterface} from "@/core/domain/entities/module.interface";
 import {BloggingWidget} from "@/modules/blogging/presentation/widgets/blogging.widget";
 
@@ -13,7 +13,7 @@ const bloggingModule: ModuleDeclarationInterface = {
         analytics: BloggingWidget
     },
     service: {
-        fetch: BloggingService
+        fetch: BloggingApiService
     },
     url: '/blog',
     isEnabled: true,
