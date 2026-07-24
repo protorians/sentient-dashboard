@@ -43,7 +43,7 @@ export function AutoBreadcrumb() {
       
       // Essayer de trouver un label dans la config des modules
       const navConfig = defaultModulesNavConfig.find(m => m.url === currentPath)
-      const moduleDecl = modules.find(m => m.url === currentPath)
+      const moduleDecl = modules.find(m => m.uri === currentPath)
       
       let label = segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, " ")
       

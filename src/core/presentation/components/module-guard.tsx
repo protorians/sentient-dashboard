@@ -22,8 +22,8 @@ export function ModuleGuard({ children }: { children: React.ReactNode }) {
 
         // Trouver si le chemin actuel appartient à un module
         // On trie par longueur d'URL décroissante pour matcher le plus spécifique d'abord
-        const sortedModules = [...modules].sort((a, b) => b.url.length - a.url.length)
-        const currentModule = sortedModules.find(m => pathname.startsWith(m.url))
+        const sortedModules = [...modules].sort((a, b) => b.uri.length - a.uri.length)
+        const currentModule = sortedModules.find(m => pathname.startsWith(m.uri))
         
         if (currentModule && !currentModule.isEnabled) {
             router.replace('/dashboard')
