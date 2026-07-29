@@ -10,6 +10,7 @@ import {QueryProvider} from "@/core/infrastructure/providers/query.provider";
 import {AuthGuard} from "@/modules/auth/presentation/components/auth-guard";
 import {ThemeProvider} from "@/core/infrastructure/providers/theme.provider";
 import {ModulesProvider} from "@/core/infrastructure/providers/modules-provider";
+import ModalPortal from "@/core/presentation/modals/components/ModalPortal";
 
 const manrope = Manrope({subsets: ['latin'], variable: '--font-sans'});
 
@@ -37,6 +38,7 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
                     <ThemeProvider/>
                     <TooltipProvider>
                         {children}
+                        <ModalPortal/>
                     </TooltipProvider>
                 </AuthGuard>
                 <Toaster/>
