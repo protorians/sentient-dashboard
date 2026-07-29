@@ -92,7 +92,7 @@ export function StartMenu() {
     return (
         <nav
             className={cn(
-                "flex flex-col items-center",
+                "flex flex-row md:flex-col items-center",
                 CommonClassName.glossyBorder,
                 CommonClassName.layer,
                 "p-2"

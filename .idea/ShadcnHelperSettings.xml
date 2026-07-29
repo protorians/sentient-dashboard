@@ -2970,6 +2970,126 @@
         <option name="homepage" value="https://canvasui.dev/" />
         <option name="urlTemplate" value="https://canvasui.dev/r/{name}.json" />
       </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-amicro" />
+        <option name="name" value="Amicro" />
+        <option name="namespace" value="@amicro" />
+        <option name="baseUrl" value="https://amicro.vercel.app/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Open-source React micro-interactions and UI component registry powered by Motion." />
+        <option name="homepage" value="https://amicro.vercel.app" />
+        <option name="urlTemplate" value="https://amicro.vercel.app/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-flowui" />
+        <option name="name" value="Flowui" />
+        <option name="namespace" value="@flowui" />
+        <option name="baseUrl" value="https://flowui-registry.vercel.app/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Everyday use react components to make the development flow easier for the devs." />
+        <option name="homepage" value="https://flowui-registry.vercel.app" />
+        <option name="urlTemplate" value="https://flowui-registry.vercel.app/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-hugeicons-animated" />
+        <option name="name" value="Hugeicons-animated" />
+        <option name="namespace" value="@hugeicons-animated" />
+        <option name="baseUrl" value="https://hugeicons-animated.com/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="An open-source collection of animated Hugeicons for React." />
+        <option name="homepage" value="https://hugeicons-animated.com" />
+        <option name="urlTemplate" value="https://hugeicons-animated.com/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-motokoui" />
+        <option name="name" value="Motokoui" />
+        <option name="namespace" value="@motokoui" />
+        <option name="baseUrl" value="https://www.motokoui.com/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Components, application blocks, templates, and starter kits for modern React applications." />
+        <option name="homepage" value="https://motokoui.com" />
+        <option name="urlTemplate" value="https://www.motokoui.com/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-navui" />
+        <option name="name" value="Navui" />
+        <option name="namespace" value="@navui" />
+        <option name="baseUrl" value="https://ui.navdeepsingh.dev/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="shadcn-compatible components, blocks, and illustrations that adapt to your existing design configuration." />
+        <option name="homepage" value="https://ui.navdeepsingh.dev" />
+        <option name="urlTemplate" value="https://ui.navdeepsingh.dev/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-shadcn-dashboard" />
+        <option name="name" value="Shadcn-dashboard" />
+        <option name="namespace" value="@shadcn-dashboard" />
+        <option name="baseUrl" value="https://shadcndashboard.dev/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Shadcn Dashboard is a collection of modern, production-ready dashboard layouts, components, and UI patterns built on top of shadcn/ui and Tailwind CSS. It’s designed to help developers build clean, scalable, and data-driven dashboards faster—without compromising on performance, accessibility, or customization." />
+        <option name="homepage" value="https://shadcndashboard.dev" />
+        <option name="urlTemplate" value="https://shadcndashboard.dev/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-diklein" />
+        <option name="name" value="Diklein" />
+        <option name="namespace" value="@diklein" />
+        <option name="baseUrl" value="https://diklein.com/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="A growing collection of design-forward React components by Dave Klein, extracted from the components powering diklein.com." />
+        <option name="homepage" value="https://diklein.com" />
+        <option name="urlTemplate" value="https://diklein.com/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-hexui" />
+        <option name="name" value="Hexui" />
+        <option name="namespace" value="@hexui" />
+        <option name="baseUrl" value="https://hexui.sh/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="A shadcn/ui registry of high-quality React blocks and templates." />
+        <option name="homepage" value="https://hexui.sh" />
+        <option name="urlTemplate" value="https://hexui.sh/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-neon-ui" />
+        <option name="name" value="Neon-ui" />
+        <option name="namespace" value="@neon-ui" />
+        <option name="baseUrl" value="https://ui.neon.com/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Production-ready components for agent platforms built on Neon. Database branching, connection strings, usage metering and project management UI, built with Base UI and Tailwind v4." />
+        <option name="homepage" value="https://ui.neon.com" />
+        <option name="urlTemplate" value="https://ui.neon.com/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-wa-ui" />
+        <option name="name" value="Wa-ui" />
+        <option name="namespace" value="@wa-ui" />
+        <option name="baseUrl" value="https://ui.meta-cloud-api.site/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Production-ready WhatsApp Web UI components built on WDS design tokens with Tailwind CSS v4 and @base-ui/react." />
+        <option name="homepage" value="https://ui.meta-cloud-api.site" />
+        <option name="urlTemplate" value="https://ui.meta-cloud-api.site/r/{name}.json" />
+      </RegistryConfigState>
     </registryConfigs>
   </component>
 </project>

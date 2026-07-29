@@ -46,6 +46,7 @@
     "postcss": "^8.5.15",
     "radix-ui": "^1.6.0",
     "react": "^19.0.0",
+    "react-call": "^2.0.2",
     "react-day-picker": "^10.0.1",
     "react-dom": "^19.0.0",
     "react-resizable-panels": "^4.12.1",

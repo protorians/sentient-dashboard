@@ -11,11 +11,11 @@ export interface FooterProps {
 
 export function Footer({className, children, fixed = true}: FooterProps) {
     return (
-        <div className={cn(
+        <footer className={cn(
             "",
             className,
             fixed
-                ? "fixed bottom-0 left-0 w-screen flex flex-row items-center gap-4 p-4 z-100 bg-linear-180 to-background/90"
+                ? "fixed bottom-0 left-0 w-screen flex flex-row items-center gap-4 px-4 pb-4 pt-6 z-100 backdrop-blur-xl mask-[linear-gradient(to_top,background_40%,transparent_100%)]"
                 : "flex flex-row items-center gap-4 p-4"
         )}>
             <EdgeSection className={"py-1 p-3"}>
@@ -27,6 +27,6 @@ export function Footer({className, children, fixed = true}: FooterProps) {
             <EdgeSection className="justify-end text-muted-foreground text-xs py-1 p-3">
                 © {AppConfig.COPYRIGHT_YEAR} {AppConfig.APP_NAME}
             </EdgeSection>
-        </div>
+        </footer>
     )
 }

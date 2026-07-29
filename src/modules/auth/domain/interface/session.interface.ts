@@ -1,7 +1,10 @@
 
 export interface CreateUserSessionInterface {
-    username: string;
+    username?: string;
+    email?: string;
+    phone?: string;
     password: string;
+    prefix?: string;
 }
 
 export interface CreateUserAccountInterface {

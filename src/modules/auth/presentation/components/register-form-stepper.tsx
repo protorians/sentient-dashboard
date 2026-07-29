@@ -3,8 +3,9 @@
 import {cn} from "@/core/infrastructure/utilities/utils"
 import {Button} from "@/core/presentation/ui/button"
 import {FieldGroup} from "@/core/presentation/ui/field"
-import {NestedInput} from "@/core/presentation/ui/nested-input"
-import {NestedPhoneInput} from "@/core/presentation/ui/nested-phone-input"
+import {LegacyBirthDateInput} from "@/core/presentation/ui/legacy-birth-date-input"
+import {LegacyInput} from "@/core/presentation/ui/legacy-input"
+import {LegacyPhoneInput} from "@/core/presentation/ui/legacy-phone-input"
 import {
     User,
     Mail,
@@ -339,7 +340,7 @@ export function RegisterFormStepper({className, ...props}: React.ComponentProps<
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-4 w-full">
-                                            <NestedInput
+                                            <LegacyInput
                                                 id="first_names"
                                                 label="Prénom(s)"
                                                 input={{
@@ -351,7 +352,7 @@ export function RegisterFormStepper({className, ...props}: React.ComponentProps<
                                                 }}
                                                 icon={<User className="size-4 text-muted-foreground/60"/>}
                                             />
-                                            <NestedInput
+                                            <LegacyInput
                                                 id="last_name"
                                                 label="Nom de famille"
                                                 input={{
@@ -365,7 +366,7 @@ export function RegisterFormStepper({className, ...props}: React.ComponentProps<
                                             />
                                         </div>
 
-                                        <NestedInput
+                                        <LegacyInput
                                             id="organization"
                                             label="organization"
                                             input={{
@@ -378,7 +379,7 @@ export function RegisterFormStepper({className, ...props}: React.ComponentProps<
                                             icon={<Building className="size-4 text-muted-foreground/60"/>}
                                         />
 
-                                        <NestedInput
+                                        <LegacyInput
                                             id="email"
                                             label="Email"
                                             input={{
@@ -391,7 +392,7 @@ export function RegisterFormStepper({className, ...props}: React.ComponentProps<
                                             icon={<Mail className="size-4 text-muted-foreground/60"/>}
                                         />
 
-                                        <NestedInput
+                                        <LegacyInput
                                             id="username"
                                             label="Nom d'utilisateur (optionnel)"
                                             input={{
@@ -428,7 +429,7 @@ export function RegisterFormStepper({className, ...props}: React.ComponentProps<
                                             </div>
                                         </div>
 
-                                        <NestedInput
+                                        <LegacyInput
                                             id="password"
                                             label="Mot de passe"
                                             input={{
@@ -450,7 +451,7 @@ export function RegisterFormStepper({className, ...props}: React.ComponentProps<
                                             }
                                         />
 
-                                        <NestedInput
+                                        <LegacyInput
                                             id="password_confirmation"
                                             label="Confirmer le mot de passe"
                                             input={{
@@ -497,7 +498,7 @@ export function RegisterFormStepper({className, ...props}: React.ComponentProps<
                                             </div>
                                         </div>
 
-                                        <NestedPhoneInput
+                                        <LegacyPhoneInput
                                             id="phone"
                                             label="Numéro de téléphone"
                                             value={getter('phone') || ''}
@@ -509,7 +510,7 @@ export function RegisterFormStepper({className, ...props}: React.ComponentProps<
                                         />
 
                                         <div className="grid grid-cols-2 gap-4">
-                                            <NestedInput
+                                            <LegacyInput
                                                 id="country"
                                                 label="Pays (optionnel)"
                                                 input={{
@@ -520,7 +521,7 @@ export function RegisterFormStepper({className, ...props}: React.ComponentProps<
                                                 }}
                                                 icon={<MapPin className="size-4 text-muted-foreground/60"/>}
                                             />
-                                            <NestedInput
+                                            <LegacyInput
                                                 id="city"
                                                 label="Ville (optionnel)"
                                                 input={{
@@ -533,7 +534,7 @@ export function RegisterFormStepper({className, ...props}: React.ComponentProps<
                                             />
                                         </div>
 
-                                        <NestedInput
+                                        <LegacyInput
                                             id="address"
                                             label="Adresse (optionnel)"
                                             input={{
@@ -546,17 +547,16 @@ export function RegisterFormStepper({className, ...props}: React.ComponentProps<
                                         />
 
                                         <div className="grid grid-cols-2 gap-4">
-                                            <NestedInput
+                                            <LegacyBirthDateInput
                                                 id="birth_date"
                                                 label="Date de naissance (optionnel)"
                                                 input={{
-                                                    type: "date",
                                                     value: getter('birth_date') || '',
                                                     onChange: e => setter('birth_date', e.target.value)
                                                 }}
                                                 icon={<Calendar className="size-4 text-muted-foreground/60"/>}
                                             />
-                                            <NestedInput
+                                            <LegacyInput
                                                 id="gender"
                                                 label="Genre (optionnel)"
                                                 input={{
@@ -621,7 +621,7 @@ export function RegisterFormStepper({className, ...props}: React.ComponentProps<
                                             </div>
                                         )}
 
-                                        <NestedInput
+                                        <LegacyInput
                                             id="otp"
                                             label="Code OTP"
                                             input={{

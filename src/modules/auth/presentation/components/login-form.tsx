@@ -3,8 +3,10 @@
 import {cn} from "@/core/infrastructure/utilities/utils"
 import {Button} from "@/core/presentation/ui/button"
 import {FieldGroup} from "@/core/presentation/ui/field"
-import {NestedInput} from "@/core/presentation/ui/nested-input"
-import {User, Eye, EyeOff, Loader2} from "lucide-react"
+import {LegacyInput} from "@/core/presentation/ui/legacy-input"
+import {LegacyPhoneInput} from "@/core/presentation/ui/legacy-phone-input"
+import {Tabs, TabsList, TabsTrigger, TabsContent} from "@/core/presentation/ui/tabs"
+import {User, Mail, Phone, Eye, EyeOff, Loader2} from "lucide-react"
 import Link from "next/link"
 import {useRouter} from "next/navigation"
 import {useState} from "react"
@@ -19,6 +21,8 @@ export function LoginForm({className, ...props}: React.ComponentProps<"form">) {
     const {setter, getter, dataset, consolidate} = SignInDataset()
     const [showPassword, setShowPassword] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [identifierType, setIdentifierType] = useState("email")
+    const [phonePrefix, setPhonePrefix] = useState("")
     const router = useRouter()
     const {setCurrentUser, setOrganizations} = authUserConnectedStore()
 
@@ -32,8 +36,15 @@ export function LoginForm({className, ...props}: React.ComponentProps<"form">) {
             const response = await AuthApiService.signIn({
                 username: data.identifier!,
                 password: data.password!,
+                prefix: phonePrefix,
+                identifierType: identifierType as 'email' | 'phone' | 'username',
             })
-            const authData = response.data.data;
+            const authData = response.data.data || undefined;
+
+            if (!authData) {
+                toast.error("Réponse invalide du serveur");
+                return;
+            }
 
             if (authData.token && authData.user) {
                 await AuthUserService.setSession(authData);
@@ -48,7 +59,7 @@ export function LoginForm({className, ...props}: React.ComponentProps<"form">) {
             }
         } catch (error: any) {
             console.error('Login Error', error)
-            toast.error(error?.response?.data?.message || "Erreur de connexion");
+            toast.error(error?.response?.response?.message || "Erreur de connexion");
         } finally {
             setIsLoading(false);
         }
@@ -76,21 +87,68 @@ export function LoginForm({className, ...props}: React.ComponentProps<"form">) {
                         </p>
                     </div>
 
-                    <NestedInput
-                        id="identifier"
-                        label="Email, Nom d'utilisateur ou Téléphone"
-                        input={{
-                            type: "text",
-                            placeholder: "email, username ou 06...",
-                            required: true,
-                            value: getter('identifier') || '',
-                            onChange: e => setter('identifier', e.target.value),
+                    <Tabs value={identifierType} onValueChange={setIdentifierType} className="w-full">
+                        <TabsList className="w-full">
+                            <TabsTrigger value="email" className="flex-1 gap-1.5">
+                                <Mail className="size-3.5"/>
+                                Email
+                            </TabsTrigger>
+                            <TabsTrigger value="phone" className="flex-1 gap-1.5">
+                                <Phone className="size-3.5"/>
+                                Téléphone
+                            </TabsTrigger>
+                            <TabsTrigger value="username" className="flex-1 gap-1.5">
+                                <User className="size-3.5"/>
+                                Nom d'utilisateur
+                            </TabsTrigger>
+                        </TabsList>
 
-                        }}
-                        icon={<User className="size-4 text-muted-foreground/60"/>}
-                    />
+                        <TabsContent value="email">
+                            <LegacyInput
+                                id="identifier"
+                                label="Email"
+                                input={{
+                                    type: "text",
+                                    placeholder: "exemple@email.com",
+                                    required: true,
+                                    value: getter('identifier') || '',
+                                    onChange: e => setter('identifier', e.target.value),
+                                }}
+                                icon={<Mail className="size-4 text-muted-foreground/60"/>}
+                            />
+                        </TabsContent>
 
-                    <NestedInput
+                        <TabsContent value="phone">
+                            <LegacyPhoneInput
+                                label="Téléphone"
+                                onChange={(_, prefix, value) => {
+                                    setter('identifier', value);
+                                    setPhonePrefix(prefix);
+                                }}
+                                input={{
+                                    placeholder: "XX XX XX XX",
+                                    required: true,
+                                }}
+                            />
+                        </TabsContent>
+
+                        <TabsContent value="username">
+                            <LegacyInput
+                                id="identifier"
+                                label="Nom d'utilisateur"
+                                input={{
+                                    type: "text",
+                                    placeholder: "votre nom d'utilisateur",
+                                    required: true,
+                                    value: getter('identifier') || '',
+                                    onChange: e => setter('identifier', e.target.value),
+                                }}
+                                icon={<User className="size-4 text-muted-foreground/60"/>}
+                            />
+                        </TabsContent>
+                    </Tabs>
+
+                    <LegacyInput
                         id="password"
                         label="Mot de passe"
                         input={{

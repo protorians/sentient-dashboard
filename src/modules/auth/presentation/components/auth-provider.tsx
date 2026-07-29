@@ -34,8 +34,8 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
                     try {
                         const response = await AuthApiService.fetchAvailableSessions()
                         if (response && response.data) {
-                            if (response.data.data.token)
-                                await AuthUserService.setToken(response.data.data.token)
+                            // if (response.data.data.token)
+                            //     await AuthUserService.setToken(response.data.data.token)
                         }
                     } catch (e) {
                         console.error("Session verification failed", e)

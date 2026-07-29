@@ -4,9 +4,10 @@ import React from 'react';
 import {useModalStore} from '../stores/useModalStore';
 import {ModalInstance} from '../types/modal.type';
 import {cn} from '@/core/infrastructure/utilities/utils';
-import {SizeEnum} from "@/core/domain/enums/size.enum";
-import {FaIcon, FaTypeEnum} from "@/core/presentation/icons/glyphIcons";
-import { COMMON_CLASSNAMES } from "@/core/domain/constant/common-classname.constant";
+import {SizeEnum, SizeHeightEnum} from "@/core/domain/enums/size.enum";
+import {FaIcon, FaSizeEnum, FaTypeEnum} from "@/core/presentation/icons/glyphIcons";
+import {COMMON_CLASSNAMES} from "@/core/domain/constant/common-classname.constant";
+import {CircleXIcon, XIcon} from "lucide-react";
 
 interface ModalBoxProps {
     modal: ModalInstance;
@@ -14,14 +15,18 @@ interface ModalBoxProps {
 
 const ModalBox = ({modal}: ModalBoxProps) => {
     const closeModal = useModalStore((state) => state.closeModal);
-    const {id, component: Component, props, options} = modal;
+    let {id, component: Component, props, options} = modal;
+
+    options = options || {};
+    options.scrollable = typeof options.scrollable === 'undefined' ? true : options.scrollable;
 
     return (
         <div
             className={cn(
-                "relative w-full overflow-hidden flex flex-col rounded-lg border bg-background text-foreground shadow-lg",
+                "relative w-full overflow-hidden flex flex-col rounded-lg! border bg-background text-foreground shadow-lg",
                 COMMON_CLASSNAMES.Layer,
-                options?.size || SizeEnum.MD,
+                SizeEnum[options.size || 'AUTO'],
+                options?.useHeight && SizeHeightEnum[options.size || 'AUTO'],
                 options?.className
             )}
         >
@@ -49,13 +54,17 @@ const ModalBox = ({modal}: ModalBoxProps) => {
                                 options?.locked ? "opacity-50 cursor-not-allowed" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
                             )}
                         >
-                            <FaIcon name={'times-circle'} type={FaTypeEnum.Solid}/>
+                            <XIcon className="size-7"/>
                         </button>
                     )}
                 </div>
             )}
 
-            <div className="flex-auto overflow-y-auto w-full ">
+            <div className={cn(
+                "flex-auto w-full ",
+                options?.scrollable && "overflow-y-auto",
+                !options?.scrollable && "overflow-hidden",
+            )}>
                 {typeof Component === 'function' ? <Component {...props} /> : Component}
             </div>
         </div>

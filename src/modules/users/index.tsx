@@ -22,7 +22,7 @@ const usersModule: ModuleDeclarationInterface = {
     menu: {
         items: [
             {
-                label: 'Utilisateurs',
+                label: 'Ficher',
                 // description: 'Gestion des comptes et activités',
                 icon: "UsersIcon",
                 // action: () => {},

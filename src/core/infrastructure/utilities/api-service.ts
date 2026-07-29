@@ -77,8 +77,8 @@ export class ApiService {
         if (typeof responses === 'object') {
             if (responses.status === 401 || responses.status === 403) {
                 toast.error(`Vous n'êtes pas authorisé à avoir acceder à cette ressource`);
-                await authLogoutUtil();
-                redirect(AuthConfig.routes.login);
+                // await authLogoutUtil();
+                // redirect(AuthConfig.routes.login);
             }
             if (responses.status === 500) {
                 if ('errorCode' in responses.data) {

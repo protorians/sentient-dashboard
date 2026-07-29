@@ -25,8 +25,20 @@ export class AuthApiService extends ApiService {
         });
     }
 
-    static async signIn(payload: CreateUserSessionInterface) {
-        return await this.post<FetchResponseInterface<UserAuthResponseInterface>>(`${AuthConfig.routes.login}`, payload)
+    static async signIn(payload: CreateUserSessionInterface & { identifierType?: 'email' | 'phone' | 'username' }) {
+        const { identifierType, ...rest } = payload;
+        const body: Record<string, string | undefined> = { password: rest.password };
+
+        if (identifierType === 'email') {
+            body.email = rest.username;
+        } else if (identifierType === 'phone') {
+            body.phone = rest.username;
+            body.prefix = rest.prefix;
+        } else {
+            body.username = rest.username;
+        }
+
+        return await this.post<FetchResponseInterface<UserAuthResponseInterface>>(`${AuthConfig.routes.login}`, body)
     }
 
     static async signUp(payload: CreateUserAccountInterface) {

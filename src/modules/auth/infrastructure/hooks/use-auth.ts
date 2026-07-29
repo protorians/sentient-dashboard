@@ -4,7 +4,7 @@ import {AuthConfig} from "@/core/domain/config/auth.config";
 import {authLogoutUtil} from "@/modules/auth/infrastructure/utilities/auth-logout.util";
 
 export function useAuth() {
-    const {getCurrentUser, setCurrentUser} = authUserConnectedStore()
+    const {getCurrentUser, setCurrentUser, currentOrganization} = authUserConnectedStore()
     const router = useRouter()
 
     const logout = async () => {
@@ -14,6 +14,7 @@ export function useAuth() {
 
     return {
         user: getCurrentUser,
+        currentOrganization,
         isAuthenticated: !!getCurrentUser,
         logout
     }

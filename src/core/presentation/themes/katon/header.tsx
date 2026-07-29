@@ -33,8 +33,8 @@ export function Header({className, fixed = true}: HeaderProps) {
 
     return (
         <header className={cn(
-            "w-full h-16 flex items-center gap-4 pl-24",
-            fixed ? "fixed top-0 left-0 z-10 [&+*]:mt-16 bg-linear-0 to-background/90" : "",
+            "w-full h-24 flex items-start pt-4 gap-4 px-6 md:pl-24",
+            fixed ? "relative md:fixed top-0 left-0 z-10 [&+*]:mt-24 backdrop-blur-xl mask-[linear-gradient(to_bottom,background_40%,transparent_100%)]" : "",
             className
         )}>
 
@@ -45,14 +45,13 @@ export function Header({className, fixed = true}: HeaderProps) {
             <div className="flex-auto flex flex-row items-center justify-start">
                 {selectedModule ? <ModuleMenubar module={selectedModule}/> : null}
             </div>
-
             {
                 organization && (
                     <Tooltip>
                         <TooltipTrigger>
-                            <EdgeSection className="gap-2 px-4 py-3">
-                                <span className={"text-foreground text-sm leading-3"}>{organization.name}</span>
-                                <Building2Icon size={16} strokeWidth={1}/>
+                            <EdgeSection className="gap-2 px-4 py-3 text-foreground">
+                                <span className={" text-sm leading-3"}>{organization.name}</span>
+                                <Building2Icon size={16} />
                             </EdgeSection>
                         </TooltipTrigger>
                         <TooltipContent side={'left'}>

@@ -4,7 +4,8 @@ import {SizeEnum} from "@/core/domain/enums/size.enum";
 export interface ModalOptions {
   title?: ReactNode;
   description?: ReactNode;
-  size?: SizeEnum;
+  size?: keyof typeof SizeEnum;
+  useHeight?: boolean;
   locked?: boolean;
   backColor?: string;
   blurred?: boolean;
@@ -12,6 +13,7 @@ export interface ModalOptions {
   className?: string;
   isClosing?: boolean;
   onClose?: () => void;
+  scrollable?: boolean;
   [key: string]: any; // Pour la personnalisation étendue
 }
 

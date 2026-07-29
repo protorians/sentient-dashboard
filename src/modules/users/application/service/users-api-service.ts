@@ -1,5 +1,5 @@
 import {ApiService} from "@/core/infrastructure/utilities/api-service";
-import {UserAnalyticsInterface} from "@/modules/users/domain/users.interface";
+import {CreateUserInterface, UserAnalyticsInterface} from "@/modules/users/domain/users.interface";
 import {FetchResponseInterface, PaginationWithSearchOptions} from "@/core/domain/typing/response";
 import {ActivitiesType} from "@/core/domain/entities/activities.interface";
 import {UserInterface} from "@/modules/auth/domain/entities/user.interface";
@@ -10,8 +10,16 @@ export class UsersApiService extends ApiService {
         return await this.get<FetchResponseInterface<UserInterface[]>>('/users/', options);
     }
 
+    static async create(payload: CreateUserInterface & { organizationId: string }) {
+        return await this.post<FetchResponseInterface<UserInterface>>('/users', payload);
+    }
+
     static async getById(id: string) {
         return await this.get(`/users/${id}`);
+    }
+
+    static async findByContact(payload: { email?: string; phone?: string; username?: string }) {
+        return await this.post<FetchResponseInterface<UserInterface>>('/users/find-by-contact', payload);
     }
 
     static async getAnalytics() {

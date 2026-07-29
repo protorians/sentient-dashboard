@@ -3,8 +3,8 @@
 import {cn} from "@/core/infrastructure/utilities/utils"
 import {Button} from "@/core/presentation/ui/button"
 import {FieldGroup} from "@/core/presentation/ui/field"
-import {NestedInput} from "@/core/presentation/ui/nested-input"
-import {NestedPhoneInput} from "@/core/presentation/ui/nested-phone-input"
+import {LegacyInput} from "@/core/presentation/ui/legacy-input"
+import {LegacyPhoneInput} from "@/core/presentation/ui/legacy-phone-input"
 import {User, Mail, Eye, EyeOff, Building, Loader2} from "lucide-react"
 import Link from "next/link"
 import {useRouter} from "next/navigation"
@@ -66,7 +66,7 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
             }
         } catch (error: any) {
             console.error('Registration Error', error)
-            toast.error(error?.response?.data?.message || "Erreur lors de l'inscription");
+            toast.error(error?.response?.response?.message || "Erreur lors de l'inscription");
         } finally {
             setIsLoading(false);
         }
@@ -95,7 +95,7 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 w-full">
-                        <NestedInput
+                        <LegacyInput
                             id="first_names"
                             label="Prénom(s)"
                             input={{
@@ -107,7 +107,7 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
                             }}
                             icon={<User className="size-4 text-muted-foreground/60"/>}
                         />
-                        <NestedInput
+                        <LegacyInput
                             id="last_name"
                             label="Nom de famille"
                             input={{
@@ -121,7 +121,7 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
                         />
                     </div>
 
-                    <NestedInput
+                    <LegacyInput
                         id="organization"
                         label="organization"
                         input={{
@@ -134,7 +134,7 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
                         icon={<Building className="size-4 text-muted-foreground/60"/>}
                     />
 
-                    <NestedInput
+                    <LegacyInput
                         id="username"
                         label="Nom d'utilisateur"
                         input={{
@@ -147,7 +147,7 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
                         icon={<User className="size-4 text-muted-foreground/60"/>}
                     />
 
-                    <NestedInput
+                    <LegacyInput
                         id="email"
                         label="Email"
                         input={{
@@ -160,7 +160,7 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
                         icon={<Mail className="size-4 text-muted-foreground/60"/>}
                     />
 
-                    <NestedPhoneInput
+                    <LegacyPhoneInput
                         id="phone"
                         label="Numéro de téléphone"
                         value={getter('phone') || ''}
@@ -171,7 +171,7 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
                         }}
                     />
 
-                    <NestedInput
+                    <LegacyInput
                         id="password"
                         label="Mot de passe"
                         input={{
@@ -192,7 +192,7 @@ export function RegisterForm({className, ...props}: React.ComponentProps<"form">
                         }
                     />
 
-                    <NestedInput
+                    <LegacyInput
                         id="password_confirmation"
                         label="Confirmation du mot de passe"
                         input={{
