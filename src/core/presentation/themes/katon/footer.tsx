@@ -15,7 +15,7 @@ export function Footer({className, children, fixed = true}: FooterProps) {
             "",
             className,
             fixed
-                ? "fixed bottom-0 left-0 w-screen flex flex-row items-center gap-4 px-4 pb-4 pt-6 z-100 backdrop-blur-xl mask-[linear-gradient(to_top,background_40%,transparent_100%)]"
+                ? "fixed bottom-0 left-0 w-screen flex flex-row items-center gap-4 px-4 pb-4 pt-6 z-3 backdrop-blur-xl mask-[linear-gradient(to_top,background_40%,transparent_100%)]"
                 : "flex flex-row items-center gap-4 p-4"
         )}>
             <EdgeSection className={"py-1 p-3"}>

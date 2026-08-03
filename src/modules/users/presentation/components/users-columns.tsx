@@ -3,31 +3,24 @@
 import * as React from "react"
 import {type ColumnDef} from "@tanstack/react-table"
 import {
-    ShieldCheckIcon,
-    ShieldAlertIcon,
-    EllipsisVerticalIcon,
-    UsersIcon
+    ShieldAlertIcon, ShieldCheckIcon, UsersIcon,
 } from "lucide-react"
 
-import {Badge} from "@/core/presentation/ui/badge"
-import {Button} from "@/core/presentation/ui/button"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/core/presentation/ui/dropdown-menu"
+import {Badge} from "@/core/presentation/ui/badge";
 import {UserInterface} from "@/modules/auth/domain/entities/user.interface";
 import {getFullName} from "@/modules/users/infrastructure/utilities/users-name.util";
 import {UserStatusEnum} from "@/modules/auth/domain/enums/user-status.enum";
+import {Fragment} from "react";
+import {RowAction} from "@/core/presentation/data-grid/data-grid";
 
-export const usersDataGridColumns: ColumnDef<UserInterface>[] = [
+export const getUsersColumns = (): ColumnDef<UserInterface>[] => [
     {
         accessorKey: "Nom d'utilisateur",
         header: "Nom d'utilisateur",
         cell: ({row}) => (
-            <div className="font-medium">{row.original.username}</div>
+            <Fragment>
+                <div className="font-semibold">{row.original.username}</div>
+            </Fragment>
         ),
     },
     {
@@ -76,28 +69,4 @@ export const usersDataGridColumns: ColumnDef<UserInterface>[] = [
             </div>
         ),
     },
-    {
-        id: "actions",
-        cell: () => (
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button
-                        variant="ghost"
-                        className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
-                        size="icon"
-                    >
-                        <EllipsisVerticalIcon/>
-                        <span className="sr-only">Ouvrir le menu</span>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-40">
-                    <DropdownMenuItem>Modifier</DropdownMenuItem>
-                    <DropdownMenuItem>Afficher les détails</DropdownMenuItem>
-                    <DropdownMenuSeparator/>
-                    <DropdownMenuItem variant="destructive">Blocker</DropdownMenuItem>
-                    <DropdownMenuItem variant="destructive">Supprimer</DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        ),
-    },
-]
+];

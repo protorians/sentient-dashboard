@@ -8,5 +8,5 @@ export function getFullName(user: UserInterface): string {
 }
 
 export function getRolesNames(user: UserInterface): string {
-  return user.roles.map(role => role.name).join(", ");
+  return user.roles?.map(role => role.name).join(", ") || "";
 }

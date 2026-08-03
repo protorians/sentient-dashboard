@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react";
-import { create } from "zustand";
+import {create, StoreApi, UseBoundStore} from "zustand";
 import { toast } from "sonner";
 
 export type DatesetPayload<T> = {
@@ -10,11 +10,11 @@ export type DatesetPayload<T> = {
     key?: string;
 }
 
-export type DatesetEntity<T> = Record<keyof T, DatesetPayload<T[keyof T]>>
+// export type DatesetEntity<T> = Record<keyof T, DatesetPayload<T[keyof T]>>
 
-export type Validator<T> = (value: T) => string | null | undefined | boolean
+export type DatasetValidatorCallable<T> = (value: T) => string | null | undefined | boolean
 
-export interface Dataset<T extends Object> {
+export interface DatasetInterface<T extends Object> {
     dataset: T;
     clear: () => void;
     consolidate: () => T;
@@ -26,8 +26,10 @@ export interface Dataset<T extends Object> {
     ensureValidAndToast: (mode?: "single" | "multiple" | "rich") => boolean;
 }
 
-export function createDataset<T extends Object>(defaultValues?: T, validators?: Partial<Record<keyof T, Validator<any>>>) {
-    return create<Dataset<T>>((setState, getState) => ({
+export type DatasetInstanceType<T extends Object> =  UseBoundStore<StoreApi<DatasetInterface<T>>>
+
+export function createDataset<T extends Object>(defaultValues?: T, validators?: Partial<Record<keyof T, DatasetValidatorCallable<any>>>): DatasetInstanceType<T> {
+    return create<DatasetInterface<T>>((setState, getState) => ({
         dataset: defaultValues || {} as T,
         clear() {
             setState({
@@ -63,7 +65,7 @@ export function createDataset<T extends Object>(defaultValues?: T, validators?: 
         validate() {
             const errors: Record<string, string> = {};
             if (validators) {
-                for (const [k, fn] of Object.entries(validators as Record<string, Validator<any>>)) {
+                for (const [k, fn] of Object.entries(validators as Record<string, DatasetValidatorCallable<any>>)) {
                     try {
                         const value = (getState().dataset as any)[k];
                         const res = fn?.(value);

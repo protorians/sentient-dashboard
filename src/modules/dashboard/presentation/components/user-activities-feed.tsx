@@ -24,7 +24,7 @@ import {
 } from "@/components/reui/timeline";
 import {explainActivity, explainActivityAction} from "@/core/infrastructure/utilities/activities.util";
 import {Badge} from "@/core/presentation/ui/badge";
-import {ActivityActionBadge} from "@/modules/dashboard/presentation/components/activity-action-badge";
+import {PermissionActionBadge} from "@/core/presentation/permission-action-badge";
 import {cn} from "@/core/infrastructure/utilities/utils";
 import {Waiting} from "@/core/presentation/waiting";
 
@@ -36,7 +36,7 @@ export interface UserActivitiesFeedProps {
 export function UserActivitiesFeed({compacted = true}: UserActivitiesFeedProps) {
     const {getCurrentUser} = authUserConnectedStore()
     const getActivities: QueryFunction<any, any, any> = async ({}) => {
-        const has = (getCurrentUser) ? hasPermissions(
+        const has = (getCurrentUser?.permissions) ? hasPermissions(
             getCurrentUser.permissions,
             [DomainsEnum.Activity, DomainsEnum.UserActivity]
         ) : undefined;
@@ -95,7 +95,7 @@ export function UserActivitiesFeed({compacted = true}: UserActivitiesFeedProps) 
                                             <TimelineHeader>
                                                 <TimelineDate>{date}</TimelineDate>
                                                 <TimelineTitle className={'flex flex-row gap-2 items-center'}>
-                                                    <ActivityActionBadge action={activity.action}/>
+                                                    <PermissionActionBadge action={activity.action}/>
                                                     <Badge variant="outline" className={'text-xs'}>
                                                         {activity.module?.toLowerCase()}
                                                     </Badge>

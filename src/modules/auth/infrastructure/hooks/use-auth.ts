@@ -1,3 +1,5 @@
+"use client"
+
 import {authUserConnectedStore} from "@/modules/auth/infrastructure/store/auth-user-connected.store"
 import {useRouter} from "next/navigation"
 import {AuthConfig} from "@/core/domain/config/auth.config";

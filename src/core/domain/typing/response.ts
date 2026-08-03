@@ -6,6 +6,17 @@ export interface FetchResponseInterface<T> {
     errorCode?: number | string;
 }
 
+export interface FetchResponseMetaProps {
+    total?: number;
+    page?: number;
+    limit?: number;
+    totalPages?: number;
+}
+
+export interface FetchResponseWithMetaInterface<T> extends FetchResponseInterface<T> {
+    meta?: FetchResponseMetaProps
+}
+
 export interface PaginationOptions {
     page?: number;
     limit?: number;

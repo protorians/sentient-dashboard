@@ -1,6 +1,9 @@
 import {UsersAnalyticsWidget} from "@/modules/users/presentation/widgets/users-analytics.widget";
 import {UsersApiService} from "@/modules/users/application/service/users-api-service";
 import {ModuleDeclarationInterface} from "@/core/domain/entities/module.interface";
+import {
+    usersAnalyticsRoutine,
+} from "@/modules/users/infrastructure/routines/users-analytics.routine";
 
 const usersModule: ModuleDeclarationInterface = {
     id: 'users',
@@ -15,6 +18,9 @@ const usersModule: ModuleDeclarationInterface = {
     service: {
         fetch: UsersApiService
     },
+    routines: [
+        usersAnalyticsRoutine
+    ],
     uri: '/users',
     isEnabled: true,
     isDefault: true,
@@ -22,7 +28,7 @@ const usersModule: ModuleDeclarationInterface = {
     menu: {
         items: [
             {
-                label: 'Ficher',
+                label: 'Fichier',
                 // description: 'Gestion des comptes et activités',
                 icon: "UsersIcon",
                 // action: () => {},

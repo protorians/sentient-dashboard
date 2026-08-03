@@ -16,21 +16,35 @@ export interface AnalyticSectionItemProps {
 
 export interface AnalyticSectionProps {
     className?: string;
+    direction?: "horizontal" | "vertical";
     items: AnalyticSectionItemProps[];
 }
 
-export function AnalyticsSection({className, items}: AnalyticSectionProps) {
+export function AnalyticsSection({className, direction = "horizontal", items}: AnalyticSectionProps) {
     return (
         <div
-            className={cn("grid grid-cols-1 md:grid-cols-4 gap-6 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card", className)}>
+            className={cn(
+                "grid gap-6 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs dark:*:data-[slot=card]:bg-card",
+                direction === "horizontal"
+                    ? "grid-cols-1 md:grid-cols-4 @xl/main:grid-cols-2 @5xl/main:grid-cols-4"
+                    : "grid-cols-1 auto-rows-fr",
+                className)}>
             {items.map((item, index) => (
                 <Card
                     key={index}
                     className={cn(
                         "@container/card",
-                        item.colspan === 2 && "md:col-span-2 @xl/main:col-span-2",
-                        item.colspan === 3 && "md:col-span-3 @xl/main:col-span-2 @5xl/main:col-span-3",
-                        item.colspan === 4 && "md:col-span-4 @xl/main:col-span-2 @5xl/main:col-span-4",
+                        direction === "vertical"
+                            ? cn(
+                                item.colspan === 2 && "row-span-2",
+                                item.colspan === 3 && "row-span-3",
+                                item.colspan === 4 && "row-span-4",
+                            )
+                            : cn(
+                                item.colspan === 2 && "md:col-span-2 @xl/main:col-span-2",
+                                item.colspan === 3 && "md:col-span-3 @xl/main:col-span-2 @5xl/main:col-span-3",
+                                item.colspan === 4 && "md:col-span-4 @xl/main:col-span-2 @5xl/main:col-span-4",
+                            ),
                     )}
                 >
                     <CardHeader>

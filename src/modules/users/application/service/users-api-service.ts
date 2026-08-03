@@ -1,13 +1,13 @@
 import {ApiService} from "@/core/infrastructure/utilities/api-service";
 import {CreateUserInterface, UserAnalyticsInterface} from "@/modules/users/domain/users.interface";
-import {FetchResponseInterface, PaginationWithSearchOptions} from "@/core/domain/typing/response";
+import {FetchResponseInterface, FetchResponseWithMetaInterface, PaginationWithSearchOptions} from "@/core/domain/typing/response";
 import {ActivitiesType} from "@/core/domain/entities/activities.interface";
-import {UserInterface} from "@/modules/auth/domain/entities/user.interface";
+import {GetAllUsersFilterOptions, UserFilter, UserInterface} from "@/modules/auth/domain/entities/user.interface";
 
 export class UsersApiService extends ApiService {
     // Users
-    static async getAll(options?: PaginationWithSearchOptions) {
-        return await this.get<FetchResponseInterface<UserInterface[]>>('/users/', options);
+    static async getAll(options?: GetAllUsersFilterOptions) {
+        return await this.get<FetchResponseWithMetaInterface<UserInterface[]>>('/users/', options);
     }
 
     static async create(payload: CreateUserInterface & { organizationId: string }) {
@@ -16,6 +16,10 @@ export class UsersApiService extends ApiService {
 
     static async getById(id: string) {
         return await this.get(`/users/${id}`);
+    }
+
+    static async update(id: string, payload: Partial<CreateUserInterface>) {
+        return await this.put<FetchResponseInterface<UserInterface>>(`/users/${id}`, payload);
     }
 
     static async findByContact(payload: { email?: string; phone?: string; username?: string }) {

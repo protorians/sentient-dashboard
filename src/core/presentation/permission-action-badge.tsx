@@ -2,7 +2,12 @@ import {explainActivityAction} from "@/core/infrastructure/utilities/activities.
 import {cn} from "@/core/infrastructure/utilities/utils";
 
 
-export function ActivityActionBadge({action}: { action?: string }) {
+export interface PermissionActionBadgeProps {
+    action?: string
+}
+
+
+export function PermissionActionBadge({action}: PermissionActionBadgeProps) {
     if(!action) return;
 
     let className = ''

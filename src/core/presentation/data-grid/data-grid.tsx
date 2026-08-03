@@ -46,7 +46,8 @@ import {
     ChevronLeftIcon,
     ChevronRightIcon,
     ChevronsRightIcon,
-    XIcon
+    XIcon,
+    EllipsisVerticalIcon
 } from "lucide-react"
 
 import {Button} from "@/core/presentation/ui/button"
@@ -55,6 +56,8 @@ import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/core/presentation/ui/dropdown-menu"
 import {Label} from "@/core/presentation/ui/label"
@@ -74,6 +77,12 @@ import {
     TableHeader,
     TableRow,
 } from "@/core/presentation/ui/table"
+import {
+    ContextMenu,
+    ContextMenuContent,
+    ContextMenuItem,
+    ContextMenuTrigger,
+} from "@/core/presentation/ui/context-menu"
 import {cn} from "@/core/infrastructure/utilities/utils"
 import {useEffect} from "react";
 
@@ -98,6 +107,33 @@ export interface BulkAction<TData> {
      * Variant of the button (e.g., 'destructive')
      */
     variant?: "default" | "destructive" | "outline" | "secondary" | "ghost"
+}
+
+export interface RowAction<TData> {
+    /**
+     * Unique identifier for the action
+     */
+    id: string
+    /**
+     * Display label for the action
+     */
+    label: string
+    /**
+     * Callback when action is triggered
+     */
+    onExecute: (row: TData) => void | Promise<void>
+    /**
+     * Optional icon for the action item
+     */
+    icon?: React.ReactNode
+    /**
+     * Variant of the item (e.g., 'destructive')
+     */
+    variant?: "default" | "destructive"
+    /**
+     * Whether to show the action in the context menu. Defaults to true.
+     */
+    showInContextMenu?: boolean
 }
 
 export interface DataGridProps<TData> {
@@ -136,11 +172,19 @@ export interface DataGridProps<TData> {
     /**
      * Enable bulk actions bar
      */
-    enableBulkActions?: boolean
+    // enableBulkActions?: boolean
     /**
      * Bulk actions available when rows are selected
      */
     bulkActions?: BulkAction<TData>[]
+    /**
+     * Enable context menu on rows
+     */
+    // enableRowActions?: boolean
+    /**
+     * Actions available in the row context menu
+     */
+    rowActions?: (row: TData) => RowAction<TData>[]
     /**
      * Enable column visibility toggling
      */
@@ -149,6 +193,22 @@ export interface DataGridProps<TData> {
      * Enable pagination
      */
     enablePagination?: boolean
+    /**
+     * Enable manual pagination (server-side)
+     */
+    manualPagination?: boolean
+    /**
+     * Total page count for manual pagination
+     */
+    pageCount?: number
+    /**
+     * Callback for pagination change
+     */
+    onPaginationChange?: OnChangeFn<import("@tanstack/react-table").PaginationState>
+    /**
+     * Current pagination state
+     */
+    pagination?: import("@tanstack/react-table").PaginationState
     /**
      * Available page size options
      */
@@ -193,11 +253,55 @@ function DragHandle({id}: { id: UniqueIdentifier }) {
     )
 }
 
+interface RowActionMenuProps<TData> {
+    children: React.ReactNode
+    row: Row<TData>
+    enableRowActions?: boolean
+    rowActions?: (row: TData) => RowAction<TData>[]
+}
+
+function RowActionMenu<TData>(
+    {
+        children,
+        row,
+        enableRowActions,
+        rowActions,
+    }: RowActionMenuProps<TData>) {
+    if (!enableRowActions || !rowActions) return <>{children}</>
+
+    const actions = rowActions(row.original).filter(action => action.showInContextMenu !== false)
+    if (actions.length === 0) return <>{children}</>
+
+    return (
+        <ContextMenu>
+            <ContextMenuTrigger asChild>
+                {children}
+            </ContextMenuTrigger>
+            <ContextMenuContent className="w-48">
+                {actions.map((action) => (
+                    <ContextMenuItem
+                        key={action.id}
+                        onClick={() => action.onExecute(row.original)}
+                        variant={action.variant}
+                    >
+                        {action.icon}
+                        {action.label}
+                    </ContextMenuItem>
+                ))}
+            </ContextMenuContent>
+        </ContextMenu>
+    )
+}
+
 // Internal component for draggable rows
 function DraggableRow<TData>({
-                                 row
+                                 row,
+                                 enableRowActions,
+                                 rowActions,
                              }: {
     row: Row<TData>
+    enableRowActions?: boolean
+    rowActions?: (row: TData) => RowAction<TData>[]
 }) {
     const {transform, transition, setNodeRef, isDragging} = useSortable({
         id: row.id,
@@ -209,19 +313,25 @@ function DraggableRow<TData>({
     }
 
     return (
-        <TableRow
-            data-state={row.getIsSelected() && "selected"}
-            data-dragging={isDragging}
-            ref={setNodeRef}
-            className="relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-80"
-            style={style}
+        <RowActionMenu
+            row={row}
+            enableRowActions={enableRowActions}
+            rowActions={rowActions}
         >
-            {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-            ))}
-        </TableRow>
+            <TableRow
+                data-state={row.getIsSelected() && "selected"}
+                data-dragging={isDragging}
+                ref={setNodeRef}
+                className="relative z-0 data-[dragging=true]:z-1 data-[dragging=true]:opacity-80"
+                style={style}
+            >
+                {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                ))}
+            </TableRow>
+        </RowActionMenu>
     )
 }
 
@@ -239,10 +349,16 @@ export function DataGrid<TData>(
         enableSelection = false,
         onRowSelectionChange,
         rowSelection: initialRowSelection = {},
-        enableBulkActions = false,
+        // enableBulkActions = false,
         bulkActions = [],
+        // enableRowActions = false,
+        rowActions,
         enableColumnVisibility = true,
         enablePagination = true,
+        manualPagination = false,
+        pageCount,
+        onPaginationChange: onPaginationChangeProp,
+        pagination: paginationProp,
         pageSizeOptions = [10, 20, 30, 40, 50],
         initialPageSize = 10,
         toolbar,
@@ -252,6 +368,8 @@ export function DataGrid<TData>(
     }: DataGridProps<TData>) {
     // We manage internal data state to support DND reordering
     const [data, setData] = React.useState(() => initialData)
+    const enableRowActions = typeof rowActions !== 'undefined'
+    const enableBulkActions = typeof bulkActions !== 'undefined'
 
     React.useEffect(() => {
         setData(initialData)
@@ -261,10 +379,13 @@ export function DataGrid<TData>(
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [sorting, setSorting] = React.useState<SortingState>([])
-    const [pagination, setPagination] = React.useState({
+    const [internalPagination, setInternalPagination] = React.useState({
         pageIndex: 0,
         pageSize: initialPageSize,
     })
+
+    const pagination = paginationProp || internalPagination
+    const onPaginationChange = onPaginationChangeProp || setInternalPagination
     const [isExecutingAction, setIsExecutingAction] = React.useState(false)
 
     const sensors = useSensors(
@@ -278,7 +399,7 @@ export function DataGrid<TData>(
         [data, getRowId]
     )
 
-    // Merge user columns with optional feature columns (selection, dnd)
+    // Merge user columns with optional feature columns (selection, dnd, actions)
     const columns = React.useMemo(() => {
         const cols = [...userColumns]
 
@@ -324,8 +445,54 @@ export function DataGrid<TData>(
             })
         }
 
+        if (enableRowActions && rowActions) {
+            const hasActionsColumn = cols.some(col => col.id === "actions")
+            if (!hasActionsColumn) {
+                cols.push({
+                    id: "actions",
+                    cell: ({row}) => {
+                        const actions = rowActions(row.original)
+                        if (actions.length === 0) return null
+
+                        return (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        className="flex size-8 text-muted-foreground data-[state=open]:bg-muted ml-auto"
+                                        size="icon"
+                                    >
+                                        <EllipsisVerticalIcon className="size-4"/>
+                                        <span className="sr-only">Ouvrir le menu</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-48">
+                                    {actions.map((action, index) => (
+                                        <React.Fragment key={action.id}>
+                                            {index > 0 && action.variant === "destructive" && actions[index - 1].variant !== "destructive" && (
+                                                <DropdownMenuSeparator/>
+                                            )}
+                                            <DropdownMenuItem
+                                                onSelect={() => action.onExecute(row.original)}
+                                                variant={action.variant}
+                                            >
+                                                {action.icon}
+                                                {action.label}
+                                            </DropdownMenuItem>
+                                        </React.Fragment>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )
+                    },
+                    enableSorting: false,
+                    enableHiding: false,
+                })
+            }
+        }
+
         return cols
-    }, [userColumns, enableSelection, enableDnd, getRowId])
+    }, [userColumns, enableSelection, enableDnd, enableRowActions, rowActions, getRowId])
 
     const table = useReactTable({
         data,
@@ -346,13 +513,15 @@ export function DataGrid<TData>(
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
         onColumnVisibilityChange: setColumnVisibility,
-        onPaginationChange: setPagination,
+        onPaginationChange,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
+        getPaginationRowModel: manualPagination ? undefined : getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
+        manualPagination,
+        pageCount,
     })
 
     function handleDragEnd(event: DragEndEvent) {
@@ -478,7 +647,7 @@ export function DataGrid<TData>(
                         id={sortableId}
                     >
                         <Table>
-                            <TableHeader className={cn(stickyHeader && "sticky top-0 z-10 bg-muted")}>
+                            <TableHeader className={cn(stickyHeader && "sticky top-0 z-1 bg-muted")}>
                                 {table.getHeaderGroups().map((headerGroup) => (
                                     <TableRow key={headerGroup.id}>
                                         {headerGroup.headers.map((header) => (
@@ -501,7 +670,12 @@ export function DataGrid<TData>(
                                         strategy={verticalListSortingStrategy}
                                     >
                                         {model?.rows.map((row) => (
-                                            <DraggableRow key={row.id} row={row}/>
+                                            <DraggableRow
+                                                key={row.id}
+                                                row={row}
+                                                enableRowActions={enableRowActions}
+                                                rowActions={rowActions}
+                                            />
                                         ))}
                                     </SortableContext>
                                 ) : (
@@ -519,7 +693,7 @@ export function DataGrid<TData>(
                     </DndContext>
                 ) : (
                     <Table>
-                        <TableHeader className={cn(stickyHeader && "sticky top-0 z-10 bg-muted")}>
+                        <TableHeader className={cn(stickyHeader && "sticky top-0 z-1 bg-muted")}>
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <TableRow key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => (
@@ -538,16 +712,22 @@ export function DataGrid<TData>(
                         <TableBody>
                             {model?.rows?.length ? (
                                 model?.rows.map((row) => (
-                                    <TableRow
+                                    <RowActionMenu
                                         key={row.id}
-                                        data-state={row.getIsSelected() && "selected"}
+                                        row={row}
+                                        enableRowActions={enableRowActions}
+                                        rowActions={rowActions}
                                     >
-                                        {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
+                                        <TableRow
+                                            data-state={row.getIsSelected() && "selected"}
+                                        >
+                                            {row.getVisibleCells().map((cell) => (
+                                                <TableCell key={cell.id}>
+                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
+                                    </RowActionMenu>
                                 ))
                             ) : (
                                 <TableRow>
@@ -598,7 +778,7 @@ export function DataGrid<TData>(
                             </Select>
                         </div>
                         <div className="flex w-fit items-center justify-center text-sm font-medium">
-                            Page {table.getState().pagination.pageIndex + 1} of{" "}
+                            Page {table.getState().pagination.pageIndex + 1} sur{" "}
                             {table.getPageCount()}
                         </div>
                         <div className="ml-auto flex items-center gap-2 lg:ml-0">
@@ -609,7 +789,7 @@ export function DataGrid<TData>(
                                 onClick={() => table.setPageIndex(0)}
                                 disabled={!table.getCanPreviousPage()}
                             >
-                                <span className="sr-only">Go to first page</span>
+                                <span className="sr-only">Aller à la première page</span>
                                 <ChevronsLeftIcon/>
                             </Button>
                             <Button
@@ -619,7 +799,7 @@ export function DataGrid<TData>(
                                 onClick={() => table.previousPage()}
                                 disabled={!table.getCanPreviousPage()}
                             >
-                                <span className="sr-only">Go to previous page</span>
+                                <span className="sr-only">Aller à la page précédente</span>
                                 <ChevronLeftIcon/>
                             </Button>
                             <Button
@@ -629,7 +809,7 @@ export function DataGrid<TData>(
                                 onClick={() => table.nextPage()}
                                 disabled={!table.getCanNextPage()}
                             >
-                                <span className="sr-only">Go to next page</span>
+                                <span className="sr-only">Aller à la page suivante</span>
                                 <ChevronRightIcon/>
                             </Button>
                             <Button
@@ -639,7 +819,7 @@ export function DataGrid<TData>(
                                 onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                                 disabled={!table.getCanNextPage()}
                             >
-                                <span className="sr-only">Go to last page</span>
+                                <span className="sr-only">Aller à la dernière page</span>
                                 <ChevronsRightIcon/>
                             </Button>
                         </div>

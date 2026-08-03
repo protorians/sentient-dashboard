@@ -13,6 +13,7 @@ import {
 import {cn} from "@/core/infrastructure/utilities/utils";
 import {AreaWidgetChart} from "@/core/presentation/charts/area-widget.chart";
 import {ChartConfig} from "@/core/presentation/ui/chart";
+import {usersAnalyticsRoutine} from "@/modules/users/infrastructure/routines/users-analytics.routine";
 
 const chartConfig = {
     count: {
@@ -21,11 +22,19 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
-export function UsersAnalytics() {
-    const {isLoading, data: analytics} = useQuery<UserAnalyticsInterface>({
-        queryKey: ['users', 'analytics'],
-        queryFn: async () => (await UsersApiService.getAnalytics()).data.data
-    })
+export function UsersAnalyticsChart() {
+    const [isLoading, setIsLoading] = useState<boolean>(true)
+    const {dataset: analytics} = usersAnalyticsRoutine.dataset()
+
+    // const {isLoading, data: analytics} = useQuery<UserAnalyticsInterface|null>({
+    //     queryKey: ['users', 'analytics'],
+    //     queryFn: async () => null
+    //     // queryFn: async () => (await UsersApiService.getAnalytics()).data.data
+    // })
+
+    useEffect(() => {
+        if (analytics) setIsLoading(false)
+    }, [analytics])
 
     return (
         <div className="flex flex-col gap-4 py-6">
@@ -35,29 +44,6 @@ export function UsersAnalytics() {
             {
                 !isLoading && analytics && analytics.summary && (
                     <Fragment>
-                        <AnalyticsSection
-                            items={[
-                                {
-                                    label: 'Total',
-                                    value: analytics.summary.totalUsers || 0,
-                                    title: <>Utilisateurs total</>,
-                                    description: <>Le nombre de tous les utilisateurs inscrits</>,
-                                    colspan: 2
-                                },
-                                {
-                                    label: 'Actifs',
-                                    value: analytics.summary.activeUsers || 0,
-                                    title: <>Utilisateurs actifs</>,
-                                    description: <>Le nombre d'utilisateurs actifs</>
-                                },
-                                {
-                                    label: 'Ce mois',
-                                    value: analytics.summary.newUsersThisMonth || 0,
-                                    title: <>Utilisateurs inscrits ce mois-ci</>,
-                                    description: <>Le nombre d'utilisateurs inscrits ce mois-ci</>
-                                },
-                            ]}
-                        />
                         <div className="w-full h-[40dvh]">
                             <AreaWidgetChart
                                 hideCard={false}

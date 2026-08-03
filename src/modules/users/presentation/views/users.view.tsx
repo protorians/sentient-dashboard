@@ -4,7 +4,7 @@ import {Header} from "@/core/presentation/themes/katon/header";
 import {Main} from "@/core/presentation/themes/katon/main";
 import {UsersSidePanel} from "@/modules/users/presentation/components/users-side.panel";
 import {UsersDataGrid} from "@/modules/users/presentation/components/users-data-grid";
-import {UsersAnalytics} from "@/modules/users/presentation/components/users-analytics";
+import {UsersAnalyticsChart} from "@/modules/users/presentation/components/users-analytics-chart";
 import {Wrapper} from "@/core/presentation/themes/katon/wrapper";
 import {Button} from "@/core/presentation/ui/button";
 import {PlusIcon} from "lucide-react";
@@ -29,14 +29,13 @@ export function UsersView() {
                         </div>
 
                         <div className="flex flex-col gap-4">
-                            <UsersAnalytics/>
+                            <UsersAnalyticsChart/>
                         </div>
 
                         <div className="flex-auto">
                             <UsersDataGrid/>
                         </div>
                     </div>
-
                     <UsersSidePanel/>
                 </Main>
             </Wrapper>

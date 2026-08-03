@@ -9,7 +9,9 @@ import {ModulesDefinition} from "@/modules";
 import {QueryProvider} from "@/core/infrastructure/providers/query.provider";
 import {AuthGuard} from "@/modules/auth/presentation/components/auth-guard";
 import {ThemeProvider} from "@/core/infrastructure/providers/theme.provider";
-import {ModulesProvider} from "@/core/infrastructure/providers/modules-provider";
+import {ModulesSwitcherProvider} from "@/core/infrastructure/providers/modules-switcher.provider";
+import {ModulesRoutinesProvider} from "@/core/infrastructure/providers/modules-routines.provider";
+import {ModulesGuardProvider} from "@/core/infrastructure/providers/modules-guard.provider";
 import ModalPortal from "@/core/presentation/modals/components/ModalPortal";
 
 const manrope = Manrope({subsets: ['latin'], variable: '--font-sans'});
@@ -34,12 +36,15 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
                 <ModulesDefinition/>
                 <NavigationProgressBar/>
                 <AuthGuard>
-                    <ModulesProvider/>
-                    <ThemeProvider/>
-                    <TooltipProvider>
-                        {children}
-                        <ModalPortal/>
-                    </TooltipProvider>
+                    <ModulesSwitcherProvider/>
+                    <ModulesRoutinesProvider/>
+                    <ModulesGuardProvider>
+                        <ThemeProvider/>
+                        <TooltipProvider>
+                            {children}
+                            <ModalPortal/>
+                        </TooltipProvider>
+                    </ModulesGuardProvider>
                 </AuthGuard>
                 <Toaster/>
             </QueryProvider>

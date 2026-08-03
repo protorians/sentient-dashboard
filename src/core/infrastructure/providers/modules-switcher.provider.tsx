@@ -4,7 +4,7 @@ import {usePathname} from "next/navigation";
 import {useEffect} from "react";
 import {useModuleStore} from "@/core/infrastructure/stores/module.store";
 
-export function ModulesProvider() {
+export function ModulesSwitcherProvider() {
     const {modules, selectModule} = useModuleStore();
     const pathname = usePathname();
 

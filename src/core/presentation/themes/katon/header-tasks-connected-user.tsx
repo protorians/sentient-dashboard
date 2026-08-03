@@ -1,3 +1,5 @@
+"use client"
+
 import {useAuth} from "@/modules/auth/infrastructure/hooks/use-auth";
 import {
     DropdownMenu,

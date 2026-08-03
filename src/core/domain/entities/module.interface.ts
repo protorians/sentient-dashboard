@@ -1,6 +1,7 @@
 import React from "react";
 import {ApiService} from "@/core/infrastructure/utilities/api-service";
 import {IconKey} from "@/core/presentation/icons/types";
+import {RoutineInterface} from "@/core/domain/typing/routine.types";
 
 export type ModuleType = 'INTERNAL' | 'EXTERNAL';
 
@@ -25,6 +26,7 @@ export interface ModuleDeclarationInterface {
     description: string;
     icon: IconKey;
     logo?: string;
+    routines?: RoutineInterface<any>[];
     widgets?: ModuleWidgetsInterface;
     service?: {
         fetch?: ApiService

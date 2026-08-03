@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import {AppSidebar} from "@/core/presentation/app-sidebar"
-import {DataGrid} from "@/core/presentation/data-grid"
+import {DataGrid} from "@/core/presentation/data-grid/data-grid"
 import {DashboardHeader} from "@/modules/dashboard/presentation/components/dashboard-header"
 import {SidebarInset, SidebarProvider} from "@/core/presentation/ui/sidebar"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/core/presentation/ui/tabs"

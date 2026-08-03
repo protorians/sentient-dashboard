@@ -1,39 +1,70 @@
 export enum DomainsEnum {
-    OTP = "OTP",
-    Deal = "Deal",
-    Lead = "Lead",
-    Post = "Post",
-    Role = "Role",
-    Task = "Task",
     User = "User",
-    Media = "Media",
-    Order = "Order",
-    Stock = "Stock",
-    Company = "Company",
-    Contact = "Contact",
-    Invoice = "Invoice",
-    Product = "Product",
-    Project = "Project",
-    Activity = "Activity",
-    Analytics = "Analytics",
     UserDevice = "UserDevice",
-    ApiAccessKey = "ApiAccessKey",
-    Notification = "Notification",
     Organization = "Organization",
-    PostCategory = "PostCategory",
-    TaskReminder = "TaskReminder",
-    UserActivity = "UserActivity",
-    PaymentMethod = "PaymentMethod",
-    StockMovement = "StockMovement",
-    RestaurantDish = "RestaurantDish",
-    RestaurantMenu = "RestaurantMenu",
-    UserPreference = "UserPreference",
-    RestaurantOrder = "RestaurantOrder",
-    PostCollaborator = "PostCollaborator",
     OrganizationMember = "OrganizationMember",
-    RestaurantCustomer = "RestaurantCustomer",
+    ApiAccessKey = "ApiAccessKey",
+
+    Role = "Role",
+
+    Post = "Post",
+    PostCategory = "PostCategory",
+    PostCollaborator = "PostCollaborator",
+
+    Contact = "Contact",
+    Company = "Company",
+    Lead = "Lead",
+    Deal = "Deal",
+    Activity = "Activity",
+
+    Project = "Project",
+    Task = "Task",
+    TaskReminder = "TaskReminder",
+
+    Media = "Media",
+    Notification = "Notification",
+
+    OTP = "OTP",
+    PaymentMethod = "PaymentMethod",
+    Order = "Order",
+    Invoice = "Invoice",
+
+    UserPreference = "UserPreference",
     OrganizationPreference = "OrganizationPreference",
+    UserActivity = "UserActivity",
+
+    // Stock Module
+    Stock = "Stock",
+    Product = "Product",
+    StockMovement = "StockMovement",
+
+    // Restaurant Module
+    RestaurantDish = "RestaurantDish",
+    RestaurantOrder = "RestaurantOrder",
+    RestaurantMenu = "RestaurantMenu",
+    RestaurantCustomer = "RestaurantCustomer",
     RestaurantSalesSession = "RestaurantSalesSession",
+
+    // Global Analytics
+    Analytics = "Analytics",
+
+    // Accounting Module
+    Accounting = "Accounting",
+    AccountingSetting = "AccountingSetting",
+    AccountingAccount = "AccountingAccount",
+    AccountingJournal = "AccountingJournal",
+    AccountingJournalEntry = "AccountingJournalEntry",
+    AccountingLedger = "AccountingLedger",
+    AccountingTrialBalance = "AccountingTrialBalance",
+    AccountingBankAccount = "AccountingBankAccount",
+    AccountingTax = "AccountingTax",
+    AccountingBudget = "AccountingBudget",
+    AccountingClosePeriod = "AccountingClosePeriod",
+    AccountingReport = "AccountingReport",
+
+    // Customer Registry
+    Customer = "Customer",
+    CustomerModule = "CustomerModule",
 }
 
 const a = {

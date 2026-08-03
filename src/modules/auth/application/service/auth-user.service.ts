@@ -1,3 +1,5 @@
+"use client"
+
 import {CacheStorageCapability} from "@/core/infrastructure/capabilities/cache-storage/capability";
 import {AuthCacheInterface} from "@/modules/auth/domain/typing/auth-caches";
 import {CacheStorageType} from "@/core/infrastructure/capabilities/cache-storage/enum";

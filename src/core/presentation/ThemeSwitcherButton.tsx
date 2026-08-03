@@ -1,3 +1,5 @@
+"use client"
+
 import {Button} from "@/core/presentation/ui/button";
 import {MoonIcon, SunIcon} from "lucide-react";
 import {useThemePreferColorSchemeStore} from "@/core/infrastructure/stores/theme.store";
