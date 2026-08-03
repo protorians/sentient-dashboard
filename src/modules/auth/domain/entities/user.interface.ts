@@ -27,7 +27,7 @@ export type PermissionsCapabilitiesInterface = Record<string, PermissionCapabili
 
 export type UserPermissionCapabilities = PermissionsCapabilitiesInterface;
 
-export interface RoleProps {
+export interface RoleInterface {
     id?: string;
     name: string;
     color?: string;
@@ -37,7 +37,7 @@ export interface RoleProps {
     organizationId: string;
 }
 
-export interface PreferenceProps {
+export interface PreferenceInterface {
     id?: string;
     key?: string;
     value?: string;
@@ -60,8 +60,8 @@ export interface UserInterface {
     updatedAt?: Date;
     userData?: UserDataInterface;
     userPhones?: UserPhoneInterface[];
-    roles?: RoleProps[];
-    preferences?: PreferenceProps[];
+    roles?: RoleInterface[];
+    preferences?: PreferenceInterface[];
     permissions?: Record<string, PermissionCapabilityInterface>;
 }
 
