@@ -7,7 +7,7 @@ Ce projet est l'interface 'manager' d'un ERP
 
 ### Commits
 
-Les commits doivent être regroupés par domaine ou par fonctionnalité. Utiliser les préfixes suivants :
+Les commits doivent être séparés par domaine ou par fonctionnalité. Utiliser les préfixes suivants :
 
 | Préfixe          | Usage |
 |------------------|-------|
