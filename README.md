@@ -7,7 +7,8 @@ Ce projet est l'interface 'manager' d'un ERP
 
 ### Commits
 
-Les commits doivent être séparés par domaine ou par fonctionnalité. Utiliser les préfixes suivants :
+Les commits doivent être des commits logiques séparés par domaine, par fonctionnalité ou par objectif dans l'ordre de modifications des fichiers. 
+Utiliser les préfixes suivants :
 
 | Préfixe          | Usage |
 |------------------|-------|
@@ -23,6 +24,9 @@ Les commits doivent être séparés par domaine ou par fonctionnalité. Utiliser
 | `docs`           | Documentation uniquement |
 | `remove`         | Suppression de code ou de fichiers |
 | `deprecate`      | Marquage d'une fonctionnalité comme dépréciée |
+
+Executer ```bun run version:sync``` pour mettre à jour la version de l'application automatiquement
+
 
 ### Documentation
 *   **Mise à jour** : Tout ajout ou modification de fonctionnalité doit être accompagné de la mise à jour de la documentation appropriée dans ce dossier `./docs`.
