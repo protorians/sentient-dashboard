@@ -3210,6 +3210,30 @@
         <option name="homepage" value="https://whiskeyjack.net" />
         <option name="urlTemplate" value="https://whiskeyjack.net/r/{name}.json" />
       </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-23rd" />
+        <option name="name" value="23rd" />
+        <option name="namespace" value="@23rd" />
+        <option name="baseUrl" value="https://23rd.dev/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Opinionated components for shippers." />
+        <option name="homepage" value="https://23rd.dev" />
+        <option name="urlTemplate" value="https://23rd.dev/r/{name}.json" />
+      </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-shoogle" />
+        <option name="name" value="Shoogle" />
+        <option name="namespace" value="@shoogle" />
+        <option name="baseUrl" value="https://shoogle.dev/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Search shadcn blocks and components across community registries from the CLI" />
+        <option name="homepage" value="https://shoogle.dev" />
+        <option name="urlTemplate" value="https://shoogle.dev/r/{name}.json" />
+      </RegistryConfigState>
     </registryConfigs>
   </component>
 </project>
