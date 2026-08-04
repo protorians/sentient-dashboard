@@ -23,6 +23,7 @@ import {Textarea} from "@/core/presentation/ui/textarea";
 import {LegacyPhoneInput} from "@/core/presentation/ui/legacy-phone-input";
 import {LegacyGenderInput} from "@/core/presentation/ui/legacy-gender-input";
 import {LegacyCountryInput} from "@/core/presentation/ui/legacy-country-input";
+import {MediaUploadStep} from "@/modules/users/presentation/components/media-upload-step";
 
 
 export function CreateUserStepper() {
@@ -42,6 +43,7 @@ export function CreateUserStepper() {
                     const response = await UsersApiService.findByContact({
                         email: data.email,
                         phone: data.phone,
+                        prefix: data.prefix,
                         username: data.username,
                     });
                     if (response.data?.data) {
@@ -57,7 +59,7 @@ export function CreateUserStepper() {
                             city: user.userData?.city || '',
                             address: user.userData?.address || '',
                         });
-                        return { step: 'confirmation', lockNavigation: true };
+                        return {step: 'confirmation', lockNavigation: true};
                     }
                 },
                 content: ({updateData, data}) => (
@@ -78,6 +80,7 @@ export function CreateUserStepper() {
                         <LegacyPhoneInput
                             id="phone"
                             label="Téléphone"
+                            onCountryChange={e => updateData({prefix: e.dialCode})}
                             input={{
                                 type: "tel",
                                 placeholder: "07 00 00 00 00",
@@ -237,6 +240,14 @@ export function CreateUserStepper() {
                 )
             },
             {
+                id: 'media',
+                title: 'Documents',
+                description: 'Avatar et pièce d\'identité (optionnel)',
+                content: ({data, updateData}) => (
+                    <MediaUploadStep data={data} updateData={updateData}/>
+                )
+            },
+            {
                 id: 'confirmation',
                 title: 'Confirmation',
                 description: 'Vérifiez les informations avant la création',
@@ -266,6 +277,13 @@ export function CreateUserStepper() {
                                 <p><strong>Ville :</strong> {data.city || 'N/A'}</p>
                                 <p><strong>Adresse :</strong> {data.address || 'N/A'}</p>
                             </div>
+                            <div>
+                                <div className="text-lg font-bold border-b pb-1 mb-2">Documents</div>
+                                <p><strong>Avatar :</strong> {data.avatar ? 'Téléversé' : 'Non fourni'}</p>
+                                <p><strong>Recto :</strong> {data.idRecto ? 'Téléversé' : 'Non fourni'}</p>
+                                <p><strong>Verso :</strong> {data.idVerso ? 'Téléversé' : 'Non fourni'}</p>
+                                <p><strong>Selfie :</strong> {data.selfie ? 'Téléversé' : 'Non fourni'}</p>
+                            </div>
                             <div className="mt-4 pt-4 border-t border-border">
                                 <p><strong>Organisation :</strong> {currentOrganization?.name || 'N/A'}</p>
                             </div>
@@ -276,7 +294,7 @@ export function CreateUserStepper() {
                         </p>
                     </div>
                 )
-            }
+            },
         ];
 
         try {

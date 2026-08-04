@@ -1,6 +1,7 @@
 import {UserStatusEnum} from "@/modules/auth/domain/enums/user-status.enum";
 import {PaginationWithSearchOptions} from "@/core/domain/typing/response";
 import {UserPhoneInterface} from "@/modules/auth/domain/entities/user-phone.interface";
+import {MediaStorageInterface} from "@/core/domain/entities/media";
 
 export interface UserDataInterface {
     id?: string;
@@ -55,7 +56,8 @@ export interface UserInterface {
     status?: UserStatusEnum;
     deletedAt?: Date;
     auditId: string;
-    avatarId?: string;
+    // avatarId?: string;
+    avatar?: MediaStorageInterface;
     createdAt?: Date;
     updatedAt?: Date;
     userData?: UserDataInterface;

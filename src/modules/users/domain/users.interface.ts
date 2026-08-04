@@ -1,4 +1,5 @@
 import {UserGenderEnum} from "@/modules/users/domain/enums/user-gender.enum";
+import {MediaStorageInterface} from "@/core/domain/entities/media";
 
 export interface UserStatsSummaryInterface {
     totalUsers: number;
@@ -31,14 +32,16 @@ export interface CreateUserInterface {
     first_names?: string;
     last_name?: string;
     phone?: string;
+    prefix?: string;
     otp?: string;
     country?: string;
     city?: string;
     address?: string;
     gender?: UserGenderEnum;
     birthDate?: string;
-    // idRecto?: any;
-    // idVerso?: any;
-    // selfie?: any;
+    idRecto?: MediaStorageInterface;
+    idVerso?: MediaStorageInterface;
+    selfie?: MediaStorageInterface;
     organization?: any;
+    avatar?: MediaStorageInterface;
 }

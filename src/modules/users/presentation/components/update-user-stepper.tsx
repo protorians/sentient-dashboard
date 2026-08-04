@@ -26,28 +26,14 @@ import {DropdownMenuItem} from "@/core/presentation/ui/dropdown-menu";
 import {UserInterface} from "@/modules/auth/domain/entities/user.interface";
 import {QueryClient, useQueryClient} from "@tanstack/react-query";
 import {OrganizationInterface} from "@/modules/organizations/domain/entities/organization.interface";
+import {toInitialCreateUserData} from "@/modules/users/infrastructure/utilities/user-data.util";
+import {MediaUploadStep} from "@/modules/users/presentation/components/media-upload-step";
 
 
 interface UpdateUserStepperProps {
     user: UserInterface;
     children: React.ReactNode;
-
 }
-
-export const toInitialData = (user: UserInterface): Partial<CreateUserInterface> => ({
-    email: user.email || '',
-    phone: user.userPhones?.[0]?.phone || '',
-    username: user.username || '',
-    first_names: user.userData?.firstname || '',
-    last_name: user.userData?.lastname || '',
-    gender: user.userData?.gender as UserGenderEnum || undefined,
-    birthDate: user.userData?.birthDate
-        ? new Date(user.userData.birthDate).toISOString().split('T')[0]
-        : '',
-    country: user.userData?.country || '',
-    city: user.userData?.city || '',
-    address: user.userData?.address || '',
-});
 
 export const getUpdateUserSteps = (
     user: UserInterface,
@@ -64,6 +50,7 @@ export const getUpdateUserSteps = (
                 email: data.email,
                 phone: data.phone,
                 username: data.username,
+                prefix: data.prefix,
             });
             if (response.data?.data && response.data.data.id !== user.id) {
                 const found = response.data.data;
@@ -101,6 +88,7 @@ export const getUpdateUserSteps = (
                     <LegacyPhoneInput
                         id="phone"
                         label="Téléphone"
+                        onCountryChange={e => updateData({prefix: e.dialCode})}
                         input={{
                             type: "tel",
                             placeholder: "07 00 00 00 00",
@@ -269,6 +257,17 @@ export const getUpdateUserSteps = (
         }
     },
     {
+        id: 'media',
+        title: 'Documents',
+        description: 'Avatar et pièce d\'identité (optionnel)',
+        content: ({data, updateData}) => {
+            updateDataRef.current = updateData;
+            return (
+                <MediaUploadStep data={data} updateData={updateData}/>
+            )
+        }
+    },
+    {
         id: 'confirmation',
         title: 'Confirmation',
         description: 'Vérifiez les informations avant la modification',
@@ -298,6 +297,13 @@ export const getUpdateUserSteps = (
                         <p><strong>Ville :</strong> {data.city || 'N/A'}</p>
                         <p><strong>Adresse :</strong> {data.address || 'N/A'}</p>
                     </div>
+                    <div>
+                        <div className="text-lg font-bold border-b pb-1 mb-2">Documents</div>
+                        <p><strong>Avatar :</strong> {data.avatar ? 'Téléversé' : 'Non fourni'}</p>
+                        <p><strong>Recto :</strong> {data.idRecto ? 'Téléversé' : 'Non fourni'}</p>
+                        <p><strong>Verso :</strong> {data.idVerso ? 'Téléversé' : 'Non fourni'}</p>
+                        <p><strong>Selfie :</strong> {data.selfie ? 'Téléversé' : 'Non fourni'}</p>
+                    </div>
                     <div className="mt-4 pt-4 border-t border-border">
                         <p><strong>Organisation :</strong> {currentOrganization?.name || 'N/A'}</p>
                     </div>
@@ -324,7 +330,7 @@ export const handleUpdateUser = async (
         await openStepper({
             steps,
             title: "Modification de l'utilisateur",
-            initialData: toInitialData(user),
+            initialData: toInitialCreateUserData(user),
             onEnd: async ({data}) => {
                 if (!user?.id) {
                     throw new Error("Utilisateur non identifié. Impossible de modifier l'utilisateur.");

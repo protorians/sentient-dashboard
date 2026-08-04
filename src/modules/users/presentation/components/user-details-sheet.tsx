@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {LegacySheet} from "@/core/presentation/sheets/legacy-sheet";
 import {UserInterface} from "@/modules/auth/domain/entities/user.interface";
@@ -23,7 +25,8 @@ import {
     CheckCircle2Icon,
     XCircleIcon,
     AlertCircleIcon,
-    TimerIcon
+    TimerIcon,
+    ShieldPlusIcon
 } from "lucide-react";
 import {getFullName} from "@/modules/users/infrastructure/utilities/users-name.util";
 import {UserStatusEnum} from "@/modules/auth/domain/enums/user-status.enum";
@@ -31,6 +34,15 @@ import {format} from "date-fns";
 import {fr} from "date-fns/locale";
 import {cn} from "@/core/infrastructure/utilities/utils";
 import {PermissionActionBadge} from "@/core/presentation/permission-action-badge";
+import {StorageMedia} from "@/modules/storage/presentation/components/storage-media";
+import {Button} from "@/core/presentation/ui/button";
+import {useAuth} from "@/modules/auth/infrastructure/hooks/use-auth";
+import {useModal} from "@/core/presentation/modals/hooks/useModal";
+import {
+    UserRolesAccessModal,
+    UserRolesAccessModalProps,
+} from "@/modules/users/presentation/components/user-roles-access-modal";
+import {toast} from "sonner";
 
 export interface UserDetailsSheetProps {
     user: UserInterface;
@@ -40,6 +52,9 @@ export interface UserDetailsSheetProps {
 }
 
 export function UserDetailsSheet({children, opened, onOpenChange, user}: UserDetailsSheetProps) {
+    const {currentOrganization} = useAuth();
+    const {open, close} = useModal();
+
     if (!user) return null;
 
     const fullName = getFullName(user);
@@ -100,15 +115,44 @@ export function UserDetailsSheet({children, opened, onOpenChange, user}: UserDet
 
     const statusConfig = getStatusConfig(user.status ?? UserStatusEnum.INACTIVE);
 
+    const openRolesAccessModal = () => {
+        if (!user?.id || !currentOrganization?.id) {
+            toast.warning("Aucune organisation sélectionnée pour gérer les rôles");
+            return;
+        }
+
+        const modalId = open(
+            (props: UserRolesAccessModalProps) => (
+                <UserRolesAccessModal
+                    user={props.user}
+                    organization={props.organization}
+                    close={props.close}
+                />
+            ),
+            {user, organization: currentOrganization, close: () => close(modalId)},
+            {
+                title: "Rôles & accès",
+                description: `Gérez les rôles et permissions de ${fullName}`,
+                size: "XL",
+                useHeight: true,
+                scrollable: false,
+            }
+        );
+    };
+
     return (
         <LegacySheet trigger={children} opened={opened} onOpenChange={onOpenChange}>
             <div className="flex flex-col h-full space-y-6 p-6">
                 {/* Header Profile Section */}
                 <div className="flex flex-row items-center space-x-4 pt-4">
-                    <Avatar className="size-24 text-xl">
-                        <AvatarFallback className="bg-primary/10 text-primary font-bold text-2xl">
-                            {displayInitials}
-                        </AvatarFallback>
+                    <Avatar className="size-24 text-xl overflow-hidden">
+                        {user.avatar?.id? (
+                            <StorageMedia id={user.avatar.id} className="size-full"/>
+                        ) : (
+                            <AvatarFallback className="bg-primary/10 text-primary font-bold text-2xl">
+                                {displayInitials}
+                            </AvatarFallback>
+                        )}
                     </Avatar>
                     <div className="flex flex-col items-start space-y-1">
                         <h2 className="text-2xl font-bold tracking-tight">{fullName}</h2>
@@ -186,6 +230,14 @@ export function UserDetailsSheet({children, opened, onOpenChange, user}: UserDet
 
                             <TabsContent value="access" className="mt-0 space-y-6">
                                 {/* Roles & Permissions */}
+                                <Button
+                                    variant="outline"
+                                    className="w-full justify-start gap-2"
+                                    onClick={openRolesAccessModal}
+                                >
+                                    <ShieldPlusIcon className="size-4 text-primary"/>
+                                    Ajouter / modifier les rôles & accès
+                                </Button>
                                 {/*<Section title="Rôles et Accès">*/}
                                 {user.roles && user.roles.length > 0 ? (
                                     <Accordion type="multiple" className="w-full">
@@ -213,15 +265,19 @@ export function UserDetailsSheet({children, opened, onOpenChange, user}: UserDet
                                                                      className="flex items-center justify-between py-2.5 px-1">
                                                                     <span
                                                                         className="text-xs font-medium text-muted-foreground uppercase tracking-tight">{domain}</span>
-                                                                    <div className="flex flex-wrap gap-1 justify-end">
+                                                                    <div className="flex flex-wrap gap-2 justify-end">
                                                                         {capabilities.read &&
-                                                                            <PermissionActionBadge action="read"/>}
+                                                                            <PermissionActionBadge action="get"/>
+                                                                        }
                                                                         {capabilities.create &&
-                                                                            <PermissionActionBadge action="Création"/>}
-                                                                        {capabilities.update && <PermissionActionBadge
-                                                                            action="Modification"/>}
-                                                                        {capabilities.delete && <PermissionActionBadge
-                                                                            action="Suppression"/>}
+                                                                            <PermissionActionBadge action="post"/>
+                                                                        }
+                                                                        {capabilities.update &&
+                                                                            <PermissionActionBadge action="put"/>
+                                                                        }
+                                                                        {capabilities.delete &&
+                                                                            <PermissionActionBadge action="delete"/>
+                                                                        }
                                                                     </div>
                                                                 </div>
                                                             );

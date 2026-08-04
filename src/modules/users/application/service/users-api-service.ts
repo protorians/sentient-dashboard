@@ -3,6 +3,7 @@ import {CreateUserInterface, UserAnalyticsInterface} from "@/modules/users/domai
 import {FetchResponseInterface, FetchResponseWithMetaInterface, PaginationWithSearchOptions} from "@/core/domain/typing/response";
 import {ActivitiesType} from "@/core/domain/entities/activities.interface";
 import {GetAllUsersFilterOptions, UserFilter, UserInterface} from "@/modules/auth/domain/entities/user.interface";
+import {CreateUserPayloadInterface} from "@/modules/users/domain/payload.interface";
 
 export class UsersApiService extends ApiService {
     // Users
@@ -22,8 +23,8 @@ export class UsersApiService extends ApiService {
         return await this.put<FetchResponseInterface<UserInterface>>(`/users/${id}`, payload);
     }
 
-    static async findByContact(payload: { email?: string; phone?: string; username?: string }) {
-        return await this.post<FetchResponseInterface<UserInterface>>('/users/find-by-contact', payload);
+    static async findByContact(payload: CreateUserPayloadInterface) {
+        return await this.post<FetchResponseInterface<UserInterface>>('/users/', payload);
     }
 
     static async getAnalytics() {
