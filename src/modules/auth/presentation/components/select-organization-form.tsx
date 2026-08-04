@@ -98,7 +98,7 @@ export function SelectOrganizationForm({className, ...props}: React.ComponentPro
                     >
                         <div className={cn(
                             "flex h-10 w-10 items-center justify-center rounded-lg",
-                            selectedId === org.id ? "bg-primary " : "bg-muted text-muted-foreground"
+                            selectedId === org.id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                         )}>
                             <Building2 className="size-5"/>
                         </div>

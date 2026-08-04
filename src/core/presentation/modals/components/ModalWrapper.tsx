@@ -50,7 +50,7 @@ const ModalWrapper = ({ modal, index, isLast }: ModalWrapperProps) => {
   return (
     <div 
       className={cn(
-        "fixed inset-0 flex items-center justify-center p-4 transition-all duration-300 pointer-events-auto",
+        "fixed z-50 inset-0 flex items-center justify-center p-4 transition-all duration-300 pointer-events-auto",
         isLast ? (modal.options?.blurred !== false ? "bg-background/50 backdrop-blur-xl" : "bg-background/80") : "bg-transparent",
         isClosing && "opacity-0"
       )}

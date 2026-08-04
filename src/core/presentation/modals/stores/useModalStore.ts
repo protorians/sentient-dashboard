@@ -13,7 +13,7 @@ export const useModalStore = create<ModalStore>((set) => ({
       props,
       options: {
         closable: true,
-        size: SizeEnum.MD,
+        size: 'MD',
         ...options,
       },
     };

@@ -89,7 +89,7 @@ export class Routines implements RoutineInstanceInterface {
 
     status: RoutineInstanceStatusEnum = RoutineInstanceStatusEnum.STOP;
 
-    timeout: number = 5000;
+    timeout: number = 30000;
 
     onChange: (() => void) | undefined;
 

@@ -24,7 +24,7 @@ export function LegacySheet({opened, children, onOpenChange, trigger, side, clas
             <SheetContent
                 side={side ?? 'right'}
                 className={cn(
-                    'bg-background/90 backdrop-blur-4xl rounded-md m-4',
+                    'bg-background/95 backdrop-blur-4xl rounded-xl m-4',
                     side === 'left' || side === 'right' ? 'w-[calc(100dvw-32px)]! sm:min-w-[80dvw]!  md:min-w-[60dvw]! lg:min-w-[35dvw]! h-full! max-h-[calc(100dvh-32px)]!' : '',
                     side === 'top' || side === 'bottom' ? 'min-h-dvh md:min-h-[35dvh]! w-full! max-w-[calc(100dvw-32px)]!' : '',
                     className,

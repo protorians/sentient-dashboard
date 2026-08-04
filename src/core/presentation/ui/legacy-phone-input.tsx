@@ -150,7 +150,7 @@ const LegacyPhoneInput = React.forwardRef<HTMLInputElement, LegacyPhoneInputProp
                     </InputGroupAddon>
                     <div className="flex items-center gap-2 mt-0.5">
                         <InputGroupAddon align="inline-start" className="px-0">
-                            <Select value={selectedCountry.code} onValueChange={handleCountryChange}>
+                            <Select value={selectedCountry.dialCode} onValueChange={handleCountryChange}>
                                 <SelectTrigger
                                     className="h-auto p-0 pr-1 border-none bg-transparent! shadow-none! focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 w-fit min-w-0 data-[placeholder]:text-foreground">
                                     <SelectValue>
@@ -162,7 +162,7 @@ const LegacyPhoneInput = React.forwardRef<HTMLInputElement, LegacyPhoneInputProp
                                 </SelectTrigger>
                                 <SelectContent className="max-h-80 w-64">
                                     {sortedCountries.map((country) => (
-                                        <SelectItem key={country.code} value={country.code} className="cursor-pointer">
+                                        <SelectItem key={`${country.code}-${country.dialCode}`} value={country.dialCode} className="cursor-pointer">
                                             <div className="flex items-center gap-2 w-full">
                                                 <span className="text-base">{country.flag}</span>
                                                 <span className="truncate flex-1">{country.name}</span>
