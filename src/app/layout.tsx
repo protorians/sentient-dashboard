@@ -8,7 +8,7 @@ import {NavigationProgressBar} from "@/core/presentation/navigation-progress-bar
 import {ModulesDefinition} from "@/modules";
 import {QueryProvider} from "@/core/infrastructure/providers/query.provider";
 import {AuthGuard} from "@/modules/auth/presentation/components/auth-guard";
-import {ThemeProvider} from "@/core/infrastructure/providers/theme.provider";
+import {ThemePreferColorSchemeProvider} from "@/core/presentation/system/prefer-color-scheme";
 import {ModulesSwitcherProvider} from "@/core/infrastructure/providers/modules-switcher.provider";
 import {ModulesRoutinesProvider} from "@/core/infrastructure/providers/modules-routines.provider";
 import {ModulesGuardProvider} from "@/core/infrastructure/providers/modules-guard.provider";
@@ -40,7 +40,7 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
                     <ModulesSwitcherProvider/>
                     <ModulesRoutinesProvider/>
                     <ModulesGuardProvider>
-                        <ThemeProvider/>
+                        <ThemePreferColorSchemeProvider/>
                         <TooltipProvider>
                             {children}
                             <ModalPortal/>

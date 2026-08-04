@@ -1,40 +1,49 @@
 "use client";
 
 import {useEffect} from "react";
-import {getThemeCached} from "@/core/infrastructure/capabilities/theme.capability";
 import {PreferColorSchemeEnum} from "@/core/domain/enums/theme.enum";
 import {useThemePreferColorSchemeStore} from "@/core/infrastructure/stores/theme.store";
 
-export function ThemePreferColorScheme() {
-    const {colorScheme, preferSystem, useSystem, setColorScheme} = useThemePreferColorSchemeStore()
+export function ThemePreferColorSchemeProvider() {
+    const setColorScheme = useThemePreferColorSchemeStore((state) => state.setColorScheme);
+    const initialize = useThemePreferColorSchemeStore((state) => state.initialize);
 
     useEffect(() => {
-        const cached = getThemeCached()
-        const _preferSystem = (typeof cached.preferSystem !== 'undefined') ? cached.preferSystem : preferSystem;
-        const _colorScheme = colorScheme || cached.colorScheme || PreferColorSchemeEnum.Light;
-        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+        let disposed = false;
+        let mediaQuery: MediaQueryList | null = null;
+        let changed: ((event: MediaQueryListEvent) => void) | null = null;
+        let preferSystem = false;
 
-        if (_preferSystem)
-            setColorScheme(mediaQuery.matches ? PreferColorSchemeEnum.Dark : PreferColorSchemeEnum.Light)
+        initialize().then((cached) => {
+            if (disposed) return;
 
-        if (!_preferSystem && Object.values(PreferColorSchemeEnum).includes(_colorScheme as PreferColorSchemeEnum))
-            setColorScheme(_colorScheme as PreferColorSchemeEnum);
+            const state = useThemePreferColorSchemeStore.getState();
+            preferSystem = cached.preferSystem ?? state.preferSystem;
+            const _colorScheme = cached.colorScheme ?? state.colorScheme ?? PreferColorSchemeEnum.Light;
 
-        const changed = (event?: MediaQueryListEvent) => {
-            if (_preferSystem) {
-                setColorScheme(event?.matches ? PreferColorSchemeEnum.Dark : PreferColorSchemeEnum.Light);
-                useSystem(true);
-            } else if (Object.values(PreferColorSchemeEnum).includes(_colorScheme)) {
+            mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+            const applySystem = (matches: boolean) =>
+                setColorScheme(matches ? PreferColorSchemeEnum.Dark : PreferColorSchemeEnum.Light);
+
+            if (preferSystem) {
+                applySystem(mediaQuery.matches);
+            } else {
                 setColorScheme(_colorScheme);
-                useSystem(false);
             }
-        };
 
-        mediaQuery.addEventListener("change", changed);
+            changed = (event: MediaQueryListEvent) => {
+                if (preferSystem) applySystem(event.matches);
+            };
+
+            mediaQuery.addEventListener("change", changed);
+        });
+
         return () => {
-            mediaQuery.removeEventListener("change", changed);
+            disposed = true;
+            if (mediaQuery && changed) mediaQuery.removeEventListener("change", changed);
         };
-    }, [])
+    }, [initialize, setColorScheme]);
 
     return null;
 }
