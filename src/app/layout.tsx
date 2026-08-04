@@ -13,6 +13,7 @@ import {ModulesSwitcherProvider} from "@/core/infrastructure/providers/modules-s
 import {ModulesRoutinesProvider} from "@/core/infrastructure/providers/modules-routines.provider";
 import {ModulesGuardProvider} from "@/core/infrastructure/providers/modules-guard.provider";
 import ModalPortal from "@/core/presentation/modals/components/ModalPortal";
+import {FloatingUpload} from "@/core/presentation/components/floating-upload";
 
 const manrope = Manrope({subsets: ['latin'], variable: '--font-sans'});
 
@@ -43,6 +44,7 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
                         <TooltipProvider>
                             {children}
                             <ModalPortal/>
+                            <FloatingUpload/>
                         </TooltipProvider>
                     </ModulesGuardProvider>
                 </AuthGuard>

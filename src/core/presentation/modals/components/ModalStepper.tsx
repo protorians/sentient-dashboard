@@ -17,6 +17,8 @@ import {SizeEnum} from '@/core/domain/enums/size.enum';
 import {ObjectableType} from "@/core/domain/entities/objectable.type";
 import {ModalOptions} from "@/core/presentation/modals/types/modal.type";
 import {toast} from 'sonner';
+import {useUploadStore} from "@/core/infrastructure/stores/upload.store";
+import {UploadProgressDialog} from "@/core/presentation/components/upload-progress-dialog";
 
 
 export interface ModalStepperStep<T extends ObjectableType = any> {
@@ -121,6 +123,7 @@ function ModalStepperContent<T extends ObjectableType>(
     const [activeStep, setActiveStep] = useState(1);
     const [isLocked, setIsLocked] = useState(false);
     const [data, setData] = useState<Partial<T>>(initialData);
+    const [showUploadDialog, setShowUploadDialog] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const stepperScrollRef = useRef<HTMLDivElement>(null);
 
@@ -200,13 +203,27 @@ function ModalStepperContent<T extends ObjectableType>(
             setActiveStep(index);
         } else {
             index = steps.length;
-            try {
-                await onEnd?.({data, index, id: modalId});
-            } catch (error) {
-                toast.error(error instanceof Error ? error.message : 'Une erreur est survenue');
-                return;
-            }
+            await finish();
         }
+    };
+
+    const finish = async () => {
+        const hasActiveUploads = useUploadStore.getState().hasActiveUploads;
+        if (hasActiveUploads) {
+            setShowUploadDialog(true);
+            return;
+        }
+        try {
+            await onEnd?.({data, index: steps.length, id: modalId});
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : 'Une erreur est survenue');
+            return;
+        }
+    };
+
+    const handleFinishAfterUploads = () => {
+        setShowUploadDialog(false);
+        void finish();
     };
 
     const handlePrev = () => {
@@ -293,6 +310,12 @@ function ModalStepperContent<T extends ObjectableType>(
                     )}
                 </div>
             </div>
+
+            <UploadProgressDialog
+                open={showUploadDialog}
+                onOpenChange={setShowUploadDialog}
+                onAllComplete={handleFinishAfterUploads}
+            />
         </div>
     );
 };

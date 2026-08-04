@@ -1,4 +1,4 @@
-import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios";
+import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosProgressEvent} from "axios";
 import {AppConfig} from "@/core/domain/config/app.config";
 import {AuthUserService} from "@/modules/auth/application/service/auth-user.service";
 import {redirect} from "next/navigation";
@@ -30,21 +30,26 @@ export class ApiService {
         return this._instance;
     }
 
-    static async request<T>(method: string, uri: string, data?: Record<string, any>, config?: AxiosRequestConfig<any> | undefined): Promise<AxiosResponse<T, any, {}>> {
-        const isGetMethod = method.toLowerCase() === 'get'
+    protected static buildAuthHeaders(extra?: Record<string, string>): Record<string, string> {
         const token = AuthUserService.getToken();
         const device = AuthUserService.getDevice();
         const apiKey = AuthUserService.getApiKey();
         const organization = AuthUserService.getCurrentOrganization();
-        const headers = {
+        return {
             "X-timestamp": (new Date()).toString(),
             "Content-Type": "application/json",
             "Accept": "*",
             ...(token ? {"Authorization": `Bearer ${token}`} : {}),
             ...(device ? {"X-Device": device} : {}),
             ...(apiKey ? {"X-API-KEY": apiKey} : {}),
-            ...(organization ? {"X-Organization-Id": organization.id} : {})
+            ...(organization ? {"X-Organization-Id": organization.id} : {}),
+            ...extra,
         }
+    }
+
+    static async request<T>(method: string, uri: string, data?: Record<string, any>, config?: AxiosRequestConfig<any> | undefined): Promise<AxiosResponse<T, any, {}>> {
+        const isGetMethod = method.toLowerCase() === 'get'
+        const headers = this.buildAuthHeaders()
 
         let url = `${this.baseUrl}${uri}`;
 
@@ -63,7 +68,7 @@ export class ApiService {
         }
 
         try {
-            return await this.instance.request({method, data, url, headers});
+            return await this.instance.request({method, data, url, headers, ...config});
         } catch (error: any) {
             this.parseError(error);
             if (axios.isAxiosError(error) && error.response)
@@ -91,6 +96,24 @@ export class ApiService {
                     }
                 }
             }
+        }
+    }
+
+    static async upload<T = any>(uri: string, formData: FormData, onUploadProgress?: (progressEvent: AxiosProgressEvent) => void, config?: AxiosRequestConfig<any> | undefined): Promise<AxiosResponse<T, any, {}>> {
+        const headers = this.buildAuthHeaders({"Content-Type": "multipart/form-data"});
+        const url = `${this.baseUrl}${uri}`;
+
+        try {
+            return await this.instance.post(url, formData, {
+                headers,
+                onUploadProgress,
+                ...config,
+            });
+        } catch (error: any) {
+            this.parseError(error);
+            if (axios.isAxiosError(error) && error.response)
+                await this.checkUnAuthenticationError(error.response);
+            throw error;
         }
     }
 
