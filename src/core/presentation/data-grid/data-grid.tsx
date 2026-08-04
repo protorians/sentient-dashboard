@@ -85,6 +85,7 @@ import {
 } from "@/core/presentation/ui/context-menu"
 import {cn} from "@/core/infrastructure/utilities/utils"
 import {useEffect} from "react";
+import {DataGridEmpty} from "@/core/presentation/data-grid/data-grid-empty";
 
 export interface BulkAction<TData> {
     /**
@@ -184,7 +185,7 @@ export interface DataGridProps<TData> {
     /**
      * Actions available in the row context menu
      */
-    rowActions?: (row: TData) => RowAction<TData>[]
+    actions?: (row: TData) => RowAction<TData>[]
     /**
      * Enable column visibility toggling
      */
@@ -233,6 +234,47 @@ export interface DataGridProps<TData> {
      * If true, the table header will be sticky
      */
     stickyHeader?: boolean
+}
+
+export interface DataGridTableMeta<TData> {
+    /**
+     * Returns the row actions declared on the DataGrid for a given row.
+     * Accessible from cell/header renders via `table.options.meta.getRowActions(row)`.
+     */
+    getRowActions: (row: TData) => RowAction<TData>[]
+}
+
+/**
+ * Generic utility to retrieve, from any column cell render, the row actions
+ * declared on the DataGrid via the `actions` prop.
+ *
+ * @example
+ * cell: ({row, table}) => {
+ *     const actions = getRowActions(table, row.original)
+ *     const edit = actions.find(a => a.id === "edit")
+ *     return <Button onClick={() => edit?.onExecute(row.original)}>Modifier</Button>
+ * }
+ */
+export function getDataGridActions<TData>(table: TanstackTable<TData>, row: TData): RowAction<TData>[] {
+    const meta = table?.options?.meta as DataGridTableMeta<TData> | undefined
+    return meta?.getRowActions?.(row) ?? []
+}
+
+/**
+ * Generic utility to retrieve a single row action by its id, if it exists.
+ *
+ * @example
+ * cell: ({row, table}) => {
+ *     const edit = getRowAction(table, row.original, "edit")
+ *     return edit && <Button onClick={() => edit.onExecute(row.original)}>Modifier</Button>
+ * }
+ */
+export function getDataGridAction<TData>(
+    table: TanstackTable<TData>,
+    row: TData,
+    actionId: string,
+): RowAction<TData> | undefined {
+    return getDataGridActions(table, row).find(action => action.id === actionId)
 }
 
 // Internal component for the drag handle
@@ -352,7 +394,7 @@ export function DataGrid<TData>(
         // enableBulkActions = false,
         bulkActions = [],
         // enableRowActions = false,
-        rowActions,
+        actions,
         enableColumnVisibility = true,
         enablePagination = true,
         manualPagination = false,
@@ -368,7 +410,7 @@ export function DataGrid<TData>(
     }: DataGridProps<TData>) {
     // We manage internal data state to support DND reordering
     const [data, setData] = React.useState(() => initialData)
-    const enableRowActions = typeof rowActions !== 'undefined'
+    const enableRowActions = typeof actions !== 'undefined'
     const enableBulkActions = typeof bulkActions !== 'undefined'
 
     React.useEffect(() => {
@@ -445,14 +487,14 @@ export function DataGrid<TData>(
             })
         }
 
-        if (enableRowActions && rowActions) {
+        if (enableRowActions && actions) {
             const hasActionsColumn = cols.some(col => col.id === "actions")
             if (!hasActionsColumn) {
                 cols.push({
                     id: "actions",
                     cell: ({row}) => {
-                        const actions = rowActions(row.original)
-                        if (actions.length === 0) return null
+                        const rowActions = actions(row.original)
+                        if (rowActions.length === 0) return null
 
                         return (
                             <DropdownMenu>
@@ -467,9 +509,9 @@ export function DataGrid<TData>(
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-48">
-                                    {actions.map((action, index) => (
+                                    {rowActions.map((action, index) => (
                                         <React.Fragment key={action.id}>
-                                            {index > 0 && action.variant === "destructive" && actions[index - 1].variant !== "destructive" && (
+                                            {index > 0 && action.variant === "destructive" && rowActions[index - 1].variant !== "destructive" && (
                                                 <DropdownMenuSeparator/>
                                             )}
                                             <DropdownMenuItem
@@ -492,7 +534,7 @@ export function DataGrid<TData>(
         }
 
         return cols
-    }, [userColumns, enableSelection, enableDnd, enableRowActions, rowActions, getRowId])
+    }, [userColumns, enableSelection, enableDnd, enableRowActions, actions, getRowId])
 
     const table = useReactTable({
         data,
@@ -522,6 +564,9 @@ export function DataGrid<TData>(
         getFacetedUniqueValues: getFacetedUniqueValues(),
         manualPagination,
         pageCount,
+        meta: {
+            getRowActions: (row) => (actions ? actions(row) : []),
+        } satisfies DataGridTableMeta<TData>,
     })
 
     function handleDragEnd(event: DragEndEvent) {
@@ -674,7 +719,7 @@ export function DataGrid<TData>(
                                                 key={row.id}
                                                 row={row}
                                                 enableRowActions={enableRowActions}
-                                                rowActions={rowActions}
+                                                rowActions={actions}
                                             />
                                         ))}
                                     </SortableContext>
@@ -684,7 +729,7 @@ export function DataGrid<TData>(
                                             colSpan={columns.length}
                                             className="h-24 text-center"
                                         >
-                                            No results.
+                                            <DataGridEmpty/>
                                         </TableCell>
                                     </TableRow>
                                 )}
@@ -716,7 +761,7 @@ export function DataGrid<TData>(
                                         key={row.id}
                                         row={row}
                                         enableRowActions={enableRowActions}
-                                        rowActions={rowActions}
+                                        rowActions={actions}
                                     >
                                         <TableRow
                                             data-state={row.getIsSelected() && "selected"}
@@ -735,7 +780,7 @@ export function DataGrid<TData>(
                                         colSpan={columns.length}
                                         className="h-24 text-center"
                                     >
-                                        No results.
+                                        <DataGridEmpty/>
                                     </TableCell>
                                 </TableRow>
                             )}

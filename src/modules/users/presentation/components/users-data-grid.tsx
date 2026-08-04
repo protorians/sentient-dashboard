@@ -147,7 +147,7 @@ export function UsersDataGrid() {
                         columns={usersDataGridColumns}
                         getRowId={row => row.id ?? row.username}
                         enableSelection
-                        rowActions={rowActions}
+                        actions={rowActions}
                         manualPagination
                         pageCount={pageCount}
                         pagination={pagination}

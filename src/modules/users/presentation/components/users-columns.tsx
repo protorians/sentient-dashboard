@@ -11,17 +11,22 @@ import {UserInterface} from "@/modules/auth/domain/entities/user.interface";
 import {getFullName} from "@/modules/users/infrastructure/utilities/users-name.util";
 import {UserStatusEnum} from "@/modules/auth/domain/enums/user-status.enum";
 import {Fragment} from "react";
-import {RowAction} from "@/core/presentation/data-grid/data-grid";
+import {getDataGridAction} from "@/core/presentation/data-grid/data-grid";
+import {Button} from "@/core/presentation/ui/button";
+import {Clickable} from "@/core/presentation/clickable";
 
 export const getUsersColumns = (): ColumnDef<UserInterface>[] => [
     {
         accessorKey: "Nom d'utilisateur",
         header: "Nom d'utilisateur",
-        cell: ({row}) => (
-            <Fragment>
-                <div className="font-semibold">{row.original.username}</div>
-            </Fragment>
-        ),
+        cell: ({row, table}) => {
+            const details = getDataGridAction(table, row.original, "details")
+            return (
+                <Clickable onClick={() => details?.onExecute(row.original)}>
+                    <span className="font-semibold">{row.original.username}</span>
+                </Clickable>
+            )
+        },
     },
     {
         accessorKey: "Rôles",

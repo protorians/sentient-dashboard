@@ -93,6 +93,7 @@ import {
   TabsTrigger,
 } from "@/core/presentation/ui/tabs"
 import { GripVerticalIcon, CircleCheckIcon, LoaderIcon, EllipsisVerticalIcon, Columns3Icon, ChevronDownIcon, PlusIcon, ChevronsLeftIcon, ChevronLeftIcon, ChevronRightIcon, ChevronsRightIcon, TrendingUpIcon } from "lucide-react"
+import {DataGridEmpty} from "@/core/presentation/data-grid/data-grid-empty";
 
 export const schema = z.object({
   id: z.number(),
@@ -516,7 +517,7 @@ export function DataTable({
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      <DataGridEmpty/>
                     </TableCell>
                   </TableRow>
                 )}

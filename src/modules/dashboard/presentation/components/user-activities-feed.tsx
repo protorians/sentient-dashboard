@@ -22,7 +22,7 @@ import {
     TimelineSeparator,
     TimelineTitle
 } from "@/components/reui/timeline";
-import {explainActivity, explainActivityAction} from "@/core/infrastructure/utilities/activities.util";
+import {ActivityDescriptor, explainActivityAction} from "@/core/infrastructure/utilities/activities.util";
 import {Badge} from "@/core/presentation/ui/badge";
 import {PermissionActionBadge} from "@/core/presentation/permission-action-badge";
 import {cn} from "@/core/infrastructure/utilities/utils";
@@ -104,7 +104,7 @@ export function UserActivitiesFeed({compacted = true}: UserActivitiesFeedProps) 
                                             <TimelineIndicator/>
                                             <TimelineSeparator/>
                                             <TimelineContent className={'text-foreground!'}>
-                                                {activity.describe || explainActivity(activity)}
+                                                {ActivityDescriptor(activity)}
                                             </TimelineContent>
                                             <TimelineContent className={'text-xs!'}>
                                                 {activity.description}
