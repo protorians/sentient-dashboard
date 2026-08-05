@@ -3234,6 +3234,18 @@
         <option name="homepage" value="https://shoogle.dev" />
         <option name="urlTemplate" value="https://shoogle.dev/r/{name}.json" />
       </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-interior" />
+        <option name="name" value="Interior" />
+        <option name="namespace" value="@interior" />
+        <option name="baseUrl" value="https://www.interior.dev/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Copy-paste React micro-interactions: a headless hook plus a styled example in one self-contained file, with motion as the only dependency." />
+        <option name="homepage" value="https://www.interior.dev" />
+        <option name="urlTemplate" value="https://www.interior.dev/r/{name}.json" />
+      </RegistryConfigState>
     </registryConfigs>
   </component>
 </project>
