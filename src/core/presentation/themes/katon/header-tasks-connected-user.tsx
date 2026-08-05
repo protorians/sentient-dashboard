@@ -8,11 +8,22 @@ import {
     DropdownMenuTrigger
 } from "@/core/presentation/ui/dropdown-menu";
 import {Avatar, AvatarFallback, AvatarImage} from "@/core/presentation/ui/avatar";
-import {BellIcon, CircleUserRoundIcon, CogIcon, CreditCardIcon, EllipsisVerticalIcon, LogOutIcon} from "lucide-react";
+import {
+    BellIcon,
+    CircleUserRoundIcon,
+    CogIcon,
+    CreditCardIcon,
+    EllipsisVerticalIcon,
+    LogOutIcon, MoonIcon,
+    SunIcon
+} from "lucide-react";
 import React from "react";
 import {Button} from "../../ui/button";
+import {useThemePreferColorSchemeStore} from "@/core/infrastructure/stores/theme.store";
+import {PreferColorSchemeEnum} from "@/core/domain/enums/theme.enum";
 
 export function HeaderTasksConnectedUser() {
+    const {colorScheme, toggleColorScheme} = useThemePreferColorSchemeStore()
     const {user: authUser} = useAuth();
     const user = React.useMemo(() => ({
         name: authUser?.username || authUser?.userData?.firstname || "Utilisateur",
@@ -74,6 +85,15 @@ export function HeaderTasksConnectedUser() {
                         Notifications
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
+                <DropdownMenuSeparator/>
+                <DropdownMenuItem
+                    onClick={() => toggleColorScheme(true)}>
+                    {
+                        (colorScheme !== PreferColorSchemeEnum.Light)
+                            ? <><SunIcon/> <span>Thème clair</span></>
+                            : <><MoonIcon/> <span>Thème sombre</span></>
+                    }
+                </DropdownMenuItem>
                 <DropdownMenuSeparator/>
                 <DropdownMenuItem onClick={logout} className="cursor-pointer">
                     <LogOutIcon/>
