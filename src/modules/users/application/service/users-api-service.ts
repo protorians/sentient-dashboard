@@ -24,7 +24,11 @@ export class UsersApiService extends ApiService {
     }
 
     static async findByContact(payload: CreateUserPayloadInterface) {
-        return await this.post<FetchResponseInterface<UserInterface>>('/users/', payload);
+        return await this.post<FetchResponseInterface<UserInterface>>('/users/find-by-contact', payload);
+    }
+
+    static async updateUserStatus(id: string, payload: { status: string }) {
+        return await this.patch(`/users/${id}/status`, payload);
     }
 
     static async getAnalytics() {
@@ -66,7 +70,7 @@ export class UsersApiService extends ApiService {
     }
 
     static async deleteUnique(id: string) {
-        return await this.delete(`/users/delete/${id}`);
+        return await this.delete(`/users/${id}/delete`);
     }
 
     static async deleteMany(ids: string[]) {

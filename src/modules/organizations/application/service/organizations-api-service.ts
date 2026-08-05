@@ -16,6 +16,10 @@ export class OrganizationsApiService extends ApiService {
         return await this.get(`/organizations/${id}`);
     }
 
+    static async updateOrganization(id: string, payload: any) {
+        return await this.put(`/organizations/${id}`, payload);
+    }
+
     static async deleteOrganization(id: string) {
         return await this.delete(`/organizations/${id}`);
     }

@@ -36,6 +36,10 @@ export class BillingApiService extends ApiService {
         return await this.get(`/billing/invoices/${id}`);
     }
 
+    static async payInvoice(id: string, payload: any) {
+        return await this.post(`/billing/invoices/${id}/pay`, payload);
+    }
+
     static async getAnalytics() {
         return await this.get('/billing/analytics');
     }
