@@ -96,7 +96,8 @@ function NotificationsPagination({
 }
 
 function NotificationsList({category}: { category: NotificationCategory }) {
-    const {data, isLoading, isFetching, pageCount, pagination, setPagination, refetch} = useNotifications(category);
+    const {data, isLoading, isFetching, pageCount, pagination, setPagination, refetch} = useNotifications(category, {
+    });
     const queryClient = useQueryClient();
 
     const markAsRead = async (notification: NotificationInterface) => {

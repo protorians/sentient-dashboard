@@ -14,8 +14,8 @@ export interface NotificationInterface {
     message?: string;
     content?: string;
     type?: NotificationTypeEnum | string;
-    isRead?: boolean;
-    read?: boolean;
+    // isRead?: boolean;
+    // read?: boolean;
     readAt?: string | null;
     organizationId?: string | null;
     createdAt?: string;

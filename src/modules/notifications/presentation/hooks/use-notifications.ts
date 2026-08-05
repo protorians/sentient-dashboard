@@ -87,7 +87,7 @@ export function useNotifications(
 
 
     const query = useQuery<NotificationsQuery>({
-        queryKey: ['notifications', category, pagination.pageIndex, pagination.pageSize],
+        queryKey: ['notifications', category, pagination.pageIndex, pagination.pageSize, options.read],
         enabled,
         queryFn: async () => {
             const page = manualPagination ? pagination.pageIndex + 1 : 1;

@@ -35,7 +35,7 @@ export function NotificationItem({notification, onRead}: NotificationItemProps) 
     const {open, close} = useModal();
     const title = notification.title ?? notification.subject ?? "Notification";
     const body = notification.body ?? notification.message ?? notification.content;
-    const isRead = notification.isRead ?? notification.read ?? false;
+    const isRead = notification.readAt ?? false;
     const TypeIcon = notificationTypeIcon[(notification.type as NotificationTypeEnum) ?? NotificationTypeEnum.INFORMATION] ?? BellRingIcon;
 
     const createdAt = notification.createdAt ? formatDistanceToNow(new Date(notification.createdAt), {addSuffix: true, locale: fr}) : undefined;

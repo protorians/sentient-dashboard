@@ -18,6 +18,7 @@ function NotificationsList({category}: { category: "user" | "organization" }) {
     const {data, isLoading, isError, refetch} = useNotifications(category, {
         limit: 5,
         manualPagination: false,
+        read: false
     });
     const queryClient = useQueryClient();
 
@@ -66,6 +67,7 @@ export function NotificationsPopover() {
     const {data: userNotifications} = useNotifications("user", {
         limit: 10,
         manualPagination: false,
+        read: false
     });
 
     const unreadCount = userNotifications.filter((notification) => !(notification.isRead ?? notification.read ?? false)).length;
