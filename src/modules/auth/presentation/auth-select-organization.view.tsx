@@ -5,7 +5,7 @@ import {SelectOrganizationForm} from "@/modules/auth/presentation/components/sel
 
 export function AuthSelectOrganizationView() {
     return (
-        <FormScreen hideSideImage={false}>
+        <FormScreen hideSideImage={true}>
             <SelectOrganizationForm/>
         </FormScreen>
     )

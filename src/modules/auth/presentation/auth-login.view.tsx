@@ -6,7 +6,7 @@ import {AuthSessionView} from "@/modules/auth/presentation/auth-session.view";
 import {ThemeLogo} from "@/core/presentation/system/logo.theme";
 import {AppConfig} from "@/core/domain/config/app.config";
 import {FormScreen} from "@/core/presentation/form-screen";
-import {useEffect, useState} from "react";
+import {Fragment, useEffect, useState} from "react";
 import {AuthApiService} from "@/modules/auth/application/service/auth-api-service";
 
 export function AuthLoginView() {
@@ -33,8 +33,10 @@ export function AuthLoginView() {
     }
 
     return (
-        <FormScreen hideSideImage={false}>
-            <LoginForm/>
-        </FormScreen>
+        <Fragment>
+            <FormScreen hideSideImage={true} className={"max-w-3xl w-full mx-auto"}>
+                <LoginForm/>
+            </FormScreen>
+        </Fragment>
     )
 }
