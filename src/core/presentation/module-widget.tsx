@@ -32,6 +32,13 @@ import {RadarWidgetChart} from "@/core/presentation/charts/radar-widget.chart"
 import {RadialWidgetChart} from "@/core/presentation/charts/radial-widget.chart"
 import {RadialStackedWidgetChart} from "@/core/presentation/charts/radial-stacked-widget.chart"
 import {TooltipWidgetChart} from "@/core/presentation/charts/tooltip-widget.chart"
+import {AreaWidgetChartSkeleton} from "@/core/presentation/charts/area-widget.chart-skeleton"
+import {LineWidgetChartSkeleton} from "@/core/presentation/charts/line-widget.chart-skeleton"
+import {PieWidgetChartSkeleton} from "@/core/presentation/charts/pie-widget.chart-skeleton"
+import {RadarWidgetChartSkeleton} from "@/core/presentation/charts/radar-widget.chart-skeleton"
+import {RadialWidgetChartSkeleton} from "@/core/presentation/charts/radial-widget.chart-skeleton"
+import {RadialStackedWidgetChartSkeleton} from "@/core/presentation/charts/radial-stacked-widget.chart-skeleton"
+import {TooltipWidgetChartSkeleton} from "@/core/presentation/charts/tooltip-widget.chart-skeleton"
 
 export type ChartProps =
     | ({ variant: 'chart:area' } & AreaChartWidgetProps)
@@ -54,6 +61,7 @@ export interface ModuleWidgetProps {
     itemsFooter?: ReactNode
     className?: string
     contentClassName?: string;
+    loading?: boolean;
     chartVariant?: 'default' | 'chart:pie' | 'chart:bar' | 'chart:line' | 'chart:area' | 'chart:radar' | 'chart:radial' | 'chart:tooltip' | 'chart:radial-stacked';
     chart?: AreaChartWidgetProps | LineChartWidgetProps | PieChartWidgetProps | RadarChartWidgetProps | RadialChartWidgetProps | RadialStackedChartWidgetProps | TooltipChartWidgetProps;
 }
@@ -71,6 +79,7 @@ export function ModuleWidget(
         itemsFooter,
         className,
         contentClassName,
+        loading,
         chartVariant,
         chart
     }: ModuleWidgetProps) {
@@ -82,6 +91,36 @@ export function ModuleWidget(
             ...chart,
             hideCard: true
         };
+
+        if (loading) {
+            const skeletonProps = {
+                hideCard: true,
+                title: chart.title,
+                description: chart.description,
+                footerTitle: chart.footerTitle,
+                footerDescription: chart.footerDescription,
+            };
+
+            switch (chartVariant) {
+                case 'chart:area':
+                    return <AreaWidgetChartSkeleton {...skeletonProps} />;
+                case 'chart:line':
+                    return <LineWidgetChartSkeleton {...skeletonProps} />;
+                case 'chart:pie':
+                    return <PieWidgetChartSkeleton {...skeletonProps} />;
+                case 'chart:radar':
+                    return <RadarWidgetChartSkeleton {...skeletonProps} />;
+                case 'chart:radial':
+                    return <RadialWidgetChartSkeleton {...skeletonProps} />;
+                case 'chart:radial-stacked':
+                    return <RadialStackedWidgetChartSkeleton {...skeletonProps} />;
+                case 'chart:tooltip':
+                case 'chart:bar':
+                    return <TooltipWidgetChartSkeleton {...skeletonProps} />;
+                default:
+                    return null;
+            }
+        }
 
         switch (chartVariant) {
             case 'chart:area':

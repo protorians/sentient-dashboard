@@ -28,7 +28,7 @@ export function UsersView() {
                             </div>
                         </div>
 
-                        <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-4 min-h-[40dvh]">
                             <UsersAnalyticsChart/>
                         </div>
 

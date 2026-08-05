@@ -1,17 +1,8 @@
 "use client"
 
-import {useQuery} from "@tanstack/react-query";
-import {UsersApiService} from "@/modules/users/application/service/users-api-service";
-import {WaitingSection} from "@/core/presentation/waiting-section";
-import {AnalyticsSection} from "@/core/presentation/analytics-section";
 import {Fragment, useEffect, useState} from "react";
-import {
-    UserAnalyticsInterface, UserStatsOverTimeInterface,
-    UserStatsRoleInterface,
-    UserStatsSummaryInterface
-} from "@/modules/users/domain/users.interface";
-import {cn} from "@/core/infrastructure/utilities/utils";
 import {AreaWidgetChart} from "@/core/presentation/charts/area-widget.chart";
+import {AreaWidgetChartSkeleton} from "@/core/presentation/charts/area-widget.chart-skeleton";
 import {ChartConfig} from "@/core/presentation/ui/chart";
 import {usersAnalyticsRoutine} from "@/modules/users/infrastructure/routines/users-analytics.routine";
 
@@ -33,13 +24,19 @@ export function UsersAnalyticsChart() {
     // })
 
     useEffect(() => {
-        if (analytics) setIsLoading(false)
+        if (analytics && analytics.summary) setIsLoading(false)
     }, [analytics])
 
     return (
         <div className="flex flex-col gap-4 py-6">
             {isLoading && (
-                <WaitingSection label={'Récupération des statistiques'} className={cn("min-h-25")}/>
+                <div className="w-full h-[40dvh]">
+                    <AreaWidgetChartSkeleton
+                        title="Utilisateurs au fil du temps"
+                        description="Affichage du nombre d'utilisateurs inscrits par période"
+                        className="h-full"
+                    />
+                </div>
             )}
             {
                 !isLoading && analytics && analytics.summary && (
