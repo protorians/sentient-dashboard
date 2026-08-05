@@ -39,12 +39,13 @@ export interface ModuleDeclarationInterface {
 }
 
 export interface ModuleNavigationDropdownInterface {
-    type: 'mega' | 'default';
+    type: 'mega' | 'default' | 'mini';
     side?: 'left' | 'right' | 'top' | 'bottom';
     component: (module: ModuleNavigationInterface) => React.ReactNode;
 }
 
 export interface ModuleNavigationInterface {
+    id: string;
     label: string;
     description?: string;
     icon?: IconKey;

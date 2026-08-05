@@ -9,13 +9,11 @@ import {usePathname} from "next/navigation";
 import {Fragment} from "react";
 import {DropdownMenu, DropdownMenuTrigger} from "@/core/presentation/ui/dropdown-menu";
 import {
-    Sheet,
-    SheetContent,
     SheetDescription,
     SheetHeader,
-    SheetTitle,
-    SheetTrigger
+    SheetTitle
 } from "@/core/presentation/ui/sheet";
+import {LegacySheet} from "@/core/presentation/sheets/legacy-sheet";
 import {CommonClassName} from "@/core/infrastructure/utilities/classname.util";
 
 
@@ -42,6 +40,7 @@ export function StartMenuItem(module: ModuleNavigationInterface) {
     )
 
     const isMega = module.dropdown?.type === "mega"
+    const isMini = module.dropdown?.type === "mini"
     // const side = isMega ? "top" : "left"
 
     return (
@@ -49,31 +48,29 @@ export function StartMenuItem(module: ModuleNavigationInterface) {
             {
                 module.dropdown
                     ? (
-                        <Sheet modal={true}>
-                            <SheetTrigger asChild>
-                                <div className={cn(itemClassName, "cursor-pointer")}>
-                                    {renderChildren()}
-                                </div>
-                            </SheetTrigger>
-                            <SheetContent side={module.dropdown.side ?? "left"} className={cn(
-                                "w-full",
-                                isMega && "w-full! max-w-screen! md:max-w-[70dvw]! bg-background/80",
-                            )}>
-                                <SheetHeader>
-                                    <SheetTitle>
-                                        {module.label}
-                                    </SheetTitle>
-                                    {module.description && (
-                                        <SheetDescription>
-                                            {module.description}
-                                        </SheetDescription>
-                                    )}
-                                </SheetHeader>
-                                <div className="flex-auto flex-col gap-4 overflow-x-hidden overflow-y-auto">
-                                    {module.dropdown?.component(module)}
-                                </div>
-                            </SheetContent>
-                        </Sheet>
+                        <LegacySheet
+                            trigger={<div className={cn(itemClassName, "cursor-pointer")}>{renderChildren()}</div>}
+                            side={module.dropdown.side ?? "left"}
+                            className={cn(
+                                "bg-background/90",
+                                isMega && "w-full! max-w-screen! md:max-w-[70dvw]!",
+                                isMini && "w-[min(100%,200px)]! sm:w-[min(100%,200px)]! md:w-[min(100%,200px)]! lg:w-[min(100%,200px)]! xl:w-[min(100%,200px)]!"
+                            )}
+                        >
+                            <SheetHeader>
+                                <SheetTitle>
+                                    {module.label}
+                                </SheetTitle>
+                                {module.description && (
+                                    <SheetDescription>
+                                        {module.description}
+                                    </SheetDescription>
+                                )}
+                            </SheetHeader>
+                            <div className="flex-auto flex-col gap-4 overflow-x-hidden overflow-y-auto">
+                                {module.dropdown?.component(module)}
+                            </div>
+                        </LegacySheet>
                     )
                     : (
                         <Link
