@@ -26,7 +26,7 @@ import {
     XCircleIcon,
     AlertCircleIcon,
     TimerIcon,
-    ShieldPlusIcon
+    ShieldPlusIcon, ShieldCogIcon
 } from "lucide-react";
 import {getFullName} from "@/modules/users/infrastructure/utilities/users-name.util";
 import {UserStatusEnum} from "@/modules/auth/domain/enums/user-status.enum";
@@ -236,8 +236,8 @@ export function UserDetailsSheet({children, opened, onOpenChange, user}: UserDet
                                         className="justify-start gap-2"
                                         onClick={openRolesAccessModal}
                                     >
-                                        <ShieldPlusIcon className="size-4 text-primary"/>
-                                        Modifier
+                                        <ShieldCogIcon className="size-4 text-primary"/>
+                                        Modifier les permissions
                                     </Button>
                                 </div>
                                 {/*<Section title="Rôles et Accès">*/}
