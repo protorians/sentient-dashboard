@@ -146,7 +146,7 @@ export function UserDetailsSheet({children, opened, onOpenChange, user}: UserDet
                 {/* Header Profile Section */}
                 <div className="flex flex-row items-center space-x-4 pt-4">
                     <Avatar className="size-24 text-xl overflow-hidden">
-                        {user.avatar?.id? (
+                        {user.avatar?.id ? (
                             <StorageMedia id={user.avatar.id} className="size-full"/>
                         ) : (
                             <AvatarFallback className="bg-primary/10 text-primary font-bold text-2xl">
@@ -173,17 +173,17 @@ export function UserDetailsSheet({children, opened, onOpenChange, user}: UserDet
                 <div className="flex-1 overflow-hidden flex flex-col">
                     <Tabs defaultValue="general" className="w-full h-full flex flex-col">
                         <div className="px-1 flex justify-start overflow-y-hidden overflow-x-auto scrollbar-none">
-                            <TabsList variant="default" className="bg-transparent">
+                            <TabsList variant="default" className="">
                                 <TabsTrigger value="general"
-                                             className="data-active:border-b-2 data-active:border-primary px-4 py-2">
+                                             className="px-4 py-2">
                                     Général
                                 </TabsTrigger>
                                 <TabsTrigger value="access"
-                                             className="data-active:border-b-2 data-active:border-primary px-4 py-2">
+                                             className="px-4 py-2">
                                     Accès & Rôles
                                 </TabsTrigger>
                                 <TabsTrigger value="system"
-                                             className="data-active:border-b-2 data-active:border-primary px-4 py-2">
+                                             className="px-4 py-2">
                                     Système
                                 </TabsTrigger>
                             </TabsList>
@@ -229,15 +229,17 @@ export function UserDetailsSheet({children, opened, onOpenChange, user}: UserDet
                             </TabsContent>
 
                             <TabsContent value="access" className="mt-0 space-y-6">
-                                {/* Roles & Permissions */}
-                                <Button
-                                    variant="outline"
-                                    className="w-full justify-start gap-2"
-                                    onClick={openRolesAccessModal}
-                                >
-                                    <ShieldPlusIcon className="size-4 text-primary"/>
-                                    Ajouter / modifier les rôles & accès
-                                </Button>
+                                <div className="flex flex-row justify-start items-center">
+                                    {/* Roles & Permissions */}
+                                    <Button
+                                        variant="outline"
+                                        className="justify-start gap-2"
+                                        onClick={openRolesAccessModal}
+                                    >
+                                        <ShieldPlusIcon className="size-4 text-primary"/>
+                                        Modifier
+                                    </Button>
+                                </div>
                                 {/*<Section title="Rôles et Accès">*/}
                                 {user.roles && user.roles.length > 0 ? (
                                     <Accordion type="multiple" className="w-full">

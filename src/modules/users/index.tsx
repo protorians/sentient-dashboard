@@ -25,58 +25,58 @@ const usersModule: ModuleDeclarationInterface = {
     isEnabled: true,
     isDefault: true,
     type: 'INTERNAL',
-    menu: {
-        items: [
-            {
-                label: 'Fichier',
-                // description: 'Gestion des comptes et activités',
-                icon: "UsersIcon",
-                // action: () => {},
-                items: [
-                    {
-                        label: 'Créer',
-                        description: 'Créer un nouvel utilisateur',
-                        icon: "PlusIcon",
-                        action: () => {
-                        }
-                    },
-                    {
-                        label: "Voir",
-                        description: 'Voir un utilisateur',
-                        icon: "EyeIcon"
-                    },
-                    {
-                        separator: true
-                    },
-                    {
-                        label: 'Exporter',
-                        description: 'Exporter des utilisateurs',
-                        icon: "DownloadIcon"
-                    }
-                ]
-            },
-            {
-                label: 'Organisations',
-                // description: 'Gestion des comptes et activités',
-                icon: "BuildingIcon",
-                // action: () => {},
-                items: [
-                    {
-                        label: 'Créer',
-                        description: 'Créer une nouvelle organisation',
-                        icon: "PlusIcon",
-                        action: () => {
-                        }
-                    },
-                    {
-                        label: "Voir",
-                        description: 'Voir une organisation',
-                        icon: "EyeIcon"
-                    },
-                ]
-            }
-        ]
-    }
+    // menu: {
+    //     items: [
+    //         {
+    //             label: 'Fichier',
+    //             // description: 'Gestion des comptes et activités',
+    //             icon: "UsersIcon",
+    //             // action: () => {},
+    //             items: [
+    //                 {
+    //                     label: 'Créer',
+    //                     description: 'Créer un nouvel utilisateur',
+    //                     icon: "PlusIcon",
+    //                     action: () => {
+    //                     }
+    //                 },
+    //                 {
+    //                     label: "Voir",
+    //                     description: 'Voir un utilisateur',
+    //                     icon: "EyeIcon"
+    //                 },
+    //                 {
+    //                     separator: true
+    //                 },
+    //                 {
+    //                     label: 'Exporter',
+    //                     description: 'Exporter des utilisateurs',
+    //                     icon: "DownloadIcon"
+    //                 }
+    //             ]
+    //         },
+    //         {
+    //             label: 'Organisations',
+    //             // description: 'Gestion des comptes et activités',
+    //             icon: "BuildingIcon",
+    //             // action: () => {},
+    //             items: [
+    //                 {
+    //                     label: 'Créer',
+    //                     description: 'Créer une nouvelle organisation',
+    //                     icon: "PlusIcon",
+    //                     action: () => {
+    //                     }
+    //                 },
+    //                 {
+    //                     label: "Voir",
+    //                     description: 'Voir une organisation',
+    //                     icon: "EyeIcon"
+    //                 },
+    //             ]
+    //         }
+    //     ]
+    // }
 }
 
 export default usersModule
