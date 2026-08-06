@@ -2,7 +2,14 @@
 
 import {TrendingUp} from "lucide-react"
 import {Area, AreaChart, CartesianGrid, XAxis} from "recharts"
-import {ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent} from "@/core/presentation/ui/chart";
+import {
+    ChartConfig,
+    ChartContainer,
+    ChartLegend,
+    ChartLegendContent,
+    ChartTooltip,
+    ChartTooltipContent
+} from "@/core/presentation/ui/chart";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/core/presentation/ui/card";
 import {AreaChartWidgetProps} from "../../domain/typing/chart-widgets.types";
 import {cn} from "@/core/infrastructure/utilities/utils";
@@ -17,10 +24,16 @@ export function AreaWidgetChart(
         footerDescription,
         areas,
         xAxisDataKey = "month",
+        xAxisFormatter,
+        showLegend = areas.length > 1,
         className,
         hideCard = false,
     }: AreaChartWidgetProps
 ) {
+    const formatTick = (value: string) => {
+        if (xAxisFormatter) return xAxisFormatter(value)
+        return String(value ?? "").trim()
+    }
     const content = (
         <>
             {(title || description) && !hideCard && (
@@ -45,9 +58,12 @@ export function AreaWidgetChart(
                             tickLine={false}
                             axisLine={false}
                             tickMargin={8}
-                            tickFormatter={(value) => value.slice(0, 3)}
+                            tickFormatter={formatTick}
                         />
-                        <ChartTooltip cursor={false} content={<ChartTooltipContent/>}/>
+                        <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line"/>}/>
+                        {showLegend && (
+                            <ChartLegend content={<ChartLegendContent/>}/>
+                        )}
                         <defs>
                             {areas.map((area) => (
                                 <linearGradient key={`fill-${area.dataKey}`} id={`fill-${area.dataKey}`} x1="0" y1="0"
@@ -73,7 +89,7 @@ export function AreaWidgetChart(
                                 fill={`url(#fill-${area.dataKey})`}
                                 fillOpacity={0.4}
                                 stroke={area.stroke || `var(--color-${area.dataKey})`}
-                                stackId={area.stackId || "a"}
+                                {...(area.stackId ? {stackId: area.stackId} : {})}
                             />
                         ))}
                     </AreaChart>

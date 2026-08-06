@@ -19,6 +19,8 @@ export interface AreaChartWidgetProps extends BaseChartWidgetProps {
     stackId?: string
   }[]
   xAxisDataKey?: string
+  xAxisFormatter?: (value: string) => string
+  showLegend?: boolean
 }
 
 export interface LineChartWidgetProps extends BaseChartWidgetProps {

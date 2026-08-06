@@ -15,6 +15,7 @@ import {
 } from "@/core/presentation/ui/sheet";
 import {LegacySheet} from "@/core/presentation/sheets/legacy-sheet";
 import {CommonClassName} from "@/core/infrastructure/utilities/classname.util";
+import {useRecentModules} from "@/core/presentation/themes/katon/use-recent-modules";
 
 
 export function StartMenuItem(module: ModuleNavigationInterface) {
@@ -85,6 +86,11 @@ export function StartMenuItem(module: ModuleNavigationInterface) {
 }
 
 export function StartMenu() {
+    const recentModules = useRecentModules()
+
+    const filteredRecent = recentModules.filter(
+        rm => !defaultModulesNavConfig.some(dm => dm.id === rm.id)
+    )
 
     return (
         <nav
@@ -92,7 +98,10 @@ export function StartMenu() {
                 "flex flex-row md:flex-col items-center",
                 CommonClassName.glossyBorder,
                 CommonClassName.layer,
-                "p-2"
+                "p-2",
+                "max-h-[60vh] md:max-h-[60vh]",
+                "overflow-y-auto",
+                "scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
             )}>
             {
                 defaultModulesNavConfig.map((module, index) => {
@@ -101,6 +110,14 @@ export function StartMenu() {
                     )
                 })
             }
+            {filteredRecent.length > 0 && (
+                <>
+                    <div className="w-4/5 h-px bg-border my-2" />
+                    {filteredRecent.slice(0, 3).map((module) => (
+                        <StartMenuItem key={`recent-module-${module.id}`} {...module} />
+                    ))}
+                </>
+            )}
         </nav>
     )
 }
