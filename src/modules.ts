@@ -12,6 +12,7 @@ import ProjectManagementModule from "@/modules/project-management";
 import RestaurantModule from "@/modules/restaurant";
 import StockModule from "@/modules/stock";
 import StorageModule from "@/modules/storage";
+import BeverageSalesModule from "@/modules/beverage-sales";
 import {useEffect} from "react";
 import {useModuleStore} from "@/core/infrastructure/stores/module.store";
 import usersActivitiesModule from "@/modules/user-activities";
@@ -34,6 +35,7 @@ export function ModulesDefinition() {
                 RestaurantModule,
                 StockModule,
                 StorageModule,
+                BeverageSalesModule,
                 usersActivitiesModule,
             ])
         }
