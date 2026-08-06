@@ -1,17 +1,28 @@
+"use client"
 import * as React from "react"
 import {PackageIcon} from "lucide-react"
 import {ModuleWidget} from "@/core/presentation/module-widget"
+import {stockAnalyticsRoutine} from "@/modules/stock/infrastructure/routines/stock-analytics.routine"
 
 export interface StockWidgetProps {
     data?: {
-        totalItems?: number
+        totalProducts?: number
         lowStockCount?: number
-        alertsTrend?: number
+        outOfStockCount?: number
+        totalMovements?: number
     }
     loading?: boolean
 }
 
 export function StockWidget({ data, loading }: StockWidgetProps) {
+    const {dataset: analytics} = stockAnalyticsRoutine.dataset()
+    const summary = analytics?.summary
+
+    const totalProducts = data?.totalProducts ?? summary?.totalProducts ?? 0
+    const lowStockCount = data?.lowStockCount ?? summary?.lowStockCount ?? 0
+    const outOfStockCount = data?.outOfStockCount ?? summary?.outOfStockCount ?? 0
+    const totalMovements = data?.totalMovements ?? summary?.totalMovements ?? 0
+
     return (
         <ModuleWidget
             title={
@@ -22,8 +33,10 @@ export function StockWidget({ data, loading }: StockWidgetProps) {
             }
             description="Inventaire et logistique"
             stats={[
-                { label: 'Produits', amount: data?.totalItems ?? 0 },
-                { label: 'Alertes', amount: data?.lowStockCount ?? 0, trend: data?.alertsTrend ?? 0 }
+                { label: 'Produits', amount: totalProducts },
+                { label: 'Alertes', amount: lowStockCount },
+                { label: 'Ruptures', amount: outOfStockCount },
+                { label: 'Mouvements', amount: totalMovements }
             ]}
             className="h-full"
         />
