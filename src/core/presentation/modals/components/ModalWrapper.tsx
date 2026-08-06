@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
+import { createPortal } from 'react-dom';
+import { DismissableLayer } from 'radix-ui/internal';
 import { useModalStore } from '../stores/useModalStore';
 import { ModalInstance } from '../types/modal.type';
 import ModalBox from './ModalBox';
@@ -12,61 +14,51 @@ interface ModalWrapperProps {
   isLast: boolean;
 }
 
-const ModalWrapper = ({ modal, index, isLast }: ModalWrapperProps) => {
+const ModalWrapper = ({ modal, isLast }: ModalWrapperProps) => {
   const closeModal = useModalStore((state) => state.closeModal);
-  
-  useEffect(() => {
-    if (!isLast) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        const isLocked = modal.options?.locked === true;
-
-        if (!isLocked) {
-          closeModal(modal.id);
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isLast, modal.id, modal.options?.locked, modal.options?.closable, closeModal]);
 
   const handleOverlayClick = (e: React.MouseEvent) => {
     const isLocked = modal.options?.locked === true;
-    const isClosable = modal.options?.closable !== false;
     if (e.target === e.currentTarget && !isLocked) closeModal(modal.id);
   };
 
   const stackStyle = useMemo(() => {
     return {
-      zIndex: 100 + index,
       backgroundColor: modal.options?.backColor,
     };
-  }, [index, modal.options?.backColor]);
+  }, [modal.options?.backColor]);
 
   const isClosing = modal.options?.isClosing;
+  const isLocked = modal.options?.locked === true;
 
-  return (
-    <div 
+  // Each modal is portaled directly into `document.body` at open time (like any
+  // Radix overlay) and lives in the shared Radix dismissable-layer stack. This
+  // lets components opened afterwards (Sheet, Popover, Select, AlertDialog, ...)
+  // stack above the modal, and ensures Escape / outside interactions only dismiss
+  // the topmost layer instead of closing the modal unintentionally.
+  return createPortal(
+    <DismissableLayer.Root
       className={cn(
-        "fixed z-50 inset-0 flex items-center justify-center p-4 transition-all duration-300 pointer-events-auto",
+        "fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 pointer-events-auto",
         isLast ? (modal.options?.blurred !== false ? "bg-background/50 backdrop-blur-xl" : "bg-background/80") : "bg-transparent",
         isClosing && "opacity-0"
       )}
-      onClick={handleOverlayClick}
       style={stackStyle}
+      onClick={handleOverlayClick}
+      onEscapeKeyDown={() => {
+        if (!isLocked) closeModal(modal.id);
+      }}
     >
-      <div 
+      <div
         className={cn(
           "w-full flex justify-center transition-all duration-300 ease-out",
           isClosing ? "animate-zoom-out" : "animate-in fade-in zoom-in-95"
         )}
-        style={{ zIndex: 100 + index }}
       >
         <ModalBox modal={modal} />
       </div>
-    </div>
+    </DismissableLayer.Root>,
+    document.body
   );
 };
 

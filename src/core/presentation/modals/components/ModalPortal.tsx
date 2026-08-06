@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { useModalStore } from '../stores/useModalStore';
 import ModalWrapper from './ModalWrapper';
 
@@ -13,18 +12,19 @@ const ModalPortal = () => {
 
   if (!mounted || modals.length === 0) return null;
 
-  return createPortal(
-    <div className="fixed inset-0 z-100 pointer-events-none">
+  // Each wrapper portals itself into `document.body` at open time, so stacked
+  // overlays follow open order like any other dismissable layer.
+  return (
+    <>
       {modals.map((modal, index) => (
-        <ModalWrapper 
-          key={modal.id} 
-          modal={modal} 
-          index={index} 
-          isLast={index === modals.length - 1} 
+        <ModalWrapper
+          key={modal.id}
+          modal={modal}
+          index={index}
+          isLast={index === modals.length - 1}
         />
       ))}
-    </div>,
-    document.body
+    </>
   );
 };
 
