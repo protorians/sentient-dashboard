@@ -52,7 +52,7 @@ function formatDateTime(date?: string | null): string {
 
 export function NotificationDetailsModal({notification, close}: NotificationDetailsModalProps) {
     const queryClient = useQueryClient();
-    const [isRead, setIsRead] = useState(notification.isRead ?? notification.read ?? false);
+    const [isRead, setIsRead] = useState(!!notification.readAt);
 
     const title = notification.title ?? notification.subject ?? "Notification";
     const body = notification.body ?? notification.message ?? notification.content ?? "Aucun contenu";

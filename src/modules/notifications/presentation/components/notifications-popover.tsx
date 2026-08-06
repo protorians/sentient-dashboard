@@ -70,7 +70,7 @@ export function NotificationsPopover() {
         read: false
     });
 
-    const unreadCount = userNotifications.filter((notification) => !(notification.isRead ?? notification.read ?? false)).length;
+    const unreadCount = userNotifications.filter((notification) => !notification.readAt).length;
 
     return (
         <Popover>
