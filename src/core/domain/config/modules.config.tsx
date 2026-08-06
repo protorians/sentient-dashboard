@@ -3,6 +3,8 @@ import {ModuleNavigationInterface} from "@/core/domain/entities/module.interface
 import {ModulesListSheet} from "@/core/presentation/modules-list-sheet";
 import dashboardModule from "@/modules/dashboard";
 import usersModule from "@/modules/users";
+import stockModule from "@/modules/stock";
+import posModule from "@/modules/pos-management";
 import accessControlModule from "@/modules/access-control";
 
 
@@ -20,6 +22,20 @@ export const defaultModulesNavConfig: ModuleNavigationInterface[] = [
         icon: "UsersIcon",
         useOnlyIcon: false,
         url: '/users',
+    },
+    {
+        id: stockModule.id,
+        label: 'Stock',
+        icon: "PackageIcon",
+        useOnlyIcon: false,
+        url: '/stock-management',
+    },
+    {
+        id: posModule.id,
+        label: 'Ventes',
+        icon: "ShoppingCartIcon",
+        useOnlyIcon: false,
+        url: '/pos-management',
     },
     {
         id: accessControlModule.id,
