@@ -85,17 +85,17 @@ export class ApiService {
                 // await authLogoutUtil();
                 // redirect(AuthConfig.routes.login);
             }
-            if (responses.status === 500) {
-                if ('errorCode' in responses.data) {
-                    const errorCode = parseInt((responses.data['errorCode']).toString());
-                    if (errorCode === 1001) {
-                        toast.error(`Vous devez être connecté pour acceder à cette ressource`);
-                        await authLogoutUtil();
-                        console.log(`Vous devez être connecté pour acceder à cette ressource`);
-                        redirect(AuthConfig.routes.login);
-                    }
-                }
-            }
+            // if (responses.status === 500) {
+            //     if ('errorCode' in responses.data) {
+            //         const errorCode = parseInt((responses.data['errorCode']).toString());
+            //         if (errorCode === 1001) {
+            //             toast.error(`Vous devez être connecté pour acceder à cette ressource`);
+            //             await authLogoutUtil();
+            //             console.log(`Vous devez être connecté pour acceder à cette ressource`);
+            //             redirect(AuthConfig.routes.login);
+            //         }
+            //     }
+            // }
         }
     }
 
