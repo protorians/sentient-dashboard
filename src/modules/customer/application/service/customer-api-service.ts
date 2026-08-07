@@ -1,8 +1,9 @@
 import {ApiService} from "@/core/infrastructure/utilities/api-service";
+import {CreateCustomerInterface} from "@/modules/beverage-sales/domain/customer.interface";
 
 export class CustomerApiService extends ApiService {
     // Customers
-    static async create(payload: any) {
+    static async create(payload: CreateCustomerInterface) {
         return await this.post('/customers/', payload);
     }
 
