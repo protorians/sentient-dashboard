@@ -24,20 +24,6 @@ export const defaultModulesNavConfig: ModuleNavigationInterface[] = [
         url: '/users',
     },
     {
-        id: stockModule.id,
-        label: 'Stock',
-        icon: "PackageIcon",
-        useOnlyIcon: false,
-        url: '/stock-management',
-    },
-    {
-        id: posModule.id,
-        label: 'Ventes',
-        icon: "ShoppingCartIcon",
-        useOnlyIcon: false,
-        url: '/pos-management',
-    },
-    {
         id: accessControlModule.id,
         label: 'Contrôles d\'accès',
         icon: "ShieldIcon",

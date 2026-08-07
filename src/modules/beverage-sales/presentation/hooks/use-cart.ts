@@ -17,6 +17,7 @@ export interface UseCartReturn {
     updateBundleQty: (bundleId: string, quantity: number) => void;
     removeBundleFromCart: (bundleId: string) => void;
     clearCart: () => void;
+    loadFromOrder: (items: CartItemLine[], bundleLines: CartBundleLine[]) => void;
 }
 
 export function useCart(): UseCartReturn {
@@ -83,6 +84,11 @@ export function useCart(): UseCartReturn {
         setBundleLines([]);
     };
 
+    const loadFromOrder = (orderItems: CartItemLine[], orderBundleLines: CartBundleLine[]) => {
+        setItems(orderItems);
+        setBundleLines(orderBundleLines);
+    };
+
     return {
         items,
         bundleLines,
@@ -94,5 +100,6 @@ export function useCart(): UseCartReturn {
         updateBundleQty,
         removeBundleFromCart,
         clearCart,
+        loadFromOrder,
     };
 }

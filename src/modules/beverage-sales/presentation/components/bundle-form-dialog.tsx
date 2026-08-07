@@ -54,7 +54,7 @@ export function BundleFormDialog({open, onOpenChange, products, isLoadingProduct
             name: bundle?.name ?? '',
             sku: bundle?.sku ?? nextSku ?? '',
             description: bundle?.description ?? '',
-            type: bundle?.type ?? BundleTypeEnum.COMPOSITION,
+            type: BundleTypeEnum.KIT,
             price: bundle && bundle.price > 0 ? bundle.price : 0,
             items: bundle && bundle.items.length > 0
                 ? bundle.items.map(i => ({productId: i.productId, quantity: i.quantity}))
@@ -85,23 +85,7 @@ export function BundleFormDialog({open, onOpenChange, products, isLoadingProduct
                                 onChange={(e) => updateData({name: e.target.value})}
                             />
                         </div>
-                        <div className="flex flex-col gap-1.5 sm:col-span-2">
-                            <Label htmlFor="bundle-type">Type</Label>
-                            <Select
-                                value={data.type ?? BundleTypeEnum.COMPOSITION}
-                                onValueChange={(v) => updateData({type: v as BundleTypeEnum})}
-                            >
-                                <SelectTrigger id="bundle-type" className="w-full">
-                                    <SelectValue/>
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value={BundleTypeEnum.COMPOSITION}>Composition</SelectItem>
-                                    <SelectItem value={BundleTypeEnum.RECIPE}>Recette</SelectItem>
-                                    <SelectItem value={BundleTypeEnum.BUNDLE}>Bundle</SelectItem>
-                                    <SelectItem value={BundleTypeEnum.KIT}>Kit</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
+
                         <div className="flex flex-col gap-1.5">
                             <Label htmlFor="bundle-sku">SKU</Label>
                             <Input
@@ -234,7 +218,7 @@ export function BundleFormDialog({open, onOpenChange, products, isLoadingProduct
                                 </div>
                         <div className="flex flex-col gap-0.5">
                             <Label className="text-xs text-muted-foreground">Type</Label>
-                            <p className="font-semibold">{data.type ?? BundleTypeEnum.COMPOSITION}</p>
+                            <p className="font-semibold">Kit</p>
                         </div>
                                 <div className="flex flex-col gap-0.5">
                                     <Label className="text-xs text-muted-foreground">Prix</Label>
@@ -277,7 +261,7 @@ export function BundleFormDialog({open, onOpenChange, products, isLoadingProduct
                     name: (data.name ?? '').trim(),
                     sku: (data.sku ?? '').trim() || undefined,
                     description: (data.description ?? '').trim() || undefined,
-                    type: data.type ?? BundleTypeEnum.COMPOSITION,
+                    type: BundleTypeEnum.KIT,
                     price: data.price && data.price > 0 ? data.price : 0,
                     items: validItems,
                 });

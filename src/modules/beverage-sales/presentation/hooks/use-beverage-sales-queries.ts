@@ -31,12 +31,28 @@ export interface UseBeverageSalesQueriesReturn {
 }
 
 export function useBeverageSalesQueries(selectedTable: PosTableInterface | null): UseBeverageSalesQueriesReturn {
-    const {data: products, isLoading: isLoadingProducts} = useQuery<ProductInterface[]>({
-        queryKey: ['stock', 'products', 'beverage-sales'],
+    const {data: warehouses} = useQuery<WarehouseInterface[]>({
+        queryKey: ['stock', 'warehouses'],
         queryFn: async () => {
-            const response = await StockApiService.getAll();
+            const response = await StockApiService.getWarehouses();
             return response.data?.data || [];
         }
+    });
+
+    const depotWarehouseId = useMemo(() => {
+        return warehouses?.find(w => w.type === WarehouseTypeEnum.DEPOT)?.id;
+    }, [warehouses]);
+
+    const {data: products, isLoading: isLoadingProducts} = useQuery<ProductInterface[]>({
+        queryKey: ['pos', 'products', depotWarehouseId],
+        queryFn: async () => {
+            const response = await BeverageSalesApiService.getPosProducts(depotWarehouseId);
+            const posProducts = response.data?.data;
+            if (posProducts && posProducts.length > 0) return posProducts;
+            const stockResponse = await StockApiService.getAll();
+            return stockResponse.data?.data || [];
+        },
+        enabled: !!depotWarehouseId,
     });
 
     const {data: bundles, isLoading: isLoadingBundles} = useQuery<BundleInterface[]>({
@@ -48,19 +64,12 @@ export function useBeverageSalesQueries(selectedTable: PosTableInterface | null)
     });
 
     const {data: tables, isLoading: isLoadingTables} = useQuery<PosTableInterface[]>({
-        queryKey: ['beverage-sales', 'tables'],
+        queryKey: ['beverage-sales', 'tables', depotWarehouseId],
         queryFn: async () => {
-            const response = await BeverageSalesApiService.getTables();
+            const response = await BeverageSalesApiService.getTables(depotWarehouseId);
             return response.data?.data || [];
-        }
-    });
-
-    const {data: warehouses} = useQuery<WarehouseInterface[]>({
-        queryKey: ['stock', 'warehouses'],
-        queryFn: async () => {
-            const response = await StockApiService.getWarehouses();
-            return response.data?.data || [];
-        }
+        },
+        enabled: !!depotWarehouseId,
     });
 
     const {data: orders, isLoading: isLoadingOrders} = useQuery<OrderInterface[]>({
@@ -70,10 +79,6 @@ export function useBeverageSalesQueries(selectedTable: PosTableInterface | null)
             return response.data?.data || [];
         }
     });
-
-    const depotWarehouseId = useMemo(() => {
-        return warehouses?.find(w => w.type === WarehouseTypeEnum.DEPOT)?.id;
-    }, [warehouses]);
 
     const displayTables = useMemo(() => {
         const depotTables = depotWarehouseId

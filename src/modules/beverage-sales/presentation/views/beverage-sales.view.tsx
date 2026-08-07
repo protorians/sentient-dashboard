@@ -1,6 +1,7 @@
 "use client"
 
 import React, {useState} from "react";
+import {useQueryClient} from "@tanstack/react-query";
 import {OrderTypeEnum} from "@/modules/beverage-sales/domain/enums/order-type.enum";
 import {OrderStatusEnum} from "@/modules/beverage-sales/domain/enums/order-status.enum";
 import {WarehouseTypeEnum} from "@/modules/beverage-sales/domain/enums/warehouse-type.enum";
@@ -17,27 +18,32 @@ import {SaleTypeSelector} from "@/modules/beverage-sales/presentation/components
 import {TableSelector} from "@/modules/beverage-sales/presentation/components/table-selector";
 import {CatalogTabs} from "@/modules/beverage-sales/presentation/components/catalog-tabs";
 import {CartPanel} from "@/modules/beverage-sales/presentation/components/cart-panel";
+import {OrdersList} from "@/modules/beverage-sales/presentation/components/orders-list";
 import {BundleManager} from "@/modules/beverage-sales/presentation/components/bundle-manager";
 import {CustomerCombobox} from "@/modules/beverage-sales/presentation/components/customer-combobox";
 import {TableCreateDialog} from "@/modules/beverage-sales/presentation/components/table-create-dialog";
 import {Card} from "@/core/presentation/ui/card";
 import {Tabs, TabsList, TabsTrigger} from "@/core/presentation/ui/tabs";
-import {WineIcon, ShoppingBagIcon, GiftIcon, UserIcon, WarehouseIcon, ArrowLeftIcon} from "lucide-react";
+import {WineIcon, ShoppingBagIcon, GiftIcon, WarehouseIcon, ArrowLeftIcon} from "lucide-react";
 import {toast} from "sonner";
 import {generateTableLabel, generateTableNumber} from "@/modules/beverage-sales/presentation/utilities/beverage-sales.util";
 import { Button } from "@/core/presentation/ui/button";
+import {WaitingActivity} from "@/core/presentation/waiting-activity";
+import {DepotSetupDialog} from "@/modules/beverage-sales/presentation/components/depot-setup-dialog";
 import {useRouter} from "next/navigation";
 
 export default function BeverageSalesView() {
     const router = useRouter();
+    const queryClient = useQueryClient();
     const [activeTab, setActiveTab] = useState<'caisse' | 'bundles'>('caisse');
-    const [catalogTab, setCatalogTab] = useState<'products' | 'bundles' | 'orders'>('products');
+    const [catalogTab, setCatalogTab] = useState<'products' | 'bundles'>('products');
     const [selectedTable, setSelectedTable] = useState<PosTableInterface | null>(null);
     const [selectedCustomer, setSelectedCustomer] = useState<CustomerInterface | null>(null);
     const [customerName, setCustomerName] = useState<string>("");
     const [saleType, setSaleType] = useState<OrderTypeEnum>(OrderTypeEnum.DETAIL);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [tableCreateOpen, setTableCreateOpen] = useState(false);
+    const [activeOrder, setActiveOrder] = useState<OrderInterface | null>(null);
 
     const cart = useCart();
 
@@ -65,32 +71,130 @@ export default function BeverageSalesView() {
         depotWarehouseId,
     } = useBeverageSalesMutations(warehouses);
 
-    const handleCheckout = () => {
-        createOrderMutation.mutate({
-            warehouseType: WarehouseTypeEnum.DEPOT,
-            orderType: saleType,
-            customerId: selectedCustomer?.id,
-            tableId: selectedTable?.id,
-            customer: (!selectedCustomer && customerName.trim())
-                ? {name: customerName.trim()}
-                : undefined,
-            items: cart.items.length > 0 ? cart.items : undefined,
-            bundles: cart.bundleLines.length > 0 ? cart.bundleLines.map(line => ({bundleId: line.bundleId, quantity: line.quantity})) : undefined,
-        }, {
-            onSuccess: () => {
-                cart.clearCart();
-                setSelectedTable(null);
-                setSelectedCustomer(null);
-                setCustomerName("");
+    const handleCheckout = async (amountGiven: number) => {
+        try {
+            let order = activeOrder;
+
+            if (!order) {
+                const draftResponse = await createOrderMutation.mutateAsync({
+                    warehouseType: WarehouseTypeEnum.DEPOT,
+                    orderType: saleType,
+                    customerId: selectedCustomer?.id,
+                    tableId: selectedTable?.id,
+                    customer: (!selectedCustomer && customerName.trim())
+                        ? {name: customerName.trim()}
+                        : undefined,
+                });
+                order = draftResponse.data?.data;
+                if (!order) return;
             }
-        });
+
+            await updateOrderMutation.mutateAsync({
+                id: order.id,
+                payload: {
+                    orderType: saleType,
+                    customerId: selectedCustomer?.id,
+                    tableId: selectedTable?.id,
+                    customer: (!selectedCustomer && customerName.trim())
+                        ? {name: customerName.trim()}
+                        : undefined,
+                    items: cart.items.length > 0 ? cart.items : undefined,
+                    bundles: cart.bundleLines.length > 0 ? cart.bundleLines.map(line => ({bundleId: line.bundleId, quantity: line.quantity})) : undefined,
+                    receivedAmount: amountGiven > 0 ? amountGiven : undefined,
+                }
+            });
+
+            await updateOrderStatusMutation.mutateAsync({
+                id: order.id,
+                status: OrderStatusEnum.PAID
+            });
+
+            cart.clearCart();
+            setActiveOrder(null);
+            setSelectedTable(null);
+            setSelectedCustomer(null);
+            setCustomerName("");
+        } catch {
+            // toast handled by mutations
+        }
+    };
+
+    const handleCreatePendingOrder = async () => {
+        if (activeOrder) {
+            try {
+                await updateOrderMutation.mutateAsync({
+                    id: activeOrder.id,
+                    payload: {
+                        orderType: saleType,
+                        customerId: selectedCustomer?.id,
+                        tableId: selectedTable?.id,
+                        customer: (!selectedCustomer && customerName.trim())
+                            ? {name: customerName.trim()}
+                            : undefined,
+                        items: cart.items.length > 0 ? cart.items : undefined,
+                        bundles: cart.bundleLines.length > 0 ? cart.bundleLines.map(line => ({bundleId: line.bundleId, quantity: line.quantity})) : undefined,
+                    }
+                });
+                await queryClient.invalidateQueries({queryKey: ['beverage-sales', 'orders']});
+            } catch {
+                return;
+            }
+        }
+
+        try {
+            const response = await createOrderMutation.mutateAsync({
+                warehouseType: WarehouseTypeEnum.DEPOT,
+                orderType: saleType,
+            });
+            const newOrder = response.data?.data;
+            if (newOrder) {
+                setActiveOrder(newOrder);
+            }
+            await queryClient.invalidateQueries({queryKey: ['beverage-sales', 'orders']});
+        } catch {
+            return;
+        }
+
+        cart.clearCart();
+        setSelectedTable(null);
+        setSelectedCustomer(null);
+        setCustomerName("");
+    };
+
+    const handleSelectOrder = (order: OrderInterface) => {
+        setActiveOrder(order);
+        setSaleType(order.orderType);
+        const table = order.tableId ? displayTables?.find(t => t.id === order.tableId) : null;
+        setSelectedTable(table ?? null);
+        setSelectedCustomer(null);
+        setCustomerName("");
+        cart.loadFromOrder(
+            order.items.map(item => ({
+                productId: item.productId,
+                quantity: item.quantity,
+                unit: item.unit,
+                unitPrice: item.unitPrice,
+            })),
+            order.bundles.map(bundle => ({
+                bundleId: bundle.bundleId,
+                quantity: bundle.quantity,
+                unitPrice: bundle.unitPrice,
+            }))
+        );
     };
 
     const handleCreateTable = async (payload: { label: string; number?: number }) => {
         const fullPayload = {label: payload.label, number: payload.number, warehouseId: depotWarehouseId ?? ''};
         const response = await createTableMutation.mutateAsync(fullPayload);
         const created = response.data?.data;
-        if (created) setSelectedTable(created);
+        if (created) {
+            setSelectedTable(created);
+            await queryClient.invalidateQueries({queryKey: ['beverage-sales', 'tables']});
+            if (activeOrder) {
+                updateOrderMutation.mutate({ id: activeOrder.id, payload: { tableId: created.id } });
+                setActiveOrder(prev => prev ? {...prev, tableId: created.id} : null);
+            }
+        }
         setTableCreateOpen(false);
         toast.success(`Table « ${payload.label} » créée`);
     };
@@ -109,6 +213,23 @@ export default function BeverageSalesView() {
     const handleSaveOrder = (order: OrderInterface, payload: UpdateOrderInterface) => {
         updateOrderMutation.mutate({id: order.id, payload});
     };
+
+    const isSubmitting = createOrderMutation.isPending || updateOrderMutation.isPending || updateOrderStatusMutation.isPending;
+    const showDepotSetup = warehouses !== undefined && !depotWarehouseId;
+
+    if (showDepotSetup) {
+        return (
+            <>
+                <DepotSetupDialog show={true} />
+                <div className="flex items-center justify-center min-h-screen bg-muted/20">
+                    <div className="text-center">
+                        <WaitingActivity size={40} />
+                        <p className="text-muted-foreground text-sm mt-4">Initialisation du module...</p>
+                    </div>
+                </div>
+            </>
+        );
+    }
 
     return (
         <div className="flex flex-col gap-6 p-4 md:p-6 bg-muted/20 min-h-screen">
@@ -151,21 +272,49 @@ export default function BeverageSalesView() {
             </Tabs>
 
             {activeTab === 'caisse' ? (
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                    <div className="lg:col-span-3 flex flex-col gap-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Card className="p-4 border-none shadow-sm flex flex-col gap-3">
-                                <h3 className="text-sm font-semibold flex items-center gap-2">
-                                    <UserIcon className="size-4 text-primary"/>
-                                    Client
-                                </h3>
-                                <CustomerCombobox
-                                    customer={selectedCustomer}
-                                    onSelect={setSelectedCustomer}
-                                    onNameChange={setCustomerName}
-                                />
-                            </Card>
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+                    <div className="xl:col-span-2 flex flex-col gap-6">
+                        <OrdersList
+                            orders={orders}
+                            isLoading={isLoadingOrders}
+                            tables={displayTables}
+                            activeOrder={activeOrder}
+                            onSelectOrder={handleSelectOrder}
+                            onCreatePending={handleCreatePendingOrder}
+                            isCreatingPending={updateOrderMutation.isPending || createOrderMutation.isPending}
+                            onMarkPaid={(id) => updateOrderStatusMutation.mutate({id, status: OrderStatusEnum.PAID})}
+                            onCancelOrder={(id) => updateOrderStatusMutation.mutate({id, status: OrderStatusEnum.CANCELLED})}
+                            onDelete={(id) => deleteOrderMutation.mutate(id)}
+                            onSaveOrder={handleSaveOrder}
+                            isSaving={updateOrderMutation.isPending}
+                            products={products}
+                            bundles={enrichedBundles}
+                        />
 
+                        <CatalogTabs
+                            tab={catalogTab}
+                            onTabChange={setCatalogTab}
+                            products={products}
+                            isLoadingProducts={isLoadingProducts}
+                            bundles={enrichedBundles}
+                            isLoadingBundles={isLoadingBundles}
+                            searchTerm={searchTerm}
+                            onSearchChange={setSearchTerm}
+                            cartItems={cart.items}
+                            onAddToCart={cart.addToCart}
+                            onUpdateItemQty={cart.updateItemQty}
+                            onAddBundleToCart={cart.addBundleToCart}
+                        />
+                    </div>
+
+                    <div className="flex flex-col gap-6">
+                        <Card className="p-5 border-none shadow-sm flex flex-col gap-4">
+                            <h3 className="text-lg font-bold">Informations client</h3>
+                            <CustomerCombobox
+                                customer={selectedCustomer}
+                                onSelect={setSelectedCustomer}
+                                onNameChange={setCustomerName}
+                            />
                             <TableSelector
                                 tables={displayTables ?? []}
                                 selectedTable={selectedTable}
@@ -173,7 +322,7 @@ export default function BeverageSalesView() {
                                 onSelect={setSelectedTable}
                                 onCreateClick={() => setTableCreateOpen(true)}
                             />
-                        </div>
+                        </Card>
 
                         <TableCreateDialog
                             open={tableCreateOpen}
@@ -184,29 +333,6 @@ export default function BeverageSalesView() {
                             isSaving={createTableMutation.isPending}
                         />
 
-                        <CatalogTabs
-                            tab={catalogTab}
-                            onTabChange={setCatalogTab}
-                            products={products}
-                            isLoadingProducts={isLoadingProducts}
-                            bundles={enrichedBundles}
-                            isLoadingBundles={isLoadingBundles}
-                            orders={orders}
-                            isLoadingOrders={isLoadingOrders}
-                            searchTerm={searchTerm}
-                            onSearchChange={setSearchTerm}
-                            onAddToCart={cart.addToCart}
-                            onAddBundleToCart={cart.addBundleToCart}
-                            onManageBundles={() => setActiveTab('bundles')}
-                            isSaving={updateOrderMutation.isPending}
-                            onMarkPaid={(id) => updateOrderStatusMutation.mutate({id, status: OrderStatusEnum.PAID})}
-                            onCancel={(id) => updateOrderStatusMutation.mutate({id, status: OrderStatusEnum.CANCELLED})}
-                            onDelete={(id) => deleteOrderMutation.mutate(id)}
-                            onSaveOrder={handleSaveOrder}
-                        />
-                    </div>
-
-                    <div className="flex flex-col gap-6">
                         <CartPanel
                             products={products}
                             bundles={enrichedBundles}
@@ -216,14 +342,18 @@ export default function BeverageSalesView() {
                             customerName={customerName}
                             table={selectedTable}
                             saleType={saleType}
+                            activeOrder={activeOrder}
                             onUpdateItemQty={cart.updateItemQty}
                             onUpdateItemUnit={cart.updateItemUnit}
                             onRemoveItem={cart.removeFromCart}
                             onUpdateBundleQty={cart.updateBundleQty}
                             onRemoveBundle={cart.removeBundleFromCart}
-                            onClearCart={cart.clearCart}
+                            onClearCart={() => {
+                                cart.clearCart();
+                                setActiveOrder(null);
+                            }}
                             onCheckout={handleCheckout}
-                            isSubmitting={createOrderMutation.isPending}
+                            isSubmitting={isSubmitting}
                         />
                     </div>
                 </div>

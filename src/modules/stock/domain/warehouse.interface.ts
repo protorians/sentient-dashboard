@@ -9,3 +9,9 @@ export interface WarehouseInterface {
     status: boolean;
     createdAt: string;
 }
+
+export interface CreateWarehouseInterface {
+    name: string;
+    address?: string;
+    type: WarehouseTypeEnum;
+}

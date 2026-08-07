@@ -9,6 +9,33 @@ export function toBaseUnits(product: ProductInterface, quantity: number, unit?: 
     return quantity * factor;
 }
 
+export function getBaseUnitPrice(product: ProductInterface, unit?: MovementUnitEnum): number {
+    const u = unit ?? MovementUnitEnum.UNIT;
+    if (u === MovementUnitEnum.UNIT) return product.salePrice ?? 0;
+    if (u === MovementUnitEnum.PACK) {
+        if (product.packPrice && product.unitsPerPack && product.unitsPerPack > 0) {
+            return product.packPrice / product.unitsPerPack;
+        }
+        return product.salePrice ?? 0;
+    }
+    if (u === MovementUnitEnum.CASE) {
+        if (product.casePrice && product.unitsPerCase && product.unitsPerCase > 0) {
+            return product.casePrice / product.unitsPerCase;
+        }
+        return product.salePrice ?? 0;
+    }
+    return product.salePrice ?? 0;
+}
+
+export function getDisplayPrice(product: ProductInterface, unit?: MovementUnitEnum): number {
+    const u = unit ?? MovementUnitEnum.UNIT;
+    const salePrice = product.salePrice ?? 0;
+    if (u === MovementUnitEnum.UNIT) return salePrice;
+    if (u === MovementUnitEnum.PACK) return product.packPrice ?? (salePrice * (product.unitsPerPack && product.unitsPerPack > 0 ? product.unitsPerPack : 1));
+    if (u === MovementUnitEnum.CASE) return product.casePrice ?? (salePrice * (product.unitsPerCase && product.unitsPerCase > 0 ? product.unitsPerCase : 1));
+    return salePrice;
+}
+
 export function formatPrice(amount: number): string {
     return `${Math.round(amount).toLocaleString('fr-FR')} FCFA`;
 }

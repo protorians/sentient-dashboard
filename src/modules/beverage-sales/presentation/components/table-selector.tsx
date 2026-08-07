@@ -3,10 +3,9 @@
 import React from "react";
 import {PosTableInterface} from "@/modules/beverage-sales/domain/pos-table.interface";
 import {Button} from "@/core/presentation/ui/button";
-import {Card} from "@/core/presentation/ui/card";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/core/presentation/ui/select";
 import {WaitingActivity} from "@/core/presentation/waiting-activity";
-import {UtensilsIcon, PlusIcon} from "lucide-react";
-import {cn} from "@/core/infrastructure/utilities/utils";
+import {PlusIcon} from "lucide-react";
 
 interface TableSelectorProps {
     tables: PosTableInterface[];
@@ -18,46 +17,39 @@ interface TableSelectorProps {
 
 export function TableSelector({tables, selectedTable, isLoading, onSelect, onCreateClick}: TableSelectorProps) {
     return (
-        <Card className="p-4 border-none shadow-sm flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold flex items-center gap-2">
-                    <UtensilsIcon className="size-4 text-primary"/>
-                    Table
-                </h3>
-                <div className="flex items-center gap-1.5">
-                    {isLoading && <WaitingActivity size={16}/>}
-                    <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        className="text-muted-foreground hover:text-primary"
-                        onClick={onCreateClick}
-                        title="Créer une table"
-                    >
-                        <PlusIcon className="size-4"/>
-                    </Button>
-                </div>
-            </div>
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                {tables.slice(0, 8).map(table => {
-                    const isSelected = selectedTable?.id === table.id;
-                    return (
-                        <Button
-                            key={table.id}
-                            variant={isSelected ? "default" : "outline"}
-                            size="sm"
-                            className={cn("rounded-lg h-9 min-w-[80px]", isSelected && "bg-primary text-primary-foreground")}
-                            onClick={() => onSelect(isSelected ? null : table)}
-                        >
+        <div className="flex items-center gap-2">
+            <Select
+                value={selectedTable?.id ?? "none"}
+                onValueChange={(v) => {
+                    if (v === "none") {
+                        onSelect(null);
+                        return;
+                    }
+                    onSelect(tables.find(t => t.id === v) ?? null);
+                }}
+            >
+                <SelectTrigger className="h-11 flex-1 rounded-xl bg-muted/50 border-none">
+                    <SelectValue placeholder="Sélectionner une table"/>
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="none">Sans table</SelectItem>
+                    {tables.map(table => (
+                        <SelectItem key={table.id} value={table.id}>
                             {table.label}
-                        </Button>
-                    );
-                })}
-                {tables.length === 0 && !isLoading && (
-                    <span className="text-xs text-muted-foreground self-center py-1.5">
-                        Aucune table — créez-en une avec « + »
-                    </span>
-                )}
-            </div>
-        </Card>
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+            <Button
+                variant="outline"
+                size="icon"
+                className="size-11 rounded-xl shrink-0"
+                onClick={onCreateClick}
+                title="Créer une table"
+                disabled={isLoading}
+            >
+                {isLoading ? <WaitingActivity size={16}/> : <PlusIcon className="size-4"/>}
+            </Button>
+        </div>
     );
 }

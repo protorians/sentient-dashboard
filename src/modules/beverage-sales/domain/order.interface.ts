@@ -33,6 +33,7 @@ export interface CreateOrderInterface {
     items?: CreateOrderItemInterface[];
     bundles?: CreateOrderBundleInterface[];
     discountAmount?: number;
+    receivedAmount?: number;
     locationId?: string;
 }
 
@@ -48,4 +49,5 @@ export interface UpdateOrderInterface {
     items?: CreateOrderItemInterface[];
     bundles?: CreateOrderBundleInterface[];
     discountAmount?: number;
+    receivedAmount?: number;
 }

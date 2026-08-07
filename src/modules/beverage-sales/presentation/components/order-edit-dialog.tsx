@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 import {WaitingActivity} from "@/core/presentation/waiting-activity";
 import {cn} from "@/core/infrastructure/utilities/utils";
-import {formatPrice, toBaseUnits, getBundleUnitPrice} from "@/modules/beverage-sales/presentation/utilities/beverage-sales.util";
+import {formatPrice, toBaseUnits, getBundleUnitPrice, getBaseUnitPrice} from "@/modules/beverage-sales/presentation/utilities/beverage-sales.util";
 
 interface OrderEditDialogProps {
     order: OrderInterface | null;
@@ -83,8 +83,7 @@ export function OrderEditDialog({order, open, onOpenChange, products, bundles, i
     const addItem = () => {
         const product = products?.find(p => p.id === addProductId);
         if (!product?.id) return;
-        const factor = addProductUnit === MovementUnitEnum.PACK ? product.unitsPerPack : addProductUnit === MovementUnitEnum.CASE ? product.unitsPerCase : 1;
-        const unitPrice = (product.salePrice ?? 0) * (factor && factor > 0 ? factor : 1);
+        const unitPrice = getBaseUnitPrice(product, addProductUnit);
         setItems(prev => {
             const existing = prev.find(item => item.productId === product.id && item.unit === addProductUnit);
             if (existing) {

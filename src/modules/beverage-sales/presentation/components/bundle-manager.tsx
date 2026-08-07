@@ -105,7 +105,7 @@ export function BundleManager({bundles, isLoading, products, isLoadingProducts, 
                         <div>
                             <h3 className="text-lg font-bold">Gestion des bundles</h3>
                             <p className="text-xs text-muted-foreground">
-                                Compositions, recettes, bundles et kits vendus en un clic
+                                Kits vendus en un clic
                             </p>
                         </div>
                     </div>

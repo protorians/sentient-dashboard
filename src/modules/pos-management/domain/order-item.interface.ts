@@ -1,17 +1,20 @@
-import {ProductInterface} from "@/modules/stock/domain/product.interface";
+import {MovementUnitEnum} from "@/modules/stock/domain/stock-movement.interface";
 
 export interface OrderItemInterface {
     id?: string;
+    orderId: string;
     productId: string;
-    product?: ProductInterface;
+    productName?: string;
     quantity: number;
+    unit: MovementUnitEnum;
+    baseQuantity: number;
     unitPrice: number;
-    notes?: string;
+    totalPrice: number;
 }
 
 export interface CreateOrderItemInterface {
     productId: string;
     quantity: number;
-    unitPrice: number;
-    notes?: string;
+    unit?: MovementUnitEnum;
+    unitPrice?: number;
 }

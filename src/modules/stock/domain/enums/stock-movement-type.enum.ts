@@ -3,4 +3,5 @@ export enum StockMovementTypeEnum {
     OUT = 'OUT',
     ADJUSTMENT = 'ADJUSTMENT',
     RETURN = 'RETURN',
+    TRANSFER = 'TRANSFER',
 }

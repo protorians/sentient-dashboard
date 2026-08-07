@@ -1,16 +1,17 @@
 "use client"
 
-import React from "react";
+import React, {useState} from "react";
 import {ProductInterface} from "@/modules/stock/domain/product.interface";
 import {BundleInterface} from "@/modules/beverage-sales/domain/bundle.interface";
 import {PosTableInterface} from "@/modules/beverage-sales/domain/pos-table.interface";
 import {CustomerInterface} from "@/modules/beverage-sales/domain/customer.interface";
+import {OrderInterface} from "@/modules/beverage-sales/domain/order.interface";
 import {OrderTypeEnum} from "@/modules/beverage-sales/domain/enums/order-type.enum";
 import {MovementUnitEnum} from "@/modules/beverage-sales/domain/enums/movement-unit.enum";
 import {CartItemLine, CartBundleLine} from "@/modules/beverage-sales/domain/cart.types";
 import {Button} from "@/core/presentation/ui/button";
 import {Card} from "@/core/presentation/ui/card";
-import {Badge} from "@/core/presentation/ui/badge";
+import {Input} from "@/core/presentation/ui/input";
 import {Separator} from "@/core/presentation/ui/separator";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/core/presentation/ui/select";
 import {WaitingActivity} from "@/core/presentation/waiting-activity";
@@ -19,11 +20,9 @@ import {
     MinusIcon,
     TrashIcon,
     ShoppingCartIcon,
-    UserIcon,
-    UtensilsIcon,
     WineIcon,
     GiftIcon,
-    CheckIcon,
+    CoinsIcon,
 } from "lucide-react";
 import {cn} from "@/core/infrastructure/utilities/utils";
 import {formatPrice, toBaseUnits} from "@/modules/beverage-sales/presentation/utilities/beverage-sales.util";
@@ -37,13 +36,14 @@ interface CartPanelProps {
     customerName: string;
     table?: PosTableInterface | null;
     saleType: OrderTypeEnum;
+    activeOrder?: OrderInterface | null;
     onUpdateItemQty: (productId: string, quantity: number) => void;
     onUpdateItemUnit: (productId: string, unit: MovementUnitEnum) => void;
     onRemoveItem: (productId: string) => void;
     onUpdateBundleQty: (bundleId: string, quantity: number) => void;
     onRemoveBundle: (bundleId: string) => void;
     onClearCart: () => void;
-    onCheckout: () => void;
+    onCheckout: (amountGiven: number) => void;
     isSubmitting?: boolean;
 }
 
@@ -52,10 +52,8 @@ export function CartPanel({
     bundles,
     items,
     bundleLines,
-    customer,
-    customerName,
-    table,
     saleType,
+    activeOrder,
     onUpdateItemQty,
     onUpdateItemUnit,
     onRemoveItem,
@@ -65,6 +63,8 @@ export function CartPanel({
     onCheckout,
     isSubmitting,
 }: CartPanelProps) {
+    const [amountGiven, setAmountGiven] = useState<number>(0);
+
     const itemTotal = items.reduce((sum, item) => {
         const product = products?.find(p => p.id === item.productId);
         return sum + (product ? toBaseUnits(product, item.quantity, item.unit) * item.unitPrice : 0);
@@ -73,7 +73,8 @@ export function CartPanel({
     const bundleTotal = bundleLines.reduce((sum, line) => sum + (line.quantity * line.unitPrice), 0);
 
     const total = itemTotal + bundleTotal;
-    const hasSelection = customer !== null || customerName !== '' || table !== null;
+    const changeDue = amountGiven > 0 ? amountGiven - total : 0;
+    const itemsCount = items.length + bundleLines.length;
 
     const getSaleTypeLabel = (type: OrderTypeEnum) => {
         switch (type) {
@@ -84,12 +85,16 @@ export function CartPanel({
     };
 
     return (
-        <Card className="p-5 border-none shadow-sm flex flex-col h-full min-h-[600px] sticky top-6">
-            <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold flex items-center gap-2">
-                    <ShoppingCartIcon className="size-5 text-primary"/>
-                    Panier
-                </h3>
+        <Card className="p-5 border-none shadow-sm flex flex-col gap-5 sticky top-6">
+            <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-0.5">
+                    <h3 className="text-lg font-bold">
+                        {activeOrder ? `Commande ${activeOrder.orderNumber}` : 'Détails de la commande'}
+                    </h3>
+                    {activeOrder && (
+                        <span className="text-[10px] text-muted-foreground">Modification en cours</span>
+                    )}
+                </div>
                 {(items.length > 0 || bundleLines.length > 0) && (
                     <Button variant="ghost" size="icon-sm" onClick={onClearCart} className="text-destructive hover:bg-destructive/10">
                         <TrashIcon className="size-4"/>
@@ -97,20 +102,9 @@ export function CartPanel({
                 )}
             </div>
 
-            {hasSelection && (
-                <div className="flex items-center gap-2 mb-4 flex-wrap">
-                    {customer && <Badge variant="secondary" className="bg-primary/10 text-primary border-none"><UserIcon className="size-3"/>{customer.firstname ?? customer.companyName}</Badge>}
-                    {customerName && !customer && <Badge variant="outline" className="text-xs"><UserIcon className="size-3"/>{customerName}</Badge>}
-                    {table && <Badge variant="outline" className="text-xs"><UtensilsIcon className="size-3"/>{table.label}</Badge>}
-                    <Badge variant="outline" className="text-xs">{getSaleTypeLabel(saleType)}</Badge>
-                </div>
-            )}
-
-            <Separator className="mb-4 bg-border/50"/>
-
-            <div className="flex-auto overflow-y-auto space-y-4 pr-1 scrollbar-thin">
+            <div className="overflow-y-auto space-y-3 pr-1 scrollbar-thin max-h-[320px]">
                 {items.length === 0 && bundleLines.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-60 text-muted-foreground gap-4">
+                    <div className="flex flex-col items-center justify-center h-44 text-muted-foreground gap-4">
                         <div className="bg-muted p-4 rounded-full">
                             <ShoppingCartIcon className="size-8 opacity-20"/>
                         </div>
@@ -122,38 +116,30 @@ export function CartPanel({
                             const product = products?.find(p => p.id === item.productId);
                             const lineTotal = product ? toBaseUnits(product, item.quantity, item.unit) * item.unitPrice : 0;
                             return (
-                                <div key={item.productId} className="flex flex-col gap-2 p-3 bg-muted/30 rounded-xl border border-border/20">
-                                    <div className="flex items-start justify-between gap-2">
-                                        <div className="flex items-center gap-2 min-w-0">
-                                            <div className="bg-primary/10 p-1.5 rounded-lg shrink-0">
-                                                <WineIcon className="size-3.5 text-primary"/>
-                                            </div>
-                                            <div className="flex flex-col min-w-0">
-                                                <span className="text-sm font-bold truncate">{product?.name}</span>
-                                                <span className="text-[10px] text-muted-foreground">{formatPrice(item.unitPrice)} / unité de base</span>
-                                            </div>
-                                        </div>
-                                        <span className="text-sm font-bold text-primary whitespace-nowrap">{formatPrice(lineTotal)}</span>
+                                <div key={`${item.productId}-${item.unit}`} className="flex items-center gap-3">
+                                    <div className="size-14 rounded-xl bg-muted flex items-center justify-center shrink-0">
+                                        <WineIcon className="size-6 text-muted-foreground/30"/>
                                     </div>
-                                    <div className="flex items-center justify-between mt-1">
-                                        <div className="flex items-center gap-2">
-                                            <div className="flex items-center gap-3 bg-background border rounded-lg px-2 py-1">
+                                    <div className="flex flex-col flex-1 min-w-0">
+                                        <span className="text-sm font-bold truncate">{product?.name}</span>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <div className="flex items-center gap-2">
                                                 <button
                                                     onClick={() => onUpdateItemQty(item.productId, item.quantity - 1)}
-                                                    className="text-muted-foreground hover:text-destructive transition-colors"
+                                                    className="size-6 rounded-full border border-border text-muted-foreground flex items-center justify-center hover:border-destructive hover:text-destructive transition-colors"
                                                 >
                                                     <MinusIcon className="size-3"/>
                                                 </button>
                                                 <span className="text-xs font-bold w-4 text-center">{item.quantity}</span>
                                                 <button
                                                     onClick={() => onUpdateItemQty(item.productId, item.quantity + 1)}
-                                                    className="text-muted-foreground hover:text-primary transition-colors"
+                                                    className="size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors"
                                                 >
                                                     <PlusIcon className="size-3"/>
                                                 </button>
                                             </div>
                                             <Select value={item.unit} onValueChange={(v) => onUpdateItemUnit(item.productId, v as MovementUnitEnum)}>
-                                                <SelectTrigger size="sm" className="h-7 rounded-lg">
+                                                <SelectTrigger size="sm" className="h-6 rounded-lg text-[10px] px-1.5 w-auto gap-1">
                                                     <SelectValue/>
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -163,13 +149,8 @@ export function CartPanel({
                                                 </SelectContent>
                                             </Select>
                                         </div>
-                                        <button
-                                            onClick={() => onRemoveItem(item.productId)}
-                                            className="text-muted-foreground hover:text-destructive transition-colors"
-                                        >
-                                            <TrashIcon className="size-4"/>
-                                        </button>
                                     </div>
+                                    <span className="text-sm font-bold whitespace-nowrap">{formatPrice(lineTotal)}</span>
                                 </div>
                             );
                         })}
@@ -177,42 +158,29 @@ export function CartPanel({
                         {bundleLines.map(line => {
                             const bundle = bundles?.find(b => b.id === line.bundleId);
                             return (
-                                <div key={line.bundleId} className="flex flex-col gap-2 p-3 bg-primary/5 rounded-xl border border-primary/15">
-                                    <div className="flex items-start justify-between gap-2">
-                                        <div className="flex items-center gap-2 min-w-0">
-                                            <div className="bg-primary/10 p-1.5 rounded-lg shrink-0">
-                                                <GiftIcon className="size-3.5 text-primary"/>
-                                            </div>
-                                            <div className="flex flex-col min-w-0">
-                                                <span className="text-sm font-bold truncate">{bundle?.name}</span>
-                                                <span className="text-[10px] text-muted-foreground">{formatPrice(line.unitPrice)} / bundle</span>
-                                            </div>
-                                        </div>
-                                        <span className="text-sm font-bold text-primary whitespace-nowrap">{formatPrice(line.quantity * line.unitPrice)}</span>
+                                <div key={line.bundleId} className="flex items-center gap-3">
+                                    <div className="size-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                                        <GiftIcon className="size-6 text-primary/50"/>
                                     </div>
-                                    <div className="flex items-center justify-between mt-1">
-                                        <div className="flex items-center gap-3 bg-background border rounded-lg px-2 py-1">
+                                    <div className="flex flex-col flex-1 min-w-0">
+                                        <span className="text-sm font-bold truncate">{bundle?.name}</span>
+                                        <div className="flex items-center gap-2 mt-1">
                                             <button
                                                 onClick={() => onUpdateBundleQty(line.bundleId, line.quantity - 1)}
-                                                className="text-muted-foreground hover:text-destructive transition-colors"
+                                                className="size-6 rounded-full border border-border text-muted-foreground flex items-center justify-center hover:border-destructive hover:text-destructive transition-colors"
                                             >
                                                 <MinusIcon className="size-3"/>
                                             </button>
                                             <span className="text-xs font-bold w-4 text-center">{line.quantity}</span>
                                             <button
                                                 onClick={() => onUpdateBundleQty(line.bundleId, line.quantity + 1)}
-                                                className="text-muted-foreground hover:text-primary transition-colors"
+                                                className="size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors"
                                             >
                                                 <PlusIcon className="size-3"/>
                                             </button>
                                         </div>
-                                        <button
-                                            onClick={() => onRemoveBundle(line.bundleId)}
-                                            className="text-muted-foreground hover:text-destructive transition-colors"
-                                        >
-                                            <TrashIcon className="size-4"/>
-                                        </button>
                                     </div>
+                                    <span className="text-sm font-bold whitespace-nowrap">{formatPrice(line.quantity * line.unitPrice)}</span>
                                 </div>
                             );
                         })}
@@ -220,37 +188,48 @@ export function CartPanel({
                 )}
             </div>
 
-            <div className="mt-auto pt-6 space-y-4">
-                <div className="bg-muted/50 rounded-2xl p-4 space-y-2">
+            <div className="flex flex-col gap-3">
+                <h4 className="text-sm font-bold">Résumé de la commande</h4>
+                <div className="bg-primary/5 rounded-2xl p-4 space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Type de vente</span>
-                        <span className="font-semibold">{getSaleTypeLabel(saleType)}</span>
+                        <span className="text-muted-foreground">Articles ({itemsCount}) · {getSaleTypeLabel(saleType)}</span>
+                        <span className="font-semibold">{formatPrice(total)}</span>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Produits</span>
-                        <span className="font-semibold">{formatPrice(itemTotal)}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Bundles</span>
-                        <span className="font-semibold">{formatPrice(bundleTotal)}</span>
-                    </div>
-                    <Separator className="my-2 bg-border/50"/>
+                    <div className="border-t border-dashed border-border/60 my-1"/>
                     <div className="flex items-center justify-between">
-                        <span className="font-bold text-lg">Total</span>
-                        <span className="text-xl font-black text-primary">{formatPrice(total)}</span>
+                        <span className="font-bold">Total</span>
+                        <span className="text-lg font-black text-primary">{formatPrice(total)}</span>
                     </div>
                 </div>
 
+                <div className="relative">
+                    <CoinsIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground"/>
+                    <Input
+                        type="number"
+                        min={0}
+                        placeholder="Montant remis par le client..."
+                        className="pl-9 h-11 rounded-xl bg-muted/50 border-none"
+                        value={amountGiven || ''}
+                        onChange={(e) => setAmountGiven(e.target.value ? Number(e.target.value) : 0)}
+                    />
+                </div>
+                {amountGiven > 0 && (
+                    <div className={cn(
+                        "flex items-center justify-between text-sm rounded-xl px-4 py-2.5",
+                        changeDue >= 0 ? "bg-green-500/10 text-green-700" : "bg-destructive/10 text-destructive"
+                    )}>
+                        <span className="font-medium">Monnaie à rendre</span>
+                        <span className="font-bold">{formatPrice(changeDue)}</span>
+                    </div>
+                )}
+
                 <Button
-                    className={cn("w-full h-12 rounded-2xl text-base font-bold shadow-lg shadow-primary/20")}
+                    className="w-full h-12 rounded-xl text-base font-bold"
                     disabled={(items.length === 0 && bundleLines.length === 0) || isSubmitting}
-                    onClick={onCheckout}
+                    onClick={() => onCheckout(amountGiven)}
                 >
                     {isSubmitting ? <WaitingActivity size={20}/> : (
-                        <>
-                            <CheckIcon/>
-                            Finaliser la vente
-                        </>
+                        activeOrder ? `Valider la commande ${activeOrder.orderNumber}` : 'Traiter la transaction'
                     )}
                 </Button>
             </div>

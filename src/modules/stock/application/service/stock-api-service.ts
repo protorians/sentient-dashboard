@@ -12,16 +12,18 @@ import {
     UpdateProductCategoryInterface,
 } from "@/modules/stock/domain/product-category.interface";
 import {CreateStockMovementInterface, StockMovementInterface} from "@/modules/stock/domain/stock-movement.interface";
-import {CreateOrderInterface, OrderInterface, UpdateOrderInterface} from "@/modules/stock/domain/order.interface";
-import {WarehouseInterface} from "@/modules/stock/domain/warehouse.interface";
+import {WarehouseInterface, CreateWarehouseInterface} from "@/modules/stock/domain/warehouse.interface";
+import {TransferStockInterface} from "@/modules/stock/domain/transfer-stock.interface";
 
 export class StockApiService extends ApiService {
-    // Warehouses
     static async getWarehouses() {
         return await this.get<FetchResponseInterface<WarehouseInterface[]>>('/stock/warehouses');
     }
 
-    // Products
+    static async createWarehouse(payload: CreateWarehouseInterface) {
+        return await this.post<FetchResponseInterface<WarehouseInterface>>('/stock/warehouses', payload);
+    }
+
     static async getAll() {
         return await this.get<FetchResponseInterface<ProductInterface[]>>('/stock/products');
     }
@@ -38,12 +40,14 @@ export class StockApiService extends ApiService {
         return await this.get<FetchResponseInterface<StockMovementInterface[]>>(`/stock/products/${id}/movements`);
     }
 
-    // Movements
     static async createMovement(payload: CreateStockMovementInterface) {
         return await this.post<FetchResponseInterface<StockMovementInterface>>('/stock/movements', payload);
     }
 
-    // Product categories
+    static async createTransfer(payload: TransferStockInterface) {
+        return await this.post<FetchResponseInterface<any>>('/stock/transfers', payload);
+    }
+
     static async getProductCategories() {
         return await this.get<FetchResponseInterface<ProductCategoryInterface[]>>('/stock/categories');
     }
@@ -64,29 +68,7 @@ export class StockApiService extends ApiService {
         return await this.delete<FetchResponseInterface<{ deleted: boolean }>>(`/stock/categories/${id}`);
     }
 
-    // Analytics
     static async getAnalytics() {
         return await this.get<FetchResponseInterface<StockAnalyticsInterface>>('/stock/analytics');
-    }
-
-    // Orders
-    static async getOrders() {
-        return await this.get<FetchResponseInterface<OrderInterface[]>>('/stock/orders');
-    }
-
-    static async createOrder(payload: CreateOrderInterface) {
-        return await this.post<FetchResponseInterface<OrderInterface>>('/stock/orders', payload);
-    }
-
-    static async getOrder(id: string) {
-        return await this.get<FetchResponseInterface<OrderInterface>>(`/stock/orders/${id}`);
-    }
-
-    static async updateOrder(id: string, payload: UpdateOrderInterface) {
-        return await this.put<FetchResponseInterface<OrderInterface>>(`/stock/orders/${id}`, payload);
-    }
-
-    static async deleteOrder(id: string) {
-        return await this.delete<FetchResponseInterface<{ deleted: boolean }>>(`/stock/orders/${id}`);
     }
 }

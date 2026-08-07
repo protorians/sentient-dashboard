@@ -95,6 +95,8 @@ export function ProductDetailsSheet({children, opened, onOpenChange, product}: P
                 return {label: "Ajustement", tone: "text-amber-600" as const};
             case StockMovementTypeEnum.RETURN:
                 return {label: "Retour", tone: "text-blue-600" as const};
+            case StockMovementTypeEnum.TRANSFER:
+                return {label: "Transfert", tone: "text-purple-600" as const};
             default:
                 return {label: type, tone: "text-muted-foreground" as const};
         }

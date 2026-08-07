@@ -23,6 +23,7 @@ const movementTypeConfig: Record<string, { label: string; tone: string; bar: str
     [StockMovementTypeEnum.OUT]: {label: 'Sortie', tone: 'text-rose-600', bar: 'bg-rose-500'},
     [StockMovementTypeEnum.ADJUSTMENT]: {label: 'Ajustement', tone: 'text-amber-600', bar: 'bg-amber-500'},
     [StockMovementTypeEnum.RETURN]: {label: 'Retour', tone: 'text-blue-600', bar: 'bg-blue-500'},
+    [StockMovementTypeEnum.TRANSFER]: {label: 'Transfert', tone: 'text-purple-600', bar: 'bg-purple-500'},
 };
 
 const getMovementTypeConfig = (type: string) => movementTypeConfig[type] ?? {

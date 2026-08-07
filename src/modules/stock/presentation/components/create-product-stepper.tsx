@@ -13,6 +13,8 @@ import {
     ScaleIcon,
     TagsIcon,
     FolderTreeIcon,
+    StoreIcon,
+    DollarSignIcon,
 } from "lucide-react";
 import {useAuth} from "@/modules/auth/infrastructure/hooks/use-auth";
 import {StockApiService} from "@/modules/stock/application/service/stock-api-service";
@@ -26,6 +28,8 @@ import {Switch} from "@/core/presentation/ui/switch";
 import {Checkbox} from "@/core/presentation/ui/checkbox";
 import {useQuery} from "@tanstack/react-query";
 import {ProductCategoryInterface} from "@/modules/stock/domain/product-category.interface";
+import {WarehouseInterface} from "@/modules/stock/domain/warehouse.interface";
+import {CreateWarehouseInlineButton} from "@/modules/stock/presentation/components/create-warehouse-stepper";
 import {Waiting} from "@/core/presentation/waiting";
 
 function CategoriesStepContent({value, onValueChange}: {
@@ -109,6 +113,72 @@ function SelectedCategories({categoryIds}: { categoryIds: string[] }) {
     return <p>{selected.map(category => category.name).join(', ')}</p>;
 }
 
+function WarehouseSelectContent({value, onValueChange}: {
+    value: string;
+    onValueChange: (id: string) => void;
+}) {
+    const {currentOrganization} = useAuth();
+    const {data: warehouses, isLoading} = useQuery<WarehouseInterface[]>({
+        queryKey: ['stock', 'warehouses', 'select'],
+        enabled: !!currentOrganization?.id,
+        queryFn: async () => {
+            const responses = await StockApiService.getWarehouses();
+            return responses.data?.data || [];
+        },
+    });
+
+    if (isLoading) return <Waiting label={"Chargement des emplacements..."}/>;
+
+    if (!warehouses?.length) {
+        return (
+            <div className="flex flex-col items-center justify-center py-8 text-center border rounded-lg border-dashed gap-3">
+                <StoreIcon className="size-8 text-muted-foreground/30"/>
+                <span className="text-sm text-muted-foreground italic">
+                    Aucun emplacement disponible. Créez d'abord un emplacement.
+                </span>
+                <CreateWarehouseInlineButton/>
+            </div>
+        )
+    }
+
+    return (
+        <div className="divide-y divide-border/50 border border-border/50 rounded-lg max-h-64 overflow-y-auto">
+            {warehouses.map((warehouse) => (
+                <div
+                    key={warehouse.id}
+                    className={`flex items-center gap-3 py-2.5 px-3 cursor-pointer hover:bg-muted/40 transition-colors ${value === warehouse.id ? 'bg-primary/5' : ''}`}
+                    onClick={() => onValueChange(warehouse.id)}
+                >
+                    <Checkbox
+                        checked={value === warehouse.id}
+                        onCheckedChange={() => onValueChange(warehouse.id)}
+                    />
+                    <div className="flex flex-col min-w-0">
+                        <span className="text-sm font-medium">{warehouse.name}</span>
+                        <span className="text-xs text-muted-foreground">{warehouse.type}</span>
+                    </div>
+                </div>
+            ))}
+        </div>
+    )
+}
+
+function SelectedWarehouse({locationId}: { locationId: string }) {
+    const {currentOrganization} = useAuth();
+    const {data: warehouses} = useQuery<WarehouseInterface[]>({
+        queryKey: ['stock', 'warehouses', 'select'],
+        enabled: !!currentOrganization?.id,
+        queryFn: async () => {
+            const responses = await StockApiService.getWarehouses();
+            return responses.data?.data || [];
+        },
+    });
+
+    const warehouse = warehouses?.find(w => w.id === locationId);
+    if (!warehouse) return <p>Emplacement non trouvé</p>;
+    return <p>{warehouse.name} ({warehouse.type})</p>;
+}
+
 export function CreateProductStepper() {
     const {currentOrganization} = useAuth();
     const openStepper = useModalStepper<CreateProductInterface>({
@@ -117,6 +187,26 @@ export function CreateProductStepper() {
 
     const handleOpenStepper = async () => {
         const steps: ModalStepperStep<CreateProductInterface>[] = [
+            {
+                id: 'location',
+                required: true,
+                title: 'Emplacement',
+                description: 'Emplacement initial pour ce produit',
+                content: ({updateData, data}) => (
+                    <FieldGroup className="gap-4 max-w-lg mx-auto">
+                        <div className="flex flex-col gap-2">
+                            <label className="text-sm font-medium">Emplacement de stock</label>
+                            <p className="text-xs text-muted-foreground">
+                                Le stock du produit sera initialisé à zéro à cet emplacement.
+                            </p>
+                        </div>
+                        <WarehouseSelectContent
+                            value={data.locationId || ''}
+                            onValueChange={(locationId) => updateData({locationId})}
+                        />
+                    </FieldGroup>
+                )
+            },
             {
                 id: 'identification',
                 required: true,
@@ -194,6 +284,146 @@ export function CreateProductStepper() {
                                 onCheckedChange={(checked) => updateData({isPerishable: checked})}
                             />
                         </div>
+                    </FieldGroup>
+                )
+            },
+            {
+                id: 'units',
+                title: 'Unités de mesure',
+                description: 'Unité de base et facteurs de conversion (casier/pack/unité)',
+                content: ({updateData, data}) => (
+                    <FieldGroup className="gap-4 max-w-lg mx-auto">
+                        <LegacyInput
+                            id="baseUnit"
+                            label="Unité de base"
+                            description="Nom de l'unité de mesure de base (ex: bouteille, kg, litre)"
+                            input={{
+                                type: "text",
+                                placeholder: "bouteille",
+                                value: data.baseUnit || '',
+                                onChange: e => updateData({baseUnit: e.target.value}),
+                            }}
+                            icon={<ScaleIcon className="size-4 text-muted-foreground/60"/>}
+                        />
+                        <LegacyInput
+                            id="unitsPerPack"
+                            label="Unités par pack"
+                            description="Nombre d'unités de base dans un pack"
+                            input={{
+                                type: "number",
+                                min: 1,
+                                placeholder: "6",
+                                value: data.unitsPerPack != null ? String(data.unitsPerPack) : '',
+                                onChange: e => updateData({unitsPerPack: Number(e.target.value) || undefined}),
+                            }}
+                            icon={<PackageIcon className="size-4 text-muted-foreground/60"/>}
+                        />
+                        <LegacyInput
+                            id="unitsPerCase"
+                            label="Unités par casier"
+                            description="Nombre d'unités de base dans un casier"
+                            input={{
+                                type: "number",
+                                min: 1,
+                                placeholder: "24",
+                                value: data.unitsPerCase != null ? String(data.unitsPerCase) : '',
+                                onChange: e => updateData({unitsPerCase: Number(e.target.value) || undefined}),
+                            }}
+                            icon={<BoxIcon className="size-4 text-muted-foreground/60"/>}
+                        />
+                    </FieldGroup>
+                )
+            },
+            {
+                id: 'pricing',
+                title: 'Prix',
+                description: 'Prix d\'achat et de revente',
+                content: ({updateData, data}) => (
+                    <FieldGroup className="gap-4 max-w-lg mx-auto">
+                        <div className="border-b pb-2 mb-2">
+                            <h4 className="text-sm font-semibold">Prix d'achat (coût d'acquisition)</h4>
+                        </div>
+                        <LegacyInput
+                            id="purchasePrice"
+                            label="Prix d'achat unitaire"
+                            description="Coût d'acquisition d'une unité de base"
+                            input={{
+                                type: "number",
+                                min: 0,
+                                placeholder: "1000",
+                                value: data.purchasePrice != null ? String(data.purchasePrice) : '',
+                                onChange: e => updateData({purchasePrice: Number(e.target.value) || undefined}),
+                            }}
+                            icon={<DollarSignIcon className="size-4 text-muted-foreground/60"/>}
+                        />
+                        <LegacyInput
+                            id="packPurchasePrice"
+                            label="Prix d'achat par pack"
+                            description="Optionnel — auto-calculé si vide"
+                            input={{
+                                type: "number",
+                                min: 0,
+                                placeholder: "5000",
+                                value: data.packPurchasePrice != null ? String(data.packPurchasePrice) : '',
+                                onChange: e => updateData({packPurchasePrice: Number(e.target.value) || undefined}),
+                            }}
+                            icon={<DollarSignIcon className="size-4 text-muted-foreground/60"/>}
+                        />
+                        <LegacyInput
+                            id="casePurchasePrice"
+                            label="Prix d'achat par casier"
+                            description="Optionnel — auto-calculé si vide"
+                            input={{
+                                type: "number",
+                                min: 0,
+                                placeholder: "20000",
+                                value: data.casePurchasePrice != null ? String(data.casePurchasePrice) : '',
+                                onChange: e => updateData({casePurchasePrice: Number(e.target.value) || undefined}),
+                            }}
+                            icon={<DollarSignIcon className="size-4 text-muted-foreground/60"/>}
+                        />
+                        <div className="border-b pb-2 mb-2 mt-4">
+                            <h4 className="text-sm font-semibold">Prix de revente</h4>
+                        </div>
+                        <LegacyInput
+                            id="salePrice"
+                            label="Prix de vente unitaire"
+                            description="Prix de revente d'une unité de base"
+                            input={{
+                                type: "number",
+                                min: 0,
+                                placeholder: "1500",
+                                value: data.salePrice != null ? String(data.salePrice) : '',
+                                onChange: e => updateData({salePrice: Number(e.target.value) || undefined}),
+                            }}
+                            icon={<DollarSignIcon className="size-4 text-muted-foreground/60"/>}
+                        />
+                        <LegacyInput
+                            id="packPrice"
+                            label="Prix de vente par pack"
+                            description="Optionnel — auto-calculé si vide"
+                            input={{
+                                type: "number",
+                                min: 0,
+                                placeholder: "8500",
+                                value: data.packPrice != null ? String(data.packPrice) : '',
+                                onChange: e => updateData({packPrice: Number(e.target.value) || undefined}),
+                            }}
+                            icon={<DollarSignIcon className="size-4 text-muted-foreground/60"/>}
+                        />
+                        <LegacyInput
+                            id="casePrice"
+                            label="Prix de vente par casier"
+                            description="Optionnel — auto-calculé si vide"
+                            input={{
+                                type: "number",
+                                min: 0,
+                                placeholder: "32000",
+                                value: data.casePrice != null ? String(data.casePrice) : '',
+                                onChange: e => updateData({casePrice: Number(e.target.value) || undefined}),
+                            }}
+                            icon={<DollarSignIcon className="size-4 text-muted-foreground/60"/>}
+                        />
                     </FieldGroup>
                 )
             },
@@ -306,6 +536,10 @@ export function CreateProductStepper() {
                     <div className={''}>
                         <div className="flex flex-col gap-y-6 p-4 bg-muted rounded text-sm space-y-4">
                             <div>
+                                <div className="text-lg font-bold border-b pb-1 mb-2">Emplacement</div>
+                                <SelectedWarehouse locationId={data.locationId || ''}/>
+                            </div>
+                            <div>
                                 <div className="text-lg font-bold border-b pb-1 mb-2">Identification</div>
                                 <p><strong>Nom :</strong> {data.name || 'N/A'}</p>
                                 <p><strong>Référence :</strong> {data.sku || 'N/A'}</p>
@@ -315,6 +549,23 @@ export function CreateProductStepper() {
                                 <div className="text-lg font-bold border-b pb-1 mb-2">Caractéristiques</div>
                                 <p><strong>Type :</strong> {data.type === ProductTypeEnum.PHYSICAL ? 'Physique' : data.type === ProductTypeEnum.DIGITAL ? 'Numérique' : 'N/A'}</p>
                                 <p><strong>Périssable :</strong> {data.isPerishable ? 'Oui' : 'Non'}</p>
+                            </div>
+                            {(data.baseUnit || data.unitsPerPack || data.unitsPerCase) && (
+                                <div>
+                                    <div className="text-lg font-bold border-b pb-1 mb-2">Unités de mesure</div>
+                                    <p><strong>Unité de base :</strong> {data.baseUnit || 'N/A'}</p>
+                                    <p><strong>Unités par pack :</strong> {data.unitsPerPack != null ? data.unitsPerPack : 'N/A'}</p>
+                                    <p><strong>Unités par casier :</strong> {data.unitsPerCase != null ? data.unitsPerCase : 'N/A'}</p>
+                                </div>
+                            )}
+                            <div>
+                                <div className="text-lg font-bold border-b pb-1 mb-2">Prix</div>
+                                <p><strong>Prix d'achat unitaire :</strong> {data.purchasePrice != null ? `${data.purchasePrice} FCFA` : 'N/A'}</p>
+                                <p><strong>Prix d'achat pack :</strong> {data.packPurchasePrice != null ? `${data.packPurchasePrice} FCFA` : 'Auto-calculé'}</p>
+                                <p><strong>Prix d'achat casier :</strong> {data.casePurchasePrice != null ? `${data.casePurchasePrice} FCFA` : 'Auto-calculé'}</p>
+                                <p><strong>Prix de vente unitaire :</strong> {data.salePrice != null ? `${data.salePrice} FCFA` : 'N/A'}</p>
+                                <p><strong>Prix de vente pack :</strong> {data.packPrice != null ? `${data.packPrice} FCFA` : 'Auto-calculé'}</p>
+                                <p><strong>Prix de vente casier :</strong> {data.casePrice != null ? `${data.casePrice} FCFA` : 'Auto-calculé'}</p>
                             </div>
                             <div>
                                 <div className="text-lg font-bold border-b pb-1 mb-2">Catégories</div>
@@ -355,13 +606,26 @@ export function CreateProductStepper() {
                 title: "Assistant de Création de produit",
                 initialData: {},
                 onEnd: async ({data}) => {
+                    if (!data.locationId) {
+                        throw new Error("Un emplacement est obligatoire. Créez d'abord un emplacement via la gestion des stocks.");
+                    }
                     const created = await StockApiService.createProduct({
                         name: data.name || '',
                         sku: data.sku,
                         description: data.description,
                         type: data.type || ProductTypeEnum.PHYSICAL,
                         isPerishable: data.isPerishable,
+                        locationId: data.locationId,
                         categoryIds: data.categoryIds,
+                        baseUnit: data.baseUnit,
+                        unitsPerPack: data.unitsPerPack,
+                        unitsPerCase: data.unitsPerCase,
+                        purchasePrice: data.purchasePrice,
+                        salePrice: data.salePrice,
+                        packPrice: data.packPrice,
+                        casePrice: data.casePrice,
+                        packPurchasePrice: data.packPurchasePrice,
+                        casePurchasePrice: data.casePurchasePrice,
                         physicalData: data.type === ProductTypeEnum.PHYSICAL ? data.physicalData : undefined,
                         digitalData: data.type === ProductTypeEnum.DIGITAL ? data.digitalData : undefined,
                     });

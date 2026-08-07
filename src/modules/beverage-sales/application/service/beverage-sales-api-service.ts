@@ -18,8 +18,17 @@ import {
 import {PosTableInterface, CreatePosTableInterface} from "@/modules/beverage-sales/domain/pos-table.interface";
 import {CustomerInterface} from "@/modules/beverage-sales/domain/customer.interface";
 import {PosAnalyticsInterface} from "@/modules/beverage-sales/domain/pos-analytics.interface";
+import {ProductInterface} from "@/modules/stock/domain/product.interface";
 
 export class BeverageSalesApiService extends ApiService {
+    // Products
+    static async getPosProducts(warehouseId?: string, search?: string) {
+        const params: Record<string, string> = {};
+        if (warehouseId) params.warehouseId = warehouseId;
+        if (search) params.search = search;
+        return await this.get<FetchResponseInterface<ProductInterface[]>>('/pos/products', params);
+    }
+
     // Orders
     static async getOrders(filters?: Record<string, any>) {
         return await this.get<FetchResponseInterface<OrderInterface[]>>('/pos/orders', filters);

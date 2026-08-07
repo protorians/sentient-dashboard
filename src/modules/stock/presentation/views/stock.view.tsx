@@ -11,9 +11,9 @@ import {StockCategoriesDataGrid} from "@/modules/stock/presentation/components/s
 import {Wrapper} from "@/core/presentation/themes/katon/wrapper";
 import {CreateProductStepper} from "@/modules/stock/presentation/components/create-product-stepper";
 import {ProductCategoryStepper} from "@/modules/stock/presentation/components/product-category-stepper";
+import {CreateWarehouseStepper} from "@/modules/stock/presentation/components/create-warehouse-stepper";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/core/presentation/ui/tabs";
-import {LayersIcon, FolderTreeIcon, ShoppingCartIcon} from "lucide-react";
-import {OrderManagementView} from "@/modules/stock/presentation/components/order-management-view";
+import {LayersIcon, FolderTreeIcon} from "lucide-react";
 
 
 export function StockView() {
@@ -29,6 +29,7 @@ export function StockView() {
                                 <h1 className="text-2xl font-bold truncate text-ellipsis">Gestion des stocks</h1>
                             </div>
                             <div className="flex flex-row items-center gap-2">
+                                <CreateWarehouseStepper variant="outline" size="lg"/>
                                 <CreateProductStepper/>
                                 <ProductCategoryStepper/>
                             </div>
