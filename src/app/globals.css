@@ -695,6 +695,18 @@
 
 /** Tint — Fin */
 
+[data-slot="input-group-control"]:-webkit-autofill,
+[data-slot="input-group-control"]:-webkit-autofill:hover,
+[data-slot="input-group-control"]:-webkit-autofill:focus,
+[data-slot="input-group-control"]:autofill,
+[data-slot="input-group-control"]:autofill:hover,
+[data-slot="input-group-control"]:autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset;
+  transition: background-color 5000s ease-in-out 0s;
+  -webkit-text-fill-color: inherit !important;
+  caret-color: inherit;
+}
+
 @layer base {
     * {
         @apply border-border outline-ring/50;
