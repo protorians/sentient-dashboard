@@ -18,6 +18,8 @@ export interface OrderInterface {
     totalAmount: number;
     discountAmount: number;
     netAmount: number;
+    receivedAmount: number;
+    changeAmount: number;
     billingOrderId?: string | null;
     items: OrderItemInterface[];
     bundles: OrderBundleInterface[];

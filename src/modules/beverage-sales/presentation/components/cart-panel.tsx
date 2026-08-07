@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {ProductInterface} from "@/modules/stock/domain/product.interface";
 import {BundleInterface} from "@/modules/beverage-sales/domain/bundle.interface";
 import {PosTableInterface} from "@/modules/beverage-sales/domain/pos-table.interface";
@@ -65,6 +65,12 @@ export function CartPanel({
 }: CartPanelProps) {
     const [amountGiven, setAmountGiven] = useState<number>(0);
 
+    useEffect(() => {
+        if (activeOrder) {
+            setAmountGiven(activeOrder.receivedAmount ?? 0);
+        }
+    }, [activeOrder?.id]);
+
     const itemTotal = items.reduce((sum, item) => {
         const product = products?.find(p => p.id === item.productId);
         return sum + (product ? toBaseUnits(product, item.quantity, item.unit) * item.unitPrice : 0);
@@ -92,7 +98,14 @@ export function CartPanel({
                         {activeOrder ? `Commande ${activeOrder.orderNumber}` : 'Détails de la commande'}
                     </h3>
                     {activeOrder && (
-                        <span className="text-[10px] text-muted-foreground">Modification en cours</span>
+                        <div className="flex flex-col gap-0.5">
+                            <span className="text-[10px] text-muted-foreground">Modification en cours</span>
+                            {activeOrder.billingOrderId && (
+                                <span className="text-[10px] text-muted-foreground">
+                                    Facture liée
+                                </span>
+                            )}
+                        </div>
                     )}
                 </div>
                 {(items.length > 0 || bundleLines.length > 0) && (

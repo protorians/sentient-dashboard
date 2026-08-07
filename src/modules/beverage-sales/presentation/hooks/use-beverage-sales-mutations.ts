@@ -47,7 +47,6 @@ export function useBeverageSalesMutations(warehouses?: WarehouseInterface[]) {
             BeverageSalesApiService.updateOrder(id, payload),
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['beverage-sales', 'orders']});
-            toast.success("Commande modifiée avec succès");
         }
     });
 
