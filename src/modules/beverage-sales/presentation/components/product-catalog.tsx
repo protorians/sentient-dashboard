@@ -20,6 +20,7 @@ interface ProductCatalogProps {
     cartItems: CartItemLine[];
     onAdd: (product: ProductInterface, unit: MovementUnitEnum, unitPrice: number) => void;
     onUpdateQty: (productId: string, quantity: number) => void;
+    isReadOnly?: boolean;
 }
 
 const UNIT_ICONS: Record<MovementUnitEnum, typeof BeerIcon> = {
@@ -34,7 +35,7 @@ const UNIT_LABELS: Record<MovementUnitEnum, string> = {
     [MovementUnitEnum.CASE]: 'Casier',
 };
 
-export function ProductCatalog({products, isLoading, searchTerm, onSearchChange, cartItems, onAdd, onUpdateQty}: ProductCatalogProps) {
+export function ProductCatalog({products, isLoading, searchTerm, onSearchChange, cartItems, onAdd, onUpdateQty, isReadOnly}: ProductCatalogProps) {
     const [unit, setUnit] = useState<MovementUnitEnum>(MovementUnitEnum.UNIT);
 
     const filtered = products?.filter(p =>
@@ -51,6 +52,7 @@ export function ProductCatalog({products, isLoading, searchTerm, onSearchChange,
     };
 
     const handleIncrement = (product: ProductInterface) => {
+        if (isReadOnly) return;
         const qty = getQuantity(product.id);
         if (qty === 0) {
             onAdd(product, unit, getBaseUnitPrice(product, unit));
@@ -60,6 +62,7 @@ export function ProductCatalog({products, isLoading, searchTerm, onSearchChange,
     };
 
     const handleDecrement = (product: ProductInterface) => {
+        if (isReadOnly) return;
         const qty = getQuantity(product.id);
         if (qty > 0) onUpdateQty(product.id!, qty - 1);
     };
@@ -130,10 +133,10 @@ export function ProductCatalog({products, isLoading, searchTerm, onSearchChange,
                                         <div className="flex items-center gap-2.5">
                                             <button
                                                 onClick={() => handleDecrement(product)}
-                                                disabled={qty === 0}
+                                                disabled={qty === 0 || isReadOnly}
                                                 className={cn(
                                                     "size-7 rounded-full border flex items-center justify-center transition-colors",
-                                                    qty === 0
+                                                    (qty === 0 || isReadOnly)
                                                         ? "border-border/40 text-muted-foreground/30 cursor-not-allowed"
                                                         : "border-border text-muted-foreground hover:border-destructive hover:text-destructive"
                                                 )}
@@ -143,7 +146,13 @@ export function ProductCatalog({products, isLoading, searchTerm, onSearchChange,
                                             <span className="text-sm font-bold w-4 text-center">{qty}</span>
                                             <button
                                                 onClick={() => handleIncrement(product)}
-                                                className="size-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors"
+                                                disabled={isReadOnly}
+                                                className={cn(
+                                                    "size-7 rounded-full flex items-center justify-center transition-colors",
+                                                    isReadOnly
+                                                        ? "bg-muted text-muted-foreground/30 cursor-not-allowed"
+                                                        : "bg-primary text-primary-foreground hover:bg-primary/90"
+                                                )}
                                             >
                                                 <PlusIcon className="size-3.5"/>
                                             </button>

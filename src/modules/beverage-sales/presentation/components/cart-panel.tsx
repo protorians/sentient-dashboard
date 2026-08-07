@@ -7,6 +7,7 @@ import {PosTableInterface} from "@/modules/beverage-sales/domain/pos-table.inter
 import {CustomerInterface} from "@/modules/beverage-sales/domain/customer.interface";
 import {OrderInterface} from "@/modules/beverage-sales/domain/order.interface";
 import {OrderTypeEnum} from "@/modules/beverage-sales/domain/enums/order-type.enum";
+import {OrderStatusEnum} from "@/modules/beverage-sales/domain/enums/order-status.enum";
 import {MovementUnitEnum} from "@/modules/beverage-sales/domain/enums/movement-unit.enum";
 import {CartItemLine, CartBundleLine} from "@/modules/beverage-sales/domain/cart.types";
 import {Button} from "@/core/presentation/ui/button";
@@ -90,6 +91,8 @@ export function CartPanel({
         }
     };
 
+    const isReadOnly = activeOrder?.status === OrderStatusEnum.PAID;
+
     return (
         <Card className="p-5 border-none shadow-sm flex flex-col gap-5 sticky top-6">
             <div className="flex items-center justify-between">
@@ -99,7 +102,11 @@ export function CartPanel({
                     </h3>
                     {activeOrder && (
                         <div className="flex flex-col gap-0.5">
-                            <span className="text-[10px] text-muted-foreground">Modification en cours</span>
+                            {isReadOnly ? (
+                                <span className="text-[10px] text-green-600 font-medium">Commande payée</span>
+                            ) : (
+                                <span className="text-[10px] text-muted-foreground">Modification en cours</span>
+                            )}
                             {activeOrder.billingOrderId && (
                                 <span className="text-[10px] text-muted-foreground">
                                     Facture liée
@@ -108,7 +115,7 @@ export function CartPanel({
                         </div>
                     )}
                 </div>
-                {(items.length > 0 || bundleLines.length > 0) && (
+                {!isReadOnly && (items.length > 0 || bundleLines.length > 0) && (
                     <Button variant="ghost" size="icon-sm" onClick={onClearCart} className="text-destructive hover:bg-destructive/10">
                         <TrashIcon className="size-4"/>
                     </Button>
@@ -139,19 +146,25 @@ export function CartPanel({
                                             <div className="flex items-center gap-2">
                                                 <button
                                                     onClick={() => onUpdateItemQty(item.productId, item.quantity - 1)}
-                                                    className="size-6 rounded-full border border-border text-muted-foreground flex items-center justify-center hover:border-destructive hover:text-destructive transition-colors"
+                                                    disabled={isReadOnly}
+                                                    className={isReadOnly
+                                                        ? "size-6 rounded-full border border-border/40 text-muted-foreground/30 flex items-center justify-center cursor-not-allowed"
+                                                        : "size-6 rounded-full border border-border text-muted-foreground flex items-center justify-center hover:border-destructive hover:text-destructive transition-colors"}
                                                 >
                                                     <MinusIcon className="size-3"/>
                                                 </button>
                                                 <span className="text-xs font-bold w-4 text-center">{item.quantity}</span>
                                                 <button
                                                     onClick={() => onUpdateItemQty(item.productId, item.quantity + 1)}
-                                                    className="size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors"
+                                                    disabled={isReadOnly}
+                                                    className={isReadOnly
+                                                        ? "size-6 rounded-full bg-muted text-muted-foreground/30 flex items-center justify-center cursor-not-allowed"
+                                                        : "size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors"}
                                                 >
                                                     <PlusIcon className="size-3"/>
                                                 </button>
                                             </div>
-                                            <Select value={item.unit} onValueChange={(v) => onUpdateItemUnit(item.productId, v as MovementUnitEnum)}>
+                                            <Select value={item.unit} onValueChange={(v) => onUpdateItemUnit(item.productId, v as MovementUnitEnum)} disabled={isReadOnly}>
                                                 <SelectTrigger size="sm" className="h-6 rounded-lg text-[10px] px-1.5 w-auto gap-1">
                                                     <SelectValue/>
                                                 </SelectTrigger>
@@ -180,14 +193,20 @@ export function CartPanel({
                                         <div className="flex items-center gap-2 mt-1">
                                             <button
                                                 onClick={() => onUpdateBundleQty(line.bundleId, line.quantity - 1)}
-                                                className="size-6 rounded-full border border-border text-muted-foreground flex items-center justify-center hover:border-destructive hover:text-destructive transition-colors"
+                                                disabled={isReadOnly}
+                                                className={isReadOnly
+                                                    ? "size-6 rounded-full border border-border/40 text-muted-foreground/30 flex items-center justify-center cursor-not-allowed"
+                                                    : "size-6 rounded-full border border-border text-muted-foreground flex items-center justify-center hover:border-destructive hover:text-destructive transition-colors"}
                                             >
                                                 <MinusIcon className="size-3"/>
                                             </button>
                                             <span className="text-xs font-bold w-4 text-center">{line.quantity}</span>
                                             <button
                                                 onClick={() => onUpdateBundleQty(line.bundleId, line.quantity + 1)}
-                                                className="size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors"
+                                                disabled={isReadOnly}
+                                                className={isReadOnly
+                                                    ? "size-6 rounded-full bg-muted text-muted-foreground/30 flex items-center justify-center cursor-not-allowed"
+                                                    : "size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors"}
                                             >
                                                 <PlusIcon className="size-3"/>
                                             </button>
@@ -208,6 +227,21 @@ export function CartPanel({
                         <span className="text-muted-foreground">Articles ({itemsCount}) · {getSaleTypeLabel(saleType)}</span>
                         <span className="font-semibold">{formatPrice(total)}</span>
                     </div>
+                    {isReadOnly && activeOrder.receivedAmount > 0 && (
+                        <>
+                            <div className="flex items-center justify-between text-sm">
+                                <span className="text-muted-foreground">Montant remis</span>
+                                <span className="font-semibold">{formatPrice(activeOrder.receivedAmount)}</span>
+                            </div>
+                            <div className={cn(
+                                "flex items-center justify-between text-sm",
+                                activeOrder.changeAmount >= 0 ? "text-green-600" : "text-destructive"
+                            )}>
+                                <span className="font-medium">Monnaie rendue</span>
+                                <span className="font-bold">{formatPrice(activeOrder.changeAmount)}</span>
+                            </div>
+                        </>
+                    )}
                     <div className="border-t border-dashed border-border/60 my-1"/>
                     <div className="flex items-center justify-between">
                         <span className="font-bold">Total</span>
@@ -215,36 +249,44 @@ export function CartPanel({
                     </div>
                 </div>
 
-                <div className="relative">
-                    <CoinsIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground"/>
-                    <Input
-                        type="number"
-                        min={0}
-                        placeholder="Montant remis par le client..."
-                        className="pl-9 h-11 rounded-xl bg-muted/50 border-none"
-                        value={amountGiven || ''}
-                        onChange={(e) => setAmountGiven(e.target.value ? Number(e.target.value) : 0)}
-                    />
-                </div>
-                {amountGiven > 0 && (
-                    <div className={cn(
-                        "flex items-center justify-between text-sm rounded-xl px-4 py-2.5",
-                        changeDue >= 0 ? "bg-green-500/10 text-green-700" : "bg-destructive/10 text-destructive"
-                    )}>
-                        <span className="font-medium">Monnaie à rendre</span>
-                        <span className="font-bold">{formatPrice(changeDue)}</span>
+                {activeOrder?.status !== OrderStatusEnum.PAID ? (
+                    <>
+                        <div className="relative">
+                            <CoinsIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground"/>
+                            <Input
+                                type="number"
+                                min={0}
+                                placeholder="Montant remis par le client..."
+                                className="pl-9 h-11 rounded-xl bg-muted/50 border-none"
+                                value={amountGiven || ''}
+                                onChange={(e) => setAmountGiven(e.target.value ? Number(e.target.value) : 0)}
+                            />
+                        </div>
+                        {amountGiven > 0 && (
+                            <div className={cn(
+                                "flex items-center justify-between text-sm rounded-xl px-4 py-2.5",
+                                changeDue >= 0 ? "bg-green-500/10 text-green-700" : "bg-destructive/10 text-destructive"
+                            )}>
+                                <span className="font-medium">Monnaie à rendre</span>
+                                <span className="font-bold">{formatPrice(changeDue)}</span>
+                            </div>
+                        )}
+
+                        <Button
+                            className="w-full h-12 rounded-xl text-base font-bold"
+                            disabled={(items.length === 0 && bundleLines.length === 0) || isSubmitting}
+                            onClick={() => onCheckout(amountGiven)}
+                        >
+                            {isSubmitting ? <WaitingActivity size={20}/> : (
+                                activeOrder ? `Valider la commande ${activeOrder.orderNumber}` : 'Traiter la transaction'
+                            )}
+                        </Button>
+                    </>
+                ) : (
+                    <div className="flex items-center justify-center h-12 rounded-xl bg-green-500/10 text-green-700 font-bold text-sm">
+                        Commande déjà payée
                     </div>
                 )}
-
-                <Button
-                    className="w-full h-12 rounded-xl text-base font-bold"
-                    disabled={(items.length === 0 && bundleLines.length === 0) || isSubmitting}
-                    onClick={() => onCheckout(amountGiven)}
-                >
-                    {isSubmitting ? <WaitingActivity size={20}/> : (
-                        activeOrder ? `Valider la commande ${activeOrder.orderNumber}` : 'Traiter la transaction'
-                    )}
-                </Button>
             </div>
         </Card>
     );

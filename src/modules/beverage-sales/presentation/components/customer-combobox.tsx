@@ -2,8 +2,10 @@
 
 import React, {useState} from "react";
 import {useQuery} from "@tanstack/react-query";
-import {CustomerInterface} from "@/modules/beverage-sales/domain/customer.interface";
+import {CustomerInterface, CustomerType} from "@/modules/beverage-sales/domain/customer.interface";
 import {BeverageSalesApiService} from "@/modules/beverage-sales/application/service/beverage-sales-api-service";
+import {CustomerApiService} from "@/modules/customer/application/service/customer-api-service";
+import {Button} from "@/core/presentation/ui/button";
 import {
     Combobox,
     ComboboxContent,
@@ -27,6 +29,7 @@ interface CustomerComboboxProps {
 
 export function CustomerCombobox({customer, onSelect, onNameChange}: CustomerComboboxProps) {
     const [search, setSearch] = useState("");
+    const [isCreating, setIsCreating] = useState(false);
 
     const {data: results, isFetching} = useQuery<CustomerInterface[]>({
         queryKey: ['beverage-sales', 'customers', search],
@@ -38,6 +41,32 @@ export function CustomerCombobox({customer, onSelect, onNameChange}: CustomerCom
     });
 
     const customers = results ?? [];
+
+    const handleCreateCustomer = async () => {
+        const name = search.trim();
+        if (!name || isCreating) return;
+        setIsCreating(true);
+        try {
+            const parts = name.split(/\s+/);
+            const firstname = parts[0] || '';
+            const lastname = parts.slice(1).join(' ') || undefined;
+            const response = await CustomerApiService.create({
+                type: CustomerType.PERSON,
+                firstname,
+                ...(lastname ? { lastname } : {}),
+            });
+            const created = response.data?.data as CustomerInterface | undefined;
+            if (created) {
+                onSelect(created);
+                onNameChange(getCustomerLabel(created));
+                setSearch("");
+            }
+        } catch {
+            // ignore
+        } finally {
+            setIsCreating(false);
+        }
+    };
 
     return (
         <Combobox
@@ -85,10 +114,22 @@ export function CustomerCombobox({customer, onSelect, onNameChange}: CustomerCom
                     ))}
                 </ComboboxList>
                 <ComboboxEmpty>
-                    <span className="inline-flex items-center gap-1.5">
-                        <UserPlusIcon className="size-4"/>
-                        Aucun client trouvé — le nom sera créé à la volée
-                    </span>
+                    <div className="flex flex-col items-center gap-3 py-1">
+                        <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                            <UserPlusIcon className="size-4"/>
+                            Aucun client trouvé
+                        </span>
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            className="rounded-lg"
+                            onClick={handleCreateCustomer}
+                            disabled={isCreating || search.trim().length < 2}
+                        >
+                            {isCreating ? <WaitingActivity size={14}/> : <UserPlusIcon className="size-3.5"/>}
+                            Créer « {search.trim()} »
+                        </Button>
+                    </div>
                 </ComboboxEmpty>
             </ComboboxContent>
         </Combobox>

@@ -8,11 +8,13 @@ import {Card} from "@/core/presentation/ui/card";
 import {WaitingActivity} from "@/core/presentation/waiting-activity";
 import {PackageOpenIcon, PlusIcon, GiftIcon, FlaskConicalIcon, BookOpenIcon, BoxesIcon, LayersIcon} from "lucide-react";
 import {formatPrice, getBundleUnitPrice} from "@/modules/beverage-sales/presentation/utilities/beverage-sales.util";
+import {cn} from "@/core/infrastructure/utilities/utils";
 
 interface BundleCatalogProps {
     bundles?: BundleInterface[];
     isLoading?: boolean;
     onAdd: (bundle: BundleInterface, unitPrice: number) => void;
+    isReadOnly?: boolean;
 }
 
 const TYPE_ICONS: Record<BundleTypeEnum, typeof LayersIcon> = {
@@ -22,7 +24,7 @@ const TYPE_ICONS: Record<BundleTypeEnum, typeof LayersIcon> = {
     [BundleTypeEnum.KIT]: BoxesIcon,
 };
 
-export function BundleCatalog({bundles, isLoading, onAdd}: BundleCatalogProps) {
+export function BundleCatalog({bundles, isLoading, onAdd, isReadOnly}: BundleCatalogProps) {
     if (isLoading) {
         return (
             <Card className="p-6 border-none shadow-sm flex items-center justify-center min-h-40">
@@ -50,8 +52,11 @@ export function BundleCatalog({bundles, isLoading, onAdd}: BundleCatalogProps) {
                 return (
                     <div
                         key={bundle.id}
-                        className="group relative bg-background border border-border/50 rounded-2xl p-3 hover:border-primary/50 transition-all hover:shadow-md cursor-pointer flex flex-col gap-2"
-                        onClick={() => onAdd(bundle, unitPrice)}
+                        className={cn(
+                            "group relative bg-background border border-border/50 rounded-2xl p-3 transition-all hover:shadow-md flex flex-col gap-2",
+                            isReadOnly ? "opacity-60 cursor-not-allowed" : "hover:border-primary/50 cursor-pointer"
+                        )}
+                        onClick={() => !isReadOnly && onAdd(bundle, unitPrice)}
                     >
                         <div className="aspect-square bg-muted rounded-xl flex items-center justify-center mb-1 overflow-hidden">
                             <TypeIcon className="size-10 text-muted-foreground/30 group-hover:scale-110 transition-transform"/>

@@ -78,11 +78,38 @@ export default function BeverageSalesView() {
     const syncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isSyncingRef = useRef(false);
     const skipSyncRef = useRef(false);
+    const orderInitialCustomerIdRef = useRef<string | null | undefined>(undefined);
+    const orderInitialTableIdRef = useRef<string | null | undefined>(undefined);
+
+    const handleCustomerCreated = useCallback(async (customerId: string) => {
+        if (selectedCustomer?.id === customerId) return;
+        try {
+            const customerResponse = await CustomerApiService.getById(customerId);
+            const customer = customerResponse.data?.data;
+            if (customer) {
+                setSelectedCustomer(customer);
+                setCustomerName([customer.firstname, customer.lastname].filter(Boolean).join(' '));
+                orderInitialCustomerIdRef.current = customerId;
+            }
+        } catch {
+            // ignore
+        }
+    }, [selectedCustomer?.id]);
 
     const syncOrderToBackend = useCallback(() => {
         if (skipSyncRef.current) return;
         if (!activeOrder || activeOrder.status !== OrderStatusEnum.PENDING) return;
         if (isSyncingRef.current) return;
+
+        const customerId = selectedCustomer?.id ??
+            (customerName.trim() ? null : (orderInitialCustomerIdRef.current ? null : undefined));
+        const customer = (!selectedCustomer && customerName.trim())
+            ? {name: customerName.trim()}
+            : (orderInitialCustomerIdRef.current && !selectedCustomer && !customerName.trim())
+                ? null
+                : undefined;
+        const tableId = selectedTable?.id ??
+            (orderInitialTableIdRef.current ? null : undefined);
 
         isSyncingRef.current = true;
         updateOrderMutation.mutate(
@@ -90,20 +117,24 @@ export default function BeverageSalesView() {
                 id: activeOrder.id,
                 payload: {
                     orderType: saleType,
-                    customerId: selectedCustomer?.id,
-                    tableId: selectedTable?.id,
-                    customer: (!selectedCustomer && customerName.trim())
-                        ? {name: customerName.trim()}
-                        : undefined,
+                    customerId,
+                    tableId,
+                    customer,
                     items: cart.items.length > 0 ? cart.items : undefined,
                     bundles: cart.bundleLines.length > 0 ? cart.bundleLines.map(line => ({bundleId: line.bundleId, quantity: line.quantity})) : undefined,
                 }
             },
             {
+                onSuccess: (response: any) => {
+                    const updatedOrder = response?.data?.data as OrderInterface | undefined;
+                    if (updatedOrder?.customerId && !selectedCustomer) {
+                        handleCustomerCreated(updatedOrder.customerId);
+                    }
+                },
                 onSettled: () => { isSyncingRef.current = false; }
             }
         );
-    }, [activeOrder, saleType, selectedCustomer, selectedTable, customerName, cart.items, cart.bundleLines, updateOrderMutation]);
+    }, [activeOrder, saleType, selectedCustomer, selectedTable, customerName, cart.items, cart.bundleLines, updateOrderMutation.mutate, handleCustomerCreated]);
 
     useEffect(() => {
         if (!activeOrder || activeOrder.status !== OrderStatusEnum.PENDING) return;
@@ -119,38 +150,48 @@ export default function BeverageSalesView() {
         };
     }, [cart.items, cart.bundleLines, selectedCustomer, selectedTable, customerName, saleType, syncOrderToBackend]);
 
+    const buildSyncPayload = useCallback(() => {
+        const customerId = selectedCustomer?.id ??
+            (customerName.trim() ? null : (orderInitialCustomerIdRef.current ? null : undefined));
+        const customer = (!selectedCustomer && customerName.trim())
+            ? {name: customerName.trim()}
+            : (orderInitialCustomerIdRef.current && !selectedCustomer && !customerName.trim())
+                ? null
+                : undefined;
+        const tableId = selectedTable?.id ??
+            (orderInitialTableIdRef.current ? null : undefined);
+        return { customerId, tableId, customer };
+    }, [selectedCustomer, selectedTable, customerName]);
+
     const handleCheckout = async (amountGiven: number) => {
         try {
             let order = activeOrder;
+            const basePayload = buildSyncPayload();
 
             if (!order) {
                 const draftResponse = await createOrderMutation.mutateAsync({
                     warehouseType: WarehouseTypeEnum.DEPOT,
                     orderType: saleType,
-                    customerId: selectedCustomer?.id,
-                    tableId: selectedTable?.id,
-                    customer: (!selectedCustomer && customerName.trim())
-                        ? {name: customerName.trim()}
-                        : undefined,
+                    ...basePayload,
                 });
                 order = draftResponse.data?.data;
                 if (!order) return;
             }
 
-            await updateOrderMutation.mutateAsync({
+            const updateResponse = await updateOrderMutation.mutateAsync({
                 id: order.id,
                 payload: {
                     orderType: saleType,
-                    customerId: selectedCustomer?.id,
-                    tableId: selectedTable?.id,
-                    customer: (!selectedCustomer && customerName.trim())
-                        ? {name: customerName.trim()}
-                        : undefined,
+                    ...basePayload,
                     items: cart.items.length > 0 ? cart.items : undefined,
                     bundles: cart.bundleLines.length > 0 ? cart.bundleLines.map(line => ({bundleId: line.bundleId, quantity: line.quantity})) : undefined,
                     receivedAmount: amountGiven > 0 ? amountGiven : undefined,
                 }
             });
+            const updatedOrder = updateResponse.data?.data;
+            if (updatedOrder?.customerId && !selectedCustomer) {
+                await handleCustomerCreated(updatedOrder.customerId);
+            }
 
             await updateOrderStatusMutation.mutateAsync({
                 id: order.id,
@@ -162,27 +203,31 @@ export default function BeverageSalesView() {
             setSelectedTable(null);
             setSelectedCustomer(null);
             setCustomerName("");
+            orderInitialCustomerIdRef.current = undefined;
+            orderInitialTableIdRef.current = undefined;
         } catch {
             // toast handled by mutations
         }
     };
 
     const handleCreatePendingOrder = async () => {
+        const basePayload = buildSyncPayload();
+
         if (activeOrder) {
             try {
-                await updateOrderMutation.mutateAsync({
+                const updateResponse = await updateOrderMutation.mutateAsync({
                     id: activeOrder.id,
                     payload: {
                         orderType: saleType,
-                        customerId: selectedCustomer?.id,
-                        tableId: selectedTable?.id,
-                        customer: (!selectedCustomer && customerName.trim())
-                            ? {name: customerName.trim()}
-                            : undefined,
+                        ...basePayload,
                         items: cart.items.length > 0 ? cart.items : undefined,
                         bundles: cart.bundleLines.length > 0 ? cart.bundleLines.map(line => ({bundleId: line.bundleId, quantity: line.quantity})) : undefined,
                     }
                 });
+                const updatedOrder = updateResponse.data?.data;
+                if (updatedOrder?.customerId && !selectedCustomer) {
+                    await handleCustomerCreated(updatedOrder.customerId);
+                }
                 toast.success("Commande sauvegardée");
                 await queryClient.invalidateQueries({queryKey: ['beverage-sales', 'orders']});
             } catch {
@@ -208,10 +253,23 @@ export default function BeverageSalesView() {
         setSelectedTable(null);
         setSelectedCustomer(null);
         setCustomerName("");
+        orderInitialCustomerIdRef.current = undefined;
+        orderInitialTableIdRef.current = undefined;
+    };
+
+    const flushPendingSync = () => {
+        if (syncTimerRef.current) {
+            clearTimeout(syncTimerRef.current);
+            syncTimerRef.current = null;
+        }
+        syncOrderToBackend();
     };
 
     const handleSelectOrder = async (order: OrderInterface) => {
         try {
+            if (activeOrder && activeOrder.status === OrderStatusEnum.PENDING) {
+                flushPendingSync();
+            }
             skipSyncRef.current = true;
 
             const detailResponse = await BeverageSalesApiService.getOrder(order.id);
@@ -242,6 +300,9 @@ export default function BeverageSalesView() {
                 setSelectedCustomer(null);
                 setCustomerName("");
             }
+
+            orderInitialCustomerIdRef.current = fullOrder.customerId ?? null;
+            orderInitialTableIdRef.current = fullOrder.tableId ?? null;
 
             cart.loadFromOrder(
                 fullOrder.items.map((item: OrderItemInterface) => ({
@@ -319,6 +380,8 @@ export default function BeverageSalesView() {
         );
     }
 
+    const isReadOnly = activeOrder?.status === OrderStatusEnum.PAID;
+
     return (
         <div className="flex flex-col gap-6 p-4 md:p-6 bg-muted/20 min-h-screen">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -392,6 +455,7 @@ export default function BeverageSalesView() {
                             onAddToCart={cart.addToCart}
                             onUpdateItemQty={cart.updateItemQty}
                             onAddBundleToCart={cart.addBundleToCart}
+                            isReadOnly={isReadOnly}
                         />
                     </div>
 
@@ -439,6 +503,8 @@ export default function BeverageSalesView() {
                             onClearCart={() => {
                                 cart.clearCart();
                                 setActiveOrder(null);
+                                orderInitialCustomerIdRef.current = undefined;
+                                orderInitialTableIdRef.current = undefined;
                             }}
                             onCheckout={handleCheckout}
                             isSubmitting={isSubmitting}

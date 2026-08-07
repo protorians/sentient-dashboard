@@ -23,6 +23,7 @@ interface CatalogTabsProps {
     onAddToCart: (product: ProductInterface, unit: MovementUnitEnum, unitPrice: number) => void;
     onUpdateItemQty: (productId: string, quantity: number) => void;
     onAddBundleToCart: (bundle: EnrichedBundle, unitPrice: number) => void;
+    isReadOnly?: boolean;
 }
 
 export function CatalogTabs({
@@ -38,6 +39,7 @@ export function CatalogTabs({
     onAddToCart,
     onUpdateItemQty,
     onAddBundleToCart,
+    isReadOnly,
 }: CatalogTabsProps) {
     return (
         <Tabs value={tab} onValueChange={(v) => onTabChange(v as 'products' | 'bundles')} className="w-full">
@@ -60,6 +62,7 @@ export function CatalogTabs({
                     cartItems={cartItems}
                     onAdd={onAddToCart}
                     onUpdateQty={onUpdateItemQty}
+                    isReadOnly={isReadOnly}
                 />
             </TabsContent>
             <TabsContent value="bundles" className="flex flex-col mt-4">
@@ -67,6 +70,7 @@ export function CatalogTabs({
                     bundles={bundles}
                     isLoading={isLoadingBundles}
                     onAdd={onAddBundleToCart}
+                    isReadOnly={isReadOnly}
                 />
             </TabsContent>
         </Tabs>
