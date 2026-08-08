@@ -24,6 +24,8 @@ import {
     WineIcon,
     GiftIcon,
     CoinsIcon,
+    UserIcon,
+    LayoutGridIcon,
 } from "lucide-react";
 import {cn} from "@/core/infrastructure/utilities/utils";
 import {formatPrice, toBaseUnits} from "@/modules/beverage-sales/presentation/utilities/beverage-sales.util";
@@ -55,6 +57,9 @@ export function CartPanel({
     bundleLines,
     saleType,
     activeOrder,
+    customer,
+    customerName,
+    table,
     onUpdateItemQty,
     onUpdateItemUnit,
     onRemoveItem,
@@ -121,6 +126,30 @@ export function CartPanel({
                     </Button>
                 )}
             </div>
+
+            {(customer || customerName.trim() || table) && (
+                <div className="flex items-center gap-3 text-xs text-muted-foreground bg-muted/40 rounded-xl px-3 py-2">
+                    {customer && (
+                        <span className="inline-flex items-center gap-1.5 font-medium text-foreground truncate">
+                            <UserIcon className="size-3 shrink-0"/>
+                            {[customer.firstname, customer.lastname].filter(Boolean).join(' ') || customer.companyName}
+                        </span>
+                    )}
+                    {!customer && customerName.trim() && (
+                        <span className="inline-flex items-center gap-1.5 font-medium truncate">
+                            <UserIcon className="size-3 shrink-0"/>
+                            {customerName.trim()}
+                        </span>
+                    )}
+                    {customer && table && <span className="text-border">·</span>}
+                    {table && (
+                        <span className="inline-flex items-center gap-1.5 font-medium text-foreground truncate">
+                            <LayoutGridIcon className="size-3 shrink-0"/>
+                            {table.label}
+                        </span>
+                    )}
+                </div>
+            )}
 
             <div className="overflow-y-auto space-y-3 pr-1 scrollbar-thin max-h-[320px]">
                 {items.length === 0 && bundleLines.length === 0 ? (

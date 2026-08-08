@@ -33,22 +33,13 @@ interface BundleManagerProps {
     isSaving?: boolean;
     onSave: (bundle: BundleInterface | null, payload: { name: string; sku?: string; description?: string; type: BundleTypeEnum; price?: number; items: CreateBundleItemInterface[] }) => Promise<void>;
     onDelete: (id: string) => Promise<void>;
+    onSearchChange: (search: string) => void;
 }
 
-export function BundleManager({bundles, isLoading, products, isLoadingProducts, isSaving, onSave, onDelete}: BundleManagerProps) {
+export function BundleManager({bundles, isLoading, products, isLoadingProducts, isSaving, onSave, onDelete, onSearchChange}: BundleManagerProps) {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editing, setEditing] = useState<BundleInterface | null>(null);
     const [deleting, setDeleting] = useState<BundleInterface | null>(null);
-    const [search, setSearch] = useState('');
-
-    const filteredBundles = useMemo(() => {
-        const query = search.trim().toLowerCase();
-        if (!query) return bundles || [];
-        return (bundles || []).filter(bundle =>
-            bundle.name.toLowerCase().includes(query) ||
-            (bundle.sku ?? '').toLowerCase().includes(query)
-        );
-    }, [bundles, search]);
 
     const nextSku = useMemo(() => generateBundleSku(bundles), [bundles]);
 
@@ -85,7 +76,7 @@ export function BundleManager({bundles, isLoading, products, isLoadingProducts, 
 
     const toolbar = (table: Table<BundleInterface>) => (
         <React.Fragment>
-            <DataGridSearchEngine table={table} value={search} onChange={setSearch}/>
+            <DataGridSearchEngine table={table} value="" onChange={onSearchChange}/>
             {isLoading && (
                 <div className="flex items-center justify-center">
                     <WaitingActivity size={16}/>
@@ -136,7 +127,7 @@ export function BundleManager({bundles, isLoading, products, isLoadingProducts, 
                 </Card>
             ) : (
                 <DataGrid
-                    data={filteredBundles}
+                    data={bundles ?? []}
                     columns={getBundleColumns()}
                     getRowId={row => row.id}
                     actions={rowActions}

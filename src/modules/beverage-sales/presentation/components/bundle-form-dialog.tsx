@@ -54,7 +54,7 @@ export function BundleFormDialog({open, onOpenChange, products, isLoadingProduct
             name: bundle?.name ?? '',
             sku: bundle?.sku ?? nextSku ?? '',
             description: bundle?.description ?? '',
-            type: BundleTypeEnum.KIT,
+            type: bundle?.type ?? BundleTypeEnum.KIT,
             price: bundle && bundle.price > 0 ? bundle.price : 0,
             items: bundle && bundle.items.length > 0
                 ? bundle.items.map(i => ({productId: i.productId, quantity: i.quantity}))
@@ -71,7 +71,7 @@ export function BundleFormDialog({open, onOpenChange, products, isLoadingProduct
             {
                 id: 'info',
                 title: 'Informations',
-                description: 'Nom, SKU et prix du kit',
+                description: 'Nom, type, SKU et prix du bundle',
                 required: true,
                 content: ({data, updateData}) => (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -84,6 +84,24 @@ export function BundleFormDialog({open, onOpenChange, products, isLoadingProduct
                                 value={data.name ?? ''}
                                 onChange={(e) => updateData({name: e.target.value})}
                             />
+                        </div>
+
+                        <div className="flex flex-col gap-1.5 sm:col-span-2">
+                            <Label htmlFor="bundle-type">Type</Label>
+                            <Select
+                                value={data.type}
+                                onValueChange={(v) => updateData({type: v as BundleTypeEnum})}
+                            >
+                                <SelectTrigger id="bundle-type">
+                                    <SelectValue/>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value={BundleTypeEnum.COMPOSITION}>Composition</SelectItem>
+                                    <SelectItem value={BundleTypeEnum.RECIPE}>Recette</SelectItem>
+                                    <SelectItem value={BundleTypeEnum.BUNDLE}>Bundle</SelectItem>
+                                    <SelectItem value={BundleTypeEnum.KIT}>Kit</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         <div className="flex flex-col gap-1.5">
@@ -218,7 +236,7 @@ export function BundleFormDialog({open, onOpenChange, products, isLoadingProduct
                                 </div>
                         <div className="flex flex-col gap-0.5">
                             <Label className="text-xs text-muted-foreground">Type</Label>
-                            <p className="font-semibold">Kit</p>
+                            <p className="font-semibold">{data.type}</p>
                         </div>
                                 <div className="flex flex-col gap-0.5">
                                     <Label className="text-xs text-muted-foreground">Prix</Label>
@@ -253,7 +271,7 @@ export function BundleFormDialog({open, onOpenChange, products, isLoadingProduct
 
         const promise = openStepper({
             steps,
-            title: isEdit ? 'Modifier le kit' : 'Nouveau kit',
+            title: isEdit ? 'Modifier le bundle' : 'Nouveau bundle',
             initialData,
             onEnd: async ({data}) => {
                 const validItems = (data.items ?? []).filter(i => i.productId && i.quantity > 0);
@@ -261,7 +279,7 @@ export function BundleFormDialog({open, onOpenChange, products, isLoadingProduct
                     name: (data.name ?? '').trim(),
                     sku: (data.sku ?? '').trim() || undefined,
                     description: (data.description ?? '').trim() || undefined,
-                    type: BundleTypeEnum.KIT,
+                    type: data.type ?? BundleTypeEnum.KIT,
                     price: data.price && data.price > 0 ? data.price : 0,
                     items: validItems,
                 });

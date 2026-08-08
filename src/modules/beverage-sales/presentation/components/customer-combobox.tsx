@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useState} from "react";
+import React, {useState, useRef} from "react";
 import {useQuery} from "@tanstack/react-query";
 import {CustomerInterface, CustomerType} from "@/modules/beverage-sales/domain/customer.interface";
 import {BeverageSalesApiService} from "@/modules/beverage-sales/application/service/beverage-sales-api-service";
@@ -30,6 +30,9 @@ interface CustomerComboboxProps {
 export function CustomerCombobox({customer, onSelect, onNameChange}: CustomerComboboxProps) {
     const [search, setSearch] = useState("");
     const [isCreating, setIsCreating] = useState(false);
+    const prevCustomerRef = useRef<CustomerInterface | null>(customer);
+    const isProgrammaticChange = prevCustomerRef.current !== customer;
+    prevCustomerRef.current = customer;
 
     const {data: results, isFetching} = useQuery<CustomerInterface[]>({
         queryKey: ['beverage-sales', 'customers', search],
@@ -40,7 +43,22 @@ export function CustomerCombobox({customer, onSelect, onNameChange}: CustomerCom
         enabled: search.trim().length >= 2,
     });
 
-    const customers = results ?? [];
+    const {data: recentCustomers, isFetching: isFetchingRecent} = useQuery<CustomerInterface[]>({
+        queryKey: ['beverage-sales', 'customers', 'recent'],
+        queryFn: async () => {
+            const response = await CustomerApiService.getAll();
+            const all = response.data?.data as CustomerInterface[] | undefined;
+            return (all ?? []).sort((a, b) => {
+                const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+                const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                return dateB - dateA;
+            }).slice(0, 10);
+        },
+        staleTime: 30_000,
+    });
+
+    const customers = search.trim().length >= 2 ? (results ?? []) : (recentCustomers ?? []);
+    const showCreateButton = search.trim().length >= 2 && customers.length === 0 && !isFetching;
 
     const handleCreateCustomer = async () => {
         const name = search.trim();
@@ -80,6 +98,10 @@ export function CustomerCombobox({customer, onSelect, onNameChange}: CustomerCom
             onInputValueChange={(value, eventDetails) => {
                 const reason = eventDetails?.reason;
                 if (reason === 'item-press' || reason === 'list-navigation' || reason === 'none') return;
+                if (isProgrammaticChange) {
+                    onNameChange(value);
+                    return;
+                }
                 onSelect(null);
                 onNameChange(value);
                 setSearch(value);
@@ -99,7 +121,7 @@ export function CustomerCombobox({customer, onSelect, onNameChange}: CustomerCom
             </div>
             <ComboboxContent>
                 <ComboboxList>
-                    {isFetching ? (
+                    {(isFetching || isFetchingRecent) ? (
                         <div className="flex justify-center p-3">
                             <WaitingActivity size={20}/>
                         </div>
@@ -113,24 +135,26 @@ export function CustomerCombobox({customer, onSelect, onNameChange}: CustomerCom
                         </ComboboxItem>
                     ))}
                 </ComboboxList>
-                <ComboboxEmpty>
-                    <div className="flex flex-col items-center gap-3 py-1">
-                        <span className="inline-flex items-center gap-1.5 text-muted-foreground">
-                            <UserPlusIcon className="size-4"/>
-                            Aucun client trouvé
-                        </span>
-                        <Button
-                            size="sm"
-                            variant="outline"
-                            className="rounded-lg"
-                            onClick={handleCreateCustomer}
-                            disabled={isCreating || search.trim().length < 2}
-                        >
-                            {isCreating ? <WaitingActivity size={14}/> : <UserPlusIcon className="size-3.5"/>}
-                            Créer « {search.trim()} »
-                        </Button>
-                    </div>
-                </ComboboxEmpty>
+                {showCreateButton ? (
+                    <ComboboxEmpty>
+                        <div className="flex flex-col items-center gap-3 py-1">
+                            <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                                <UserPlusIcon className="size-4"/>
+                                Aucun client trouvé
+                            </span>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="rounded-lg"
+                                onClick={handleCreateCustomer}
+                                disabled={isCreating || search.trim().length < 2}
+                            >
+                                {isCreating ? <WaitingActivity size={14}/> : <UserPlusIcon className="size-3.5"/>}
+                                Créer « {search.trim()} »
+                            </Button>
+                        </div>
+                    </ComboboxEmpty>
+                ) : null}
             </ComboboxContent>
         </Combobox>
     );

@@ -18,14 +18,19 @@ export interface PosAnalyticsTimeSeriesPoint {
     value: number;
 }
 
+export interface PosAnalyticsOrderStatusCount {
+    status: string;
+    count: number;
+}
+
 export interface PosAnalyticsInterface {
     summary: {
         totalRevenue: number;
         totalOrders: number;
-        totalQuantity: number;
-        averageBasket: number;
+        totalItems: number;
+        averageOrderValue: number;
     };
-    ordersByStatus: Record<string, number>;
+    ordersByStatus: PosAnalyticsOrderStatusCount[];
     productsByTable: PosAnalyticsTableInfo[];
     topProducts: PosAnalyticsProduct[];
     revenueOverTime: PosAnalyticsTimeSeriesPoint[];

@@ -5,6 +5,21 @@ import {OrderItemInterface, CreateOrderItemInterface} from "@/modules/beverage-s
 import {OrderBundleInterface, CreateOrderBundleInterface} from "@/modules/beverage-sales/domain/order-bundle.interface";
 import {OrderCustomerPayload} from "@/modules/beverage-sales/domain/customer.interface";
 
+export interface OrderCustomerVm {
+    id: string;
+    firstname?: string | null;
+    lastname?: string | null;
+    companyName?: string | null;
+    phone?: string | null;
+    email?: string | null;
+}
+
+export interface OrderTableVm {
+    id: string;
+    label: string;
+    number?: number | null;
+}
+
 export interface OrderInterface {
     id: string;
     orderNumber: string;
@@ -15,6 +30,8 @@ export interface OrderInterface {
     warehouseType: WarehouseTypeEnum;
     customerId?: string | null;
     tableId?: string | null;
+    customer?: OrderCustomerVm | null;
+    table?: OrderTableVm | null;
     totalAmount: number;
     discountAmount: number;
     netAmount: number;

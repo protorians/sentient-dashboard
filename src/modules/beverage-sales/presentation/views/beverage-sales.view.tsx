@@ -46,6 +46,7 @@ export default function BeverageSalesView() {
     const [customerName, setCustomerName] = useState<string>("");
     const [saleType, setSaleType] = useState<OrderTypeEnum>(OrderTypeEnum.DETAIL);
     const [searchTerm, setSearchTerm] = useState<string>("");
+    const [bundleSearch, setBundleSearch] = useState<string>("");
     const [tableCreateOpen, setTableCreateOpen] = useState(false);
     const [activeOrder, setActiveOrder] = useState<OrderInterface | null>(null);
 
@@ -62,7 +63,7 @@ export default function BeverageSalesView() {
         orders,
         isLoadingOrders,
         displayTables,
-    } = useBeverageSalesQueries(selectedTable);
+    } = useBeverageSalesQueries(selectedTable, bundleSearch);
 
     const {
         createOrderMutation,
@@ -211,9 +212,8 @@ export default function BeverageSalesView() {
     };
 
     const handleCreatePendingOrder = async () => {
-        const basePayload = buildSyncPayload();
-
         if (activeOrder) {
+            const basePayload = buildSyncPayload();
             try {
                 const updateResponse = await updateOrderMutation.mutateAsync({
                     id: activeOrder.id,
@@ -257,18 +257,48 @@ export default function BeverageSalesView() {
         orderInitialTableIdRef.current = undefined;
     };
 
-    const flushPendingSync = () => {
+    const flushPendingSync = useCallback(async () => {
         if (syncTimerRef.current) {
             clearTimeout(syncTimerRef.current);
             syncTimerRef.current = null;
         }
-        syncOrderToBackend();
-    };
+        if (!activeOrder || activeOrder.status !== OrderStatusEnum.PENDING) return;
+        if (isSyncingRef.current) return;
+
+        isSyncingRef.current = true;
+        try {
+            const customerId = selectedCustomer?.id ??
+                (customerName.trim() ? null : (orderInitialCustomerIdRef.current ? null : undefined));
+            const customer = (!selectedCustomer && customerName.trim())
+                ? {name: customerName.trim()}
+                : (orderInitialCustomerIdRef.current && !selectedCustomer && !customerName.trim())
+                    ? null
+                    : undefined;
+            const tableId = selectedTable?.id ??
+                (orderInitialTableIdRef.current ? null : undefined);
+
+            await updateOrderMutation.mutateAsync({
+                id: activeOrder.id,
+                payload: {
+                    orderType: saleType,
+                    customerId,
+                    tableId,
+                    customer,
+                    items: cart.items.length > 0 ? cart.items : undefined,
+                    bundles: cart.bundleLines.length > 0 ? cart.bundleLines.map(line => ({bundleId: line.bundleId, quantity: line.quantity})) : undefined,
+                }
+            });
+        } catch {
+            toast.error("Impossible de sauvegarder la commande avant de changer");
+        } finally {
+            isSyncingRef.current = false;
+        }
+    }, [activeOrder, saleType, selectedCustomer, selectedTable, customerName, cart.items, cart.bundleLines, updateOrderMutation.mutateAsync]);
 
     const handleSelectOrder = async (order: OrderInterface) => {
         try {
             if (activeOrder && activeOrder.status === OrderStatusEnum.PENDING) {
-                flushPendingSync();
+                await flushPendingSync();
             }
             skipSyncRef.current = true;
 
@@ -278,10 +308,23 @@ export default function BeverageSalesView() {
             setActiveOrder(fullOrder);
             setSaleType(fullOrder.orderType);
 
-            const table = fullOrder.tableId ? displayTables?.find(t => t.id === fullOrder.tableId) : null;
-            setSelectedTable(table ?? null);
+            if (fullOrder.table) {
+                setSelectedTable(fullOrder.table as PosTableInterface);
+            } else if (fullOrder.tableId) {
+                try {
+                    const tableResponse = await BeverageSalesApiService.getTable(fullOrder.tableId);
+                    setSelectedTable(tableResponse.data?.data ?? null);
+                } catch {
+                    setSelectedTable(null);
+                }
+            } else {
+                setSelectedTable(null);
+            }
 
-            if (fullOrder.customerId) {
+            if (fullOrder.customer) {
+                setSelectedCustomer(fullOrder.customer as CustomerInterface);
+                setCustomerName([fullOrder.customer.firstname, fullOrder.customer.lastname].filter(Boolean).join(' ') || fullOrder.customer.companyName || '');
+            } else if (fullOrder.customerId) {
                 try {
                     const customerResponse = await CustomerApiService.getById(fullOrder.customerId);
                     const customer = customerResponse.data?.data;
@@ -428,7 +471,6 @@ export default function BeverageSalesView() {
                         <OrdersList
                             orders={orders}
                             isLoading={isLoadingOrders}
-                            tables={displayTables}
                             activeOrder={activeOrder}
                             onSelectOrder={handleSelectOrder}
                             onCreatePending={handleCreatePendingOrder}
@@ -520,6 +562,7 @@ export default function BeverageSalesView() {
                     isSaving={saveBundleMutation.isPending}
                     onSave={handleSaveBundle}
                     onDelete={handleDeleteBundle}
+                    onSearchChange={setBundleSearch}
                 />
             )}
         </div>

@@ -30,7 +30,7 @@ export interface UseBeverageSalesQueriesReturn {
     displayTables: PosTableInterface[] | undefined;
 }
 
-export function useBeverageSalesQueries(selectedTable: PosTableInterface | null): UseBeverageSalesQueriesReturn {
+export function useBeverageSalesQueries(selectedTable: PosTableInterface | null, bundleSearch?: string): UseBeverageSalesQueriesReturn {
     const {data: warehouses} = useQuery<WarehouseInterface[]>({
         queryKey: ['stock', 'warehouses'],
         queryFn: async () => {
@@ -56,9 +56,11 @@ export function useBeverageSalesQueries(selectedTable: PosTableInterface | null)
     });
 
     const {data: bundles, isLoading: isLoadingBundles} = useQuery<BundleInterface[]>({
-        queryKey: ['beverage-sales', 'bundles'],
+        queryKey: ['beverage-sales', 'bundles', bundleSearch ?? ''],
         queryFn: async () => {
-            const response = await BeverageSalesApiService.getBundles({page: 1, limit: 100});
+            const filters: Record<string, any> = {page: 1, limit: 100};
+            if (bundleSearch?.trim()) filters.search = bundleSearch.trim();
+            const response = await BeverageSalesApiService.getBundles(filters);
             return response.data?.data?.data || [];
         }
     });

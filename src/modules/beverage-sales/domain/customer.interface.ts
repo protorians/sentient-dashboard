@@ -11,6 +11,9 @@ export interface CustomerInterface {
     address?: string | null;
     city?: string | null;
     country?: string | null;
+    taxNumber?: string | null;
+    notes?: string | null;
+    userId?: string | null;
     status?: boolean;
     createdAt?: string;
 }
@@ -40,4 +43,22 @@ export interface CreateCustomerInterface {
     notes?: string;
     taxNumber?: string;
     userId?: string;
+    modules?: string[];
+}
+
+export interface UpdateCustomerInterface {
+    type?: CustomerType;
+    firstname?: string;
+    lastname?: string;
+    companyName?: string;
+    civility?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    country?: string;
+    notes?: string;
+    taxNumber?: string;
+    userId?: string;
+    status?: boolean;
 }

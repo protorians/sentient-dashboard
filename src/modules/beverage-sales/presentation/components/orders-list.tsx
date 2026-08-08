@@ -6,7 +6,6 @@ import {OrderStatusEnum} from "@/modules/beverage-sales/domain/enums/order-statu
 import {OrderTypeEnum} from "@/modules/beverage-sales/domain/enums/order-type.enum";
 import {ProductInterface} from "@/modules/stock/domain/product.interface";
 import {BundleInterface} from "@/modules/beverage-sales/domain/bundle.interface";
-import {PosTableInterface} from "@/modules/beverage-sales/domain/pos-table.interface";
 import {Button} from "@/core/presentation/ui/button";
 import {Badge} from "@/core/presentation/ui/badge";
 import {WaitingActivity} from "@/core/presentation/waiting-activity";
@@ -25,7 +24,6 @@ import {formatPrice} from "@/modules/beverage-sales/presentation/utilities/bever
 interface OrdersListProps {
     orders?: OrderInterface[];
     isLoading?: boolean;
-    tables?: PosTableInterface[];
     activeOrder?: OrderInterface | null;
     onSelectOrder: (order: OrderInterface) => void;
     onCreatePending: () => void;
@@ -72,7 +70,6 @@ const StatusBadge = ({status}: { status: OrderStatusEnum }) => {
 export function OrdersList({
     orders,
     isLoading,
-    tables,
     activeOrder,
     onSelectOrder,
     onCreatePending,
@@ -122,7 +119,7 @@ export function OrdersList({
                     {activeOrders.map(order => {
                         const isActive = activeOrder?.id === order.id;
                         const isPending = order.status === OrderStatusEnum.PENDING;
-                        const table = tables?.find(t => t.id === order.tableId);
+                        const table = order.table;
                         const linesCount = order.items.length + order.bundles.length;
                         return (
                             <div
