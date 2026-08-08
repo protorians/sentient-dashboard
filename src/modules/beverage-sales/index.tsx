@@ -20,6 +20,30 @@ const beverageSalesModule: ModuleDeclarationInterface = {
     isEnabled: true,
     isDefault: false,
     type: 'INTERNAL',
+    menu: {
+        items: [
+            {
+                label: "Tableau de bord",
+                icon: "LayoutDashboardIcon",
+                url: '/beverage-sales/dashboard',
+            },
+            {
+                label: "Caisse",
+                icon: "ShoppingBagIcon",
+                url: '/beverage-sales/pos',
+            },
+            {
+                label: "Kits",
+                icon: "GiftIcon",
+                url: '/beverage-sales/kits',
+            },
+            {
+                label: "Points",
+                icon: "FileTextIcon",
+                url: '/beverage-sales/reports',
+            },
+        ]
+    },
 }
 
 export default beverageSalesModule

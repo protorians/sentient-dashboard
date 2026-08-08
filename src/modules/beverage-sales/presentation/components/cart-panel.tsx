@@ -1,6 +1,8 @@
 "use client"
 
-import React, {useState, useEffect} from "react";
+import React, {useCallback} from "react";
+import {CheckoutDialog, CheckoutDialogProps} from "@/modules/beverage-sales/presentation/components/checkout-dialog";
+import {useModal} from "@/core/presentation/modals/hooks/useModal";
 import {ProductInterface} from "@/modules/stock/domain/product.interface";
 import {BundleInterface} from "@/modules/beverage-sales/domain/bundle.interface";
 import {PosTableInterface} from "@/modules/beverage-sales/domain/pos-table.interface";
@@ -10,10 +12,9 @@ import {OrderTypeEnum} from "@/modules/beverage-sales/domain/enums/order-type.en
 import {OrderStatusEnum} from "@/modules/beverage-sales/domain/enums/order-status.enum";
 import {MovementUnitEnum} from "@/modules/beverage-sales/domain/enums/movement-unit.enum";
 import {CartItemLine, CartBundleLine} from "@/modules/beverage-sales/domain/cart.types";
+import {PaymentMethodInterface} from "@/modules/beverage-sales/domain/payment-method.interface";
 import {Button} from "@/core/presentation/ui/button";
 import {Card} from "@/core/presentation/ui/card";
-import {Input} from "@/core/presentation/ui/input";
-import {Separator} from "@/core/presentation/ui/separator";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/core/presentation/ui/select";
 import {WaitingActivity} from "@/core/presentation/waiting-activity";
 import {
@@ -46,8 +47,13 @@ interface CartPanelProps {
     onUpdateBundleQty: (bundleId: string, quantity: number) => void;
     onRemoveBundle: (bundleId: string) => void;
     onClearCart: () => void;
-    onCheckout: (amountGiven: number) => void;
+    onCheckout: (amountGiven: number, paymentMethodId: string) => void;
     isSubmitting?: boolean;
+    paymentMethods?: PaymentMethodInterface[];
+    isLoadingPaymentMethods?: boolean;
+    selectedPaymentMethodId?: string | null;
+    onPaymentMethodChange?: (id: string | null) => void;
+    onAddPaymentMethod?: (name: string, type: string) => Promise<void>;
 }
 
 export function CartPanel({
@@ -68,14 +74,13 @@ export function CartPanel({
     onClearCart,
     onCheckout,
     isSubmitting,
+    paymentMethods,
+    isLoadingPaymentMethods,
+    selectedPaymentMethodId,
+    onPaymentMethodChange,
+    onAddPaymentMethod,
 }: CartPanelProps) {
-    const [amountGiven, setAmountGiven] = useState<number>(0);
-
-    useEffect(() => {
-        if (activeOrder) {
-            setAmountGiven(activeOrder.receivedAmount ?? 0);
-        }
-    }, [activeOrder?.id]);
+    const {open, close} = useModal();
 
     const itemTotal = items.reduce((sum, item) => {
         const product = products?.find(p => p.id === item.productId);
@@ -85,8 +90,65 @@ export function CartPanel({
     const bundleTotal = bundleLines.reduce((sum, line) => sum + (line.quantity * line.unitPrice), 0);
 
     const total = itemTotal + bundleTotal;
-    const changeDue = amountGiven > 0 ? amountGiven - total : 0;
     const itemsCount = items.length + bundleLines.length;
+
+    const openCheckout = useCallback(() => {
+        const modalId = open(
+            (props: CheckoutDialogProps) => (
+                <CheckoutDialog
+                    products={props.products}
+                    bundles={props.bundles}
+                    items={props.items}
+                    bundleLines={props.bundleLines}
+                    customer={props.customer}
+                    customerName={props.customerName}
+                    table={props.table}
+                    saleType={props.saleType}
+                    activeOrder={props.activeOrder}
+                    total={props.total}
+                    isSubmitting={props.isSubmitting}
+                    paymentMethods={props.paymentMethods}
+                    isLoadingPaymentMethods={props.isLoadingPaymentMethods}
+                    selectedPaymentMethodId={props.selectedPaymentMethodId}
+                    onPaymentMethodChange={props.onPaymentMethodChange}
+                    onAddPaymentMethod={props.onAddPaymentMethod}
+                    onConfirm={(amount) => {
+                        if (props.selectedPaymentMethodId) {
+                            onCheckout(amount, props.selectedPaymentMethodId);
+                            close(modalId);
+                        }
+                    }}
+                    close={() => close(modalId)}
+                />
+            ),
+            {
+                products,
+                bundles,
+                items,
+                bundleLines,
+                customer,
+                customerName,
+                table,
+                saleType,
+                activeOrder,
+                total,
+                isSubmitting,
+                paymentMethods,
+                isLoadingPaymentMethods,
+                selectedPaymentMethodId,
+                onPaymentMethodChange,
+                onAddPaymentMethod,
+            },
+            {
+                title: activeOrder ? `Valider la commande ${activeOrder.orderNumber}` : "Valider la commande",
+                description: "Confirmez le montant remis par le client pour clôturer la vente.",
+                size: "XXL",
+                useHeight: true,
+                scrollable: false,
+                className: "max-h-[calc(100dvh-2rem)]",
+            }
+        );
+    }, [open, close, products, bundles, items, bundleLines, customer, customerName, table, saleType, activeOrder, total, isSubmitting, paymentMethods, isLoadingPaymentMethods, selectedPaymentMethodId, onPaymentMethodChange, onAddPaymentMethod, onCheckout]);
 
     const getSaleTypeLabel = (type: OrderTypeEnum) => {
         switch (type) {
@@ -280,34 +342,16 @@ export function CartPanel({
 
                 {activeOrder?.status !== OrderStatusEnum.PAID ? (
                     <>
-                        <div className="relative">
-                            <CoinsIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground"/>
-                            <Input
-                                type="number"
-                                min={0}
-                                placeholder="Montant remis par le client..."
-                                className="pl-9 h-11 rounded-xl bg-muted/50 border-none"
-                                value={amountGiven || ''}
-                                onChange={(e) => setAmountGiven(e.target.value ? Number(e.target.value) : 0)}
-                            />
-                        </div>
-                        {amountGiven > 0 && (
-                            <div className={cn(
-                                "flex items-center justify-between text-sm rounded-xl px-4 py-2.5",
-                                changeDue >= 0 ? "bg-green-500/10 text-green-700" : "bg-destructive/10 text-destructive"
-                            )}>
-                                <span className="font-medium">Monnaie à rendre</span>
-                                <span className="font-bold">{formatPrice(changeDue)}</span>
-                            </div>
-                        )}
-
                         <Button
                             className="w-full h-12 rounded-xl text-base font-bold"
                             disabled={(items.length === 0 && bundleLines.length === 0) || isSubmitting}
-                            onClick={() => onCheckout(amountGiven)}
+                            onClick={openCheckout}
                         >
                             {isSubmitting ? <WaitingActivity size={20}/> : (
-                                activeOrder ? `Valider la commande ${activeOrder.orderNumber}` : 'Traiter la transaction'
+                                <>
+                                    <CoinsIcon/>
+                                    {activeOrder ? `Valider la commande ${activeOrder.orderNumber}` : 'Traiter la transaction'}
+                                </>
                             )}
                         </Button>
                     </>

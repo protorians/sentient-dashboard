@@ -59,6 +59,7 @@ export interface ModuleNavigationMenuItem {
     label: string;
     description?: string;
     icon?: IconKey;
+    url?: string;
     action?: () => void | Promise<void>;
     items?: (ModuleNavigationMenuItem | ModuleNavigationMenuSeparator)[];
 }

@@ -1,5 +1,5 @@
-import BeverageSalesView from "@/modules/beverage-sales/presentation/views/beverage-sales.view";
+import { redirect } from 'next/navigation';
 
 export default function BeverageSalesPage() {
-    return <BeverageSalesView/>;
+    redirect('/beverage-sales/pos');
 }

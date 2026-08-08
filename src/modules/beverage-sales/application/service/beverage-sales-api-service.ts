@@ -18,6 +18,8 @@ import {
 import {PosTableInterface, CreatePosTableInterface} from "@/modules/beverage-sales/domain/pos-table.interface";
 import {CustomerInterface} from "@/modules/beverage-sales/domain/customer.interface";
 import {PosAnalyticsInterface} from "@/modules/beverage-sales/domain/pos-analytics.interface";
+import {PosSalesAnalyticsInterface} from "@/modules/beverage-sales/domain/pos-sales-analytics.interface";
+import {PosProfitLossInterface} from "@/modules/beverage-sales/domain/pos-profit-loss.interface";
 import {ProductInterface} from "@/modules/stock/domain/product.interface";
 
 export class BeverageSalesApiService extends ApiService {
@@ -92,5 +94,13 @@ export class BeverageSalesApiService extends ApiService {
     // Analytics
     static async getAnalytics(params?: Record<string, any>) {
         return await this.get<FetchResponseInterface<PosAnalyticsInterface>>('/pos/analytics', params);
+    }
+
+    static async getSalesAnalytics(params?: Record<string, any>) {
+        return await this.get<FetchResponseInterface<PosSalesAnalyticsInterface>>('/pos/analytics/sales', params);
+    }
+
+    static async getProfitLoss(params?: Record<string, any>) {
+        return await this.get<FetchResponseInterface<PosProfitLossInterface>>('/pos/reports/profit-loss', params);
     }
 }
