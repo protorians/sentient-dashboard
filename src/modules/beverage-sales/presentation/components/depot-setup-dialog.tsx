@@ -26,7 +26,7 @@ function DepotSetupForm({onCreated}: FormProps) {
         try {
             await StockApiService.createWarehouse({
                 name: name.trim(),
-                type: WarehouseTypeEnum.DEPOT,
+                type: WarehouseTypeEnum.BEVERAGE_DEPOT,
             });
             await queryClient.invalidateQueries({queryKey: ['stock', 'warehouses']});
             toast.success("Dépôt créé avec succès");
@@ -41,7 +41,7 @@ function DepotSetupForm({onCreated}: FormProps) {
     return (
         <div className="flex flex-col gap-4 p-2">
             <p className="text-sm text-muted-foreground">
-                Aucun entrepôt de type <strong>DEPOT</strong> n&apos;existe.
+                Aucun entrepôt de type <strong>BEVERAGE_DEPOT</strong> n&apos;existe.
                 Veuillez en créer un pour utiliser le module de vente de boissons.
             </p>
             <div className="flex flex-col gap-1.5">
@@ -72,7 +72,7 @@ export function DepotSetupDialog({show}: { show: boolean }) {
             onCreated: () => { if (modalIdRef.current) close(modalIdRef.current); },
         }, {
             title: "Configuration du dépôt",
-            description: "Un entrepôt DEPOT est requis pour ce module.",
+            description: "Un entrepôt BEVERAGE_DEPOT est requis pour ce module.",
             locked: true,
             closable: false,
             size: "SM",

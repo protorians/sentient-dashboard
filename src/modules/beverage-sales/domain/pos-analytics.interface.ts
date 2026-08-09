@@ -7,7 +7,8 @@ export interface PosAnalyticsProduct {
 }
 
 export interface PosAnalyticsTableInfo {
-    tableLabel: string;
+    tableId: string | null;
+    tableLabel: string | null;
     products: PosAnalyticsProduct[];
     orderCount: number;
     totalRevenue: number;

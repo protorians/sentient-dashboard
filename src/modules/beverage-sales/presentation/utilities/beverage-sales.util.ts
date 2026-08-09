@@ -1,5 +1,6 @@
 import {ProductInterface} from "@/modules/stock/domain/product.interface";
 import {MovementUnitEnum} from "@/modules/beverage-sales/domain/enums/movement-unit.enum";
+import {CartItemLine} from "@/modules/beverage-sales/domain/cart.types";
 
 export function toBaseUnits(product: ProductInterface, quantity: number, unit?: MovementUnitEnum): number {
     const u = unit ?? MovementUnitEnum.UNIT;
@@ -72,4 +73,13 @@ export function generateTableNumber(tables: { number?: number | null }[] = []): 
         return Math.max(max, table.number);
     }, 0);
     return max > 0 ? max + 1 : undefined;
+}
+
+export function filterInStockItems(items: CartItemLine[], products: ProductInterface[] | undefined): CartItemLine[] {
+    if (!products || products.length === 0) return items;
+    return items.filter(item => {
+        const product = products.find(p => p.id === item.productId);
+        const stock = product?.stockQuantity ?? product?.stock?.quantity;
+        return typeof stock !== 'number' || stock > 0;
+    });
 }

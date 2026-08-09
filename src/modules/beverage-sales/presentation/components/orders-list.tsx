@@ -35,6 +35,8 @@ interface OrdersListProps {
     isSaving: boolean;
     products?: ProductInterface[];
     bundles?: BundleInterface[];
+    statusFilter: OrderStatusEnum | null;
+    onStatusFilterChange: (status: OrderStatusEnum | null) => void;
 }
 
 const getOrderTypeLabel = (type: OrderTypeEnum) => {
@@ -80,9 +82,17 @@ export function OrdersList({
     isSaving,
     products,
     bundles,
+    statusFilter,
+    onStatusFilterChange,
 }: OrdersListProps) {
     const [editing, setEditing] = useState<OrderInterface | null>(null);
-    const activeOrders = (orders ?? []).filter(o => o.status !== OrderStatusEnum.CANCELLED);
+    const displayOrders = orders ?? [];
+
+    const statusOptions: Array<{ label: string; value: OrderStatusEnum | null }> = [
+        {label: "En attente", value: OrderStatusEnum.PENDING},
+        {label: "Payées", value: OrderStatusEnum.PAID},
+        {label: "Toutes", value: null},
+    ];
 
     const handleAction = (e: React.MouseEvent, action: () => void) => {
         e.stopPropagation();
@@ -91,17 +101,33 @@ export function OrdersList({
 
     return (
         <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold">Liste des commandes</h3>
+            <div className="flex items-center sm:justify-between">
+                <div className="flex-auto flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                    <h3 className="text-lg font-bold">Liste des commandes</h3>
+                    <div className="flex items-center gap-1">
+                        {statusOptions.map(option => (
+                            <Button
+                                key={option.value ?? "all"}
+                                variant={statusFilter === option.value ? "default" : "ghost"}
+                                size="xs"
+                                onClick={() => onStatusFilterChange(option.value)}
+                            >
+                                {option.label}
+                            </Button>
+                        ))}
+                    </div>
+                </div>
                 <Button
                     size="sm"
                     variant="outline"
-                    className="rounded-xl"
+                    className="w-16 sm:w-auto h-12 sm:h-auto rounded-full sm:rounded-xl p-2 sm:p-2.5"
                     onClick={onCreatePending}
                     disabled={isCreatingPending}
                 >
-                    {isCreatingPending ? <WaitingActivity size={14}/> : <PlusIcon className="size-4"/>}
-                    Nouvelle commande
+                    {isCreatingPending ? <WaitingActivity size={14}/> : <PlusIcon className="size-5 sm:size-4"/>}
+                    <span className="hidden sm:inline">
+                        Nouvelle commande
+                    </span>
                 </Button>
             </div>
 
@@ -109,14 +135,14 @@ export function OrdersList({
                 <div className="flex justify-center p-6">
                     <WaitingActivity size={20}/>
                 </div>
-            ) : activeOrders.length === 0 ? (
+            ) : displayOrders.length === 0 ? (
                 <div className="flex items-center gap-3 text-muted-foreground bg-card rounded-2xl border border-border/40 px-5 py-4">
                     <ReceiptTextIcon className="size-5 opacity-40"/>
                     <p className="text-sm">Aucune commande — créez-en une avec « Nouvelle commande »</p>
                 </div>
             ) : (
                 <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
-                    {activeOrders.map(order => {
+                    {displayOrders.map(order => {
                         const isActive = activeOrder?.id === order.id;
                         const isPending = order.status === OrderStatusEnum.PENDING;
                         const table = order.table;

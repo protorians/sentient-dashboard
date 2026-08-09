@@ -1,13 +1,18 @@
-"use client"
-
 import React from "react";
-import {BeverageSalesHeader} from "@/modules/beverage-sales/presentation/components/beverage-sales-header";
+import {View} from "@/core/presentation/themes/katon/view";
+import {Wrapper} from "@/core/presentation/themes/katon/wrapper";
+import {Header} from "@/core/presentation/themes/katon/header";
+import {Main} from "@/core/presentation/themes/katon/main";
 
-export default function BeverageSalesLayout({children}: {children: React.ReactNode}) {
+export default function BeverageSalesLayout({children}: { children: React.ReactNode }) {
     return (
-        <div className="flex flex-col gap-6 p-4 md:p-6 bg-muted/20 min-h-screen">
-            <BeverageSalesHeader />
-            {children}
-        </div>
+        <View>
+            <Wrapper>
+                <Header/>
+                <Main className="flex flex-col lg:flex-row px-6 gap-6">
+                    {children}
+                </Main>
+            </Wrapper>
+        </View>
     );
 }

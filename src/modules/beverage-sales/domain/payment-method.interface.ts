@@ -4,7 +4,7 @@ export interface PaymentMethodInterface {
     type: string;
     feeAmount: number;
     feeRate: number;
-    isActive: boolean;
+    status: boolean;
     organizationId: string;
     createdAt: string;
 }

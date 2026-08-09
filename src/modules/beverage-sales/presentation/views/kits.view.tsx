@@ -7,8 +7,7 @@ import {CreateBundleItemInterface} from "@/modules/beverage-sales/domain/bundle-
 import {useBeverageSalesQueries} from "@/modules/beverage-sales/presentation/hooks/use-beverage-sales-queries";
 import {useBeverageSalesMutations} from "@/modules/beverage-sales/presentation/hooks/use-beverage-sales-mutations";
 import {BundleManager} from "@/modules/beverage-sales/presentation/components/bundle-manager";
-import {WaitingActivity} from "@/core/presentation/waiting-activity";
-import {DepotSetupDialog} from "@/modules/beverage-sales/presentation/components/depot-setup-dialog";
+import {RequireDepotSetup} from "@/modules/beverage-sales/presentation/components/require-depot-setup";
 
 export default function KitsView() {
     const [bundleSearch, setBundleSearch] = React.useState<string>("");
@@ -24,7 +23,6 @@ export default function KitsView() {
     const {
         saveBundleMutation,
         deleteBundleMutation,
-        depotWarehouseId,
     } = useBeverageSalesMutations(warehouses);
 
     const handleSaveBundle = async (
@@ -38,24 +36,9 @@ export default function KitsView() {
         await deleteBundleMutation.mutateAsync(id);
     };
 
-    const showDepotSetup = warehouses !== undefined && !depotWarehouseId;
-
-    if (showDepotSetup) {
-        return (
-            <>
-                <DepotSetupDialog show={true} />
-                <div className="flex items-center justify-center min-h-[60vh] bg-muted/20">
-                    <div className="text-center">
-                        <WaitingActivity size={40} />
-                        <p className="text-muted-foreground text-sm mt-4">Initialisation du module...</p>
-                    </div>
-                </div>
-            </>
-        );
-    }
-
     return (
-        <BundleManager
+        <RequireDepotSetup>
+            <BundleManager
             bundles={enrichedBundles}
             isLoading={isLoadingBundles}
             products={products}
@@ -65,5 +48,6 @@ export default function KitsView() {
             onDelete={handleDeleteBundle}
             onSearchChange={setBundleSearch}
         />
+        </RequireDepotSetup>
     );
 }

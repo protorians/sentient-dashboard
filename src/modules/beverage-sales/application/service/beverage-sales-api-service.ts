@@ -20,6 +20,12 @@ import {CustomerInterface} from "@/modules/beverage-sales/domain/customer.interf
 import {PosAnalyticsInterface} from "@/modules/beverage-sales/domain/pos-analytics.interface";
 import {PosSalesAnalyticsInterface} from "@/modules/beverage-sales/domain/pos-sales-analytics.interface";
 import {PosProfitLossInterface} from "@/modules/beverage-sales/domain/pos-profit-loss.interface";
+import {PosRequiredAccountsInterface} from "@/modules/beverage-sales/domain/pos-required-accounts.interface";
+import {
+    PosOpenStatusInterface,
+    PosPreferencesInterface,
+    UpdatePosPreferencesInterface,
+} from "@/modules/beverage-sales/domain/pos-preferences.interface";
 import {ProductInterface} from "@/modules/stock/domain/product.interface";
 
 export class BeverageSalesApiService extends ApiService {
@@ -102,5 +108,35 @@ export class BeverageSalesApiService extends ApiService {
 
     static async getProfitLoss(params?: Record<string, any>) {
         return await this.get<FetchResponseInterface<PosProfitLossInterface>>('/pos/reports/profit-loss', params);
+    }
+
+    static async autoConfigureAccounts() {
+        return await this.post<FetchResponseInterface<{
+            message: string;
+            createdAccounts: string[];
+            existingAccounts: string[];
+            updatedSettings: string[];
+            settingsUpdated: boolean;
+        }>>('/pos/auto-configure-accounts');
+    }
+
+    static async getRequiredAccounts() {
+        return await this.get<FetchResponseInterface<PosRequiredAccountsInterface>>('/pos/required-accounts');
+    }
+
+    // Cash register preferences & status
+    static async getPosPreferences() {
+        return await this.get<FetchResponseInterface<PosPreferencesInterface>>('/pos/preferences');
+    }
+
+    static async updatePosPreferences(payload: UpdatePosPreferencesInterface) {
+        return await this.put<FetchResponseInterface<PosPreferencesInterface>>('/pos/preferences', payload);
+    }
+
+    static async getPosRegisterStatus(date?: string) {
+        return await this.get<FetchResponseInterface<PosOpenStatusInterface>>(
+            '/pos/register-status',
+            date ? {date} : undefined
+        );
     }
 }

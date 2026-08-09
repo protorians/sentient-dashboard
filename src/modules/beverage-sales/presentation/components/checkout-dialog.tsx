@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {ProductInterface} from "@/modules/stock/domain/product.interface";
 import {BundleInterface} from "@/modules/beverage-sales/domain/bundle.interface";
 import {PosTableInterface} from "@/modules/beverage-sales/domain/pos-table.interface";
@@ -11,7 +11,6 @@ import {CartItemLine, CartBundleLine} from "@/modules/beverage-sales/domain/cart
 import {PaymentMethodInterface} from "@/modules/beverage-sales/domain/payment-method.interface";
 import {Button} from "@/core/presentation/ui/button";
 import {Input} from "@/core/presentation/ui/input";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/core/presentation/ui/select";
 import {Badge} from "@/core/presentation/ui/badge";
 import {WaitingActivity} from "@/core/presentation/waiting-activity";
 import {
@@ -19,18 +18,40 @@ import {
     GiftIcon,
     UserIcon,
     LayoutGridIcon,
-    CoinsIcon,
     DeleteIcon,
     EraserIcon,
     CheckCircle2Icon,
     ArrowLeftIcon,
     CreditCardIcon,
-    PlusCircleIcon,
-    CheckIcon,
-    XIcon,
+    CircleIcon,
+    BanknoteIcon,
+    SmartphoneIcon,
+    LandmarkIcon,
+    WalletIcon,
+    QrCodeIcon,
 } from "lucide-react";
 import {cn} from "@/core/infrastructure/utilities/utils";
 import {formatPrice, toBaseUnits} from "@/modules/beverage-sales/presentation/utilities/beverage-sales.util";
+
+const PAYMENT_TYPE_LABELS: Record<string, string> = {
+    CASH: "Espèces",
+    CREDIT_CARD: "Carte bancaire",
+    DEBIT_CARD: "Carte de débit",
+    MOBILE_MONEY: "Mobile Money",
+    BANK_TRANSFER: "Virement",
+    CHECK: "Chèque",
+    E_WALLET: "Wallet",
+};
+
+const PAYMENT_TYPE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+    CASH: BanknoteIcon,
+    CREDIT_CARD: CreditCardIcon,
+    DEBIT_CARD: CreditCardIcon,
+    MOBILE_MONEY: SmartphoneIcon,
+    BANK_TRANSFER: LandmarkIcon,
+    CHECK: CreditCardIcon,
+    E_WALLET: WalletIcon,
+};
 
 export interface CheckoutDialogProps {
     products?: ProductInterface[];
@@ -48,8 +69,7 @@ export interface CheckoutDialogProps {
     isLoadingPaymentMethods?: boolean;
     selectedPaymentMethodId?: string | null;
     onPaymentMethodChange?: (id: string | null) => void;
-    onAddPaymentMethod?: (name: string, type: string) => Promise<void>;
-    onConfirm: (amountGiven: number) => void;
+    onConfirm: (amountGiven: number, paymentMethodId: string) => void;
     close: () => void;
 }
 
@@ -74,42 +94,56 @@ function KeyButton({onClick, children, className}: KeyButtonProps) {
     );
 }
 
-export function CheckoutDialog({
-    items,
-    bundleLines,
-    products,
-    bundles,
-    customer,
-    customerName,
-    table,
-    saleType,
-    activeOrder,
-    total,
-    isSubmitting,
-    paymentMethods,
-    isLoadingPaymentMethods,
-    selectedPaymentMethodId,
-    onPaymentMethodChange,
-    onAddPaymentMethod,
-    onConfirm,
-    close,
-}: CheckoutDialogProps) {
+export function CheckoutDialog(
+    {
+        items,
+        bundleLines,
+        products,
+        bundles,
+        customer,
+        customerName,
+        table,
+        saleType,
+        activeOrder,
+        total,
+        isSubmitting,
+        paymentMethods,
+        isLoadingPaymentMethods,
+        selectedPaymentMethodId,
+        onPaymentMethodChange,
+        onConfirm,
+        close,
+    }: CheckoutDialogProps) {
     const [amount, setAmount] = useState<string>(
         () => activeOrder?.receivedAmount && activeOrder.receivedAmount > 0 ? String(activeOrder.receivedAmount) : ""
     );
-    const [showAddMethodForm, setShowAddMethodForm] = useState(false);
-    const [newMethodName, setNewMethodName] = useState("");
-    const [newMethodType, setNewMethodType] = useState("CASH");
-    const [isAddingMethod, setIsAddingMethod] = useState(false);
+    const [localPaymentMethodId, setLocalPaymentMethodId] = useState<string | null>(() => selectedPaymentMethodId ?? null);
+
+    useEffect(() => {
+        if (isLoadingPaymentMethods || !paymentMethods || paymentMethods.length === 0) return;
+        if (localPaymentMethodId) return;
+        const cashMethod = paymentMethods.find(m => m.type === "CASH");
+        const autoId = cashMethod?.id ?? paymentMethods[0]?.id;
+        if (autoId) {
+            setLocalPaymentMethodId(autoId);
+            onPaymentMethodChange?.(autoId);
+        }
+    }, [isLoadingPaymentMethods, paymentMethods, localPaymentMethodId, onPaymentMethodChange]);
+
+    const handleSelectMethod = (id: string) => {
+        const newId = localPaymentMethodId === id ? null : id;
+        setLocalPaymentMethodId(newId);
+        onPaymentMethodChange?.(newId);
+    };
 
     const amountGiven = Number(amount) || 0;
     const changeDue = amountGiven - total;
     const hasItems = items.length > 0 || bundleLines.length > 0;
     const hasSufficient = amountGiven > 0 && changeDue >= 0;
-    const hasPaymentMethod = !!selectedPaymentMethodId;
+    const hasPaymentMethod = !!localPaymentMethodId;
     const canConfirm = hasItems && hasSufficient && hasPaymentMethod && !isSubmitting;
 
-    const selectedMethod = paymentMethods?.find(m => m.id === selectedPaymentMethodId);
+    const selectedMethod = paymentMethods?.find(m => m.id === localPaymentMethodId);
 
     const appendDigit = (digit: string) => {
         setAmount(prev => {
@@ -126,24 +160,14 @@ export function CheckoutDialog({
     const clear = () => setAmount("");
     const setExact = () => setAmount(String(total));
 
-    const handleAddMethod = async () => {
-        if (!newMethodName.trim() || !onAddPaymentMethod) return;
-        setIsAddingMethod(true);
-        try {
-            await onAddPaymentMethod(newMethodName.trim(), newMethodType);
-            setNewMethodName("");
-            setShowAddMethodForm(false);
-        } catch {
-        } finally {
-            setIsAddingMethod(false);
-        }
-    };
-
     const getSaleTypeLabel = (type: OrderTypeEnum) => {
         switch (type) {
-            case OrderTypeEnum.GROS: return 'Gros';
-            case OrderTypeEnum.SEMI_GROS: return 'Semi-gros';
-            case OrderTypeEnum.DETAIL: return 'Detail';
+            case OrderTypeEnum.GROS:
+                return 'Gros';
+            case OrderTypeEnum.SEMI_GROS:
+                return 'Semi-gros';
+            case OrderTypeEnum.DETAIL:
+                return 'Detail';
         }
     };
 
@@ -151,21 +175,24 @@ export function CheckoutDialog({
 
     return (
         <div className="flex flex-col w-full h-full">
-            <div className="flex-1 min-h-0 overflow-y-auto p-5 grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+            <div
+                className="flex-1 min-h-0 overflow-y-auto p-5 grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                 <div className="flex flex-col gap-4">
                     <div className="flex items-center justify-between gap-3">
                         <h3 className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
                             Recapitulatif de la commande
                         </h3>
                         {activeOrder && (
-                            <span className="text-xs font-bold text-primary bg-primary/10 rounded-lg px-2.5 py-1 whitespace-nowrap">
+                            <span
+                                className="text-xs font-bold text-primary bg-primary/10 rounded-lg px-2.5 py-1 whitespace-nowrap">
                                 {getSaleTypeLabel(saleType)}
                             </span>
                         )}
                     </div>
 
                     {(customer || customerName.trim() || table) && (
-                        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground bg-muted/40 rounded-xl px-3 py-2">
+                        <div
+                            className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground bg-muted/40 rounded-xl px-3 py-2">
                             {customer && (
                                 <span className="inline-flex items-center gap-1.5 font-medium text-foreground truncate">
                                     <UserIcon className="size-3 shrink-0"/>
@@ -189,7 +216,8 @@ export function CheckoutDialog({
 
                     <div className="flex flex-col gap-2">
                         {items.length === 0 && bundleLines.length === 0 ? (
-                            <div className="flex items-center justify-center h-32 text-sm text-muted-foreground bg-muted/40 rounded-xl">
+                            <div
+                                className="flex items-center justify-center h-32 text-sm text-muted-foreground bg-muted/40 rounded-xl">
                                 Le panier est vide
                             </div>
                         ) : (
@@ -200,16 +228,19 @@ export function CheckoutDialog({
                                     return (
                                         <div key={`${item.productId}-${item.unit}`}
                                              className="flex items-center gap-3 bg-muted/40 rounded-xl px-3 py-2.5">
-                                            <div className="size-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                                            <div
+                                                className="size-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
                                                 <WineIcon className="size-5 text-muted-foreground/40"/>
                                             </div>
                                             <div className="flex flex-col flex-1 min-w-0">
-                                                <span className="text-sm font-bold truncate">{product?.name ?? item.productId}</span>
+                                                <span
+                                                    className="text-sm font-bold truncate">{product?.name ?? item.productId}</span>
                                                 <span className="text-xs text-muted-foreground">
                                                     {item.quantity} x {formatPrice(item.unitPrice)}
                                                 </span>
                                             </div>
-                                            <span className="text-sm font-bold whitespace-nowrap">{formatPrice(lineTotal)}</span>
+                                            <span
+                                                className="text-sm font-bold whitespace-nowrap">{formatPrice(lineTotal)}</span>
                                         </div>
                                     );
                                 })}
@@ -218,16 +249,19 @@ export function CheckoutDialog({
                                     return (
                                         <div key={line.bundleId}
                                              className="flex items-center gap-3 bg-primary/5 rounded-xl px-3 py-2.5 border border-primary/10">
-                                            <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                                            <div
+                                                className="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                                                 <GiftIcon className="size-5 text-primary/60"/>
                                             </div>
                                             <div className="flex flex-col flex-1 min-w-0">
-                                                <span className="text-sm font-bold truncate">{bundle?.name ?? line.bundleId}</span>
+                                                <span
+                                                    className="text-sm font-bold truncate">{bundle?.name ?? line.bundleId}</span>
                                                 <span className="text-xs text-muted-foreground">
                                                     {line.quantity} x {formatPrice(line.unitPrice)}
                                                 </span>
                                             </div>
-                                            <span className="text-sm font-bold whitespace-nowrap">{formatPrice(line.quantity * line.unitPrice)}</span>
+                                            <span
+                                                className="text-sm font-bold whitespace-nowrap">{formatPrice(line.quantity * line.unitPrice)}</span>
                                         </div>
                                     );
                                 })}
@@ -237,139 +271,70 @@ export function CheckoutDialog({
 
                     <div className="flex flex-col gap-3 pt-2">
                         <div className="flex items-center gap-2">
-                            <CreditCardIcon className="size-4 text-muted-foreground" />
+                            <CreditCardIcon className="size-4 text-muted-foreground"/>
                             <h3 className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
                                 Moyen de paiement
                             </h3>
                         </div>
 
                         {isLoadingPaymentMethods ? (
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground p-3 bg-muted/40 rounded-xl">
-                                <WaitingActivity size={16} />
+                            <div
+                                className="flex items-center gap-2 text-sm text-muted-foreground p-3 bg-muted/40 rounded-xl">
+                                <WaitingActivity size={16}/>
                                 Chargement des moyens de paiement...
                             </div>
                         ) : !hasMethods ? (
-                            <div className="flex flex-col gap-3">
-                                <div className="text-sm text-muted-foreground p-3 bg-amber-500/5 border border-amber-500/20 rounded-xl">
-                                    Aucun moyen de paiement configuré. Veuillez en ajouter au moins un.
-                                </div>
-                                {showAddMethodForm ? (
-                                    <div className="flex flex-col gap-2 p-3 bg-muted/40 rounded-xl">
-                                        <Input
-                                            placeholder="Nom (ex: Espèces, Carte bancaire...)"
-                                            value={newMethodName}
-                                            onChange={(e) => setNewMethodName(e.target.value)}
-                                            className="h-10"
-                                        />
-                                        <Select value={newMethodType} onValueChange={setNewMethodType}>
-                                            <SelectTrigger className="h-10">
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="CASH">Espèces</SelectItem>
-                                                <SelectItem value="CREDIT_CARD">Carte bancaire</SelectItem>
-                                                <SelectItem value="MOBILE_MONEY">Mobile Money</SelectItem>
-                                                <SelectItem value="BANK_TRANSFER">Virement bancaire</SelectItem>
-                                                <SelectItem value="CHECK">Chèque</SelectItem>
-                                                <SelectItem value="E_WALLET">Portefeuille électronique</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <div className="flex items-center gap-2 pt-1">
-                                            <Button
-                                                size="sm"
-                                                variant="default"
-                                                onClick={handleAddMethod}
-                                                disabled={!newMethodName.trim() || isAddingMethod}
-                                                className="gap-1.5"
-                                            >
-                                                {isAddingMethod ? <WaitingActivity size={14} /> : <CheckIcon className="size-4" />}
-                                                Ajouter
-                                            </Button>
-                                            <Button
-                                                size="sm"
-                                                variant="ghost"
-                                                onClick={() => { setShowAddMethodForm(false); setNewMethodName(""); }}
-                                            >
-                                                <XIcon className="size-4" />
-                                                Annuler
-                                            </Button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setShowAddMethodForm(true)}
-                                        className="gap-1.5 w-full"
-                                    >
-                                        <PlusCircleIcon className="size-4" />
-                                        Ajouter un moyen de paiement
-                                    </Button>
-                                )}
+                            <div
+                                className="text-sm text-muted-foreground p-3 bg-amber-500/5 border border-amber-500/20 rounded-xl">
+                                Aucun moyen de paiement configuré. Veuillez en ajouter depuis la gestion de facturation.
                             </div>
                         ) : (
-                            <div className="flex flex-col gap-2">
-                                <Select value={selectedPaymentMethodId ?? ""} onValueChange={(v) => onPaymentMethodChange?.(v || null)}>
-                                    <SelectTrigger className="h-12 rounded-xl">
-                                        <SelectValue placeholder="Sélectionner un moyen de paiement" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {paymentMethods?.map(method => (
-                                            <SelectItem key={method.id} value={method.id}>
-                                                <span className="flex items-center gap-2">
-                                                    {method.name}
-                                                    {method.type === "CASH" && <Badge variant="outline" className="text-[10px] px-1 py-0">Espèces</Badge>}
-                                                    {method.type === "MOBILE_MONEY" && <Badge variant="outline" className="text-[10px] px-1 py-0">Mobile</Badge>}
-                                                    {method.type === "CREDIT_CARD" && <Badge variant="outline" className="text-[10px] px-1 py-0">CB</Badge>}
-                                                </span>
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                {onAddPaymentMethod && (
-                                    showAddMethodForm ? (
-                                        <div className="flex flex-col gap-2 p-3 bg-muted/40 rounded-xl mt-1">
-                                            <Input
-                                                placeholder="Nom du moyen de paiement"
-                                                value={newMethodName}
-                                                onChange={(e) => setNewMethodName(e.target.value)}
-                                                className="h-9 text-sm"
-                                            />
-                                            <Select value={newMethodType} onValueChange={setNewMethodType}>
-                                                <SelectTrigger className="h-9">
-                                                    <SelectValue />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="CASH">Espèces</SelectItem>
-                                                    <SelectItem value="CREDIT_CARD">Carte bancaire</SelectItem>
-                                                    <SelectItem value="MOBILE_MONEY">Mobile Money</SelectItem>
-                                                    <SelectItem value="BANK_TRANSFER">Virement bancaire</SelectItem>
-                                                    <SelectItem value="CHECK">Chèque</SelectItem>
-                                                    <SelectItem value="E_WALLET">Portefeuille électronique</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <div className="flex items-center gap-2">
-                                                <Button size="sm" variant="default" onClick={handleAddMethod} disabled={!newMethodName.trim() || isAddingMethod} className="gap-1.5">
-                                                    {isAddingMethod ? <WaitingActivity size={14} /> : <CheckIcon className="size-4" />}
-                                                    Valider
-                                                </Button>
-                                                <Button size="sm" variant="ghost" onClick={() => { setShowAddMethodForm(false); setNewMethodName(""); }}>
-                                                    <XIcon className="size-4" />
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => setShowAddMethodForm(true)}
-                                            className="gap-1.5 text-xs"
+                            <div className="flex flex-col gap-1.5">
+                                {paymentMethods!.map(method => {
+                                    const isSelected = method.id === localPaymentMethodId;
+                                    const TypeIcon = PAYMENT_TYPE_ICONS[method.type] ?? CreditCardIcon;
+                                    return (
+                                        <button
+                                            key={method.id}
+                                            type="button"
+                                            onClick={() => handleSelectMethod(method.id)}
+                                            className={cn(
+                                                "flex items-center gap-3 w-full rounded-xl px-3 py-3 text-left transition-all",
+                                                isSelected
+                                                    ? "bg-primary/10 border-2 border-primary ring-1 ring-primary/20"
+                                                    : "bg-muted/40 border-2 border-transparent hover:bg-muted/60 hover:border-border/50"
+                                            )}
                                         >
-                                            <PlusCircleIcon className="size-3.5" />
-                                            Ajouter un autre moyen
-                                        </Button>
-                                    )
-                                )}
+                                            <div className="shrink-0">
+                                                {isSelected ? (
+                                                    <CheckCircle2Icon
+                                                        className="size-5 text-primary"/>
+                                                ) : (
+                                                    <CircleIcon
+                                                        className="size-5 text-muted-foreground/40"/>
+                                                )}
+                                            </div>
+                                            <div
+                                                className="size-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                                                <TypeIcon className="size-4 text-muted-foreground"/>
+                                            </div>
+                                            <div
+                                                className="flex flex-col flex-1 min-w-0">
+                                                <span className="text-sm font-bold">{method.name}</span>
+                                                <span className="text-[10px] text-muted-foreground">
+                                                    {PAYMENT_TYPE_LABELS[method.type] ?? method.type}
+                                                    {method.feeRate > 0 && ` · Frais ${method.feeRate}%`}
+                                                </span>
+                                            </div>
+                                            {isSelected && (
+                                                <Badge variant="default"
+                                                       className="shrink-0 text-[10px] px-1.5 py-0 h-5">
+                                                    Actif
+                                                </Badge>
+                                            )}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         )}
                     </div>
@@ -398,16 +363,19 @@ export function CheckoutDialog({
                                     disabled={isSubmitting}
                                     className="h-11 w-full max-w-[200px] rounded-xl border-transparent! focus:border-transparent! text-right text-4xl! bg-transparent! focus:bg-transparent! p-0! font-black tabular-nums px-3"
                                 />
-                                <span className="text-sm font-bold text-muted-foreground whitespace-nowrap">FCFA</span>
+                                <span
+                                    className="text-sm font-bold text-muted-foreground whitespace-nowrap">FCFA</span>
                             </div>
                         </div>
                     </div>
 
                     {selectedMethod && selectedMethod.type !== "CASH" && (
-                        <div className="text-xs text-muted-foreground flex items-center gap-2 p-2 bg-blue-500/5 border border-blue-500/20 rounded-lg">
-                            <CreditCardIcon className="size-3.5 text-blue-500" />
+                        <div
+                            className="text-xs text-muted-foreground flex items-center gap-2 p-2 bg-blue-500/5 border border-blue-500/20 rounded-lg">
+                            <CreditCardIcon className="size-3.5 text-blue-500"/>
                             Paiement via {selectedMethod.name}
-                            {selectedMethod.feeRate > 0 && <span className="text-amber-600">· Frais: {selectedMethod.feeRate}%</span>}
+                            {selectedMethod.feeRate > 0 &&
+                                <span className="text-amber-600">· Frais: {selectedMethod.feeRate}%</span>}
                         </div>
                     )}
 
@@ -457,8 +425,9 @@ export function CheckoutDialog({
                     </div>
 
                     {!hasPaymentMethod && (
-                        <div className="text-xs text-amber-600 bg-amber-500/5 border border-amber-500/20 rounded-lg p-2 flex items-center gap-2">
-                            <CreditCardIcon className="size-3.5 shrink-0" />
+                        <div
+                            className="text-xs text-amber-600 bg-amber-500/5 border border-amber-500/20 rounded-lg p-2 flex items-center gap-2">
+                            <CreditCardIcon className="size-3.5 shrink-0"/>
                             Veuillez sélectionner un moyen de paiement pour valider.
                         </div>
                     )}
@@ -474,7 +443,7 @@ export function CheckoutDialog({
                     size="lg"
                     className="h-11 px-6 text-base font-bold"
                     disabled={!canConfirm}
-                    onClick={() => onConfirm(amountGiven)}
+                    onClick={() => onConfirm(amountGiven, localPaymentMethodId!)}
                 >
                     {isSubmitting ? <WaitingActivity size={20}/> : (
                         <>

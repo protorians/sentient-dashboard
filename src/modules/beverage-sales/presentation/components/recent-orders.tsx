@@ -81,13 +81,19 @@ export function RecentOrders({orders, isLoading, products, bundles, isSaving, on
             ),
         },
         {
-            accessorKey: "createdAt",
+            id: "date",
             header: "Date",
-            cell: ({row}: any) => (
-                <span className="text-xs text-muted-foreground whitespace-nowrap">
-                    {row.original.createdAt ? new Date(row.original.createdAt).toLocaleString('fr-FR') : ''}
-                </span>
-            ),
+            cell: ({row}: any) => {
+                const order = row.original as OrderInterface;
+                const reference = order.paidAt ?? order.createdAt;
+                const isPaid = order.status === OrderStatusEnum.PAID;
+                return (
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">
+                        {reference ? new Date(reference).toLocaleString('fr-FR') : ''}
+                        {isPaid && order.paidAt && <span className="ml-1 text-green-600">· payée</span>}
+                    </span>
+                );
+            },
         },
         {
             id: "assignee",

@@ -14,7 +14,7 @@ export function useBeverageSalesMutations(warehouses?: WarehouseInterface[]) {
     const queryClient = useQueryClient();
 
     const depotWarehouseId = useMemo(() => {
-        return warehouses?.find(w => w.type === WarehouseTypeEnum.DEPOT)?.id;
+        return warehouses?.find(w => w.type === WarehouseTypeEnum.BEVERAGE_DEPOT)?.id;
     }, [warehouses]);
 
     const createOrderMutation = useMutation({

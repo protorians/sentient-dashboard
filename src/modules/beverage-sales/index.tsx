@@ -23,14 +23,14 @@ const beverageSalesModule: ModuleDeclarationInterface = {
     menu: {
         items: [
             {
-                label: "Tableau de bord",
-                icon: "LayoutDashboardIcon",
-                url: '/beverage-sales/dashboard',
-            },
-            {
                 label: "Caisse",
                 icon: "ShoppingBagIcon",
                 url: '/beverage-sales/pos',
+            },
+            {
+                label: "Tableau de bord",
+                icon: "LayoutDashboardIcon",
+                url: '/beverage-sales/dashboard',
             },
             {
                 label: "Kits",
@@ -41,6 +41,11 @@ const beverageSalesModule: ModuleDeclarationInterface = {
                 label: "Points",
                 icon: "FileTextIcon",
                 url: '/beverage-sales/reports',
+            },
+            {
+                label: "Paramètres",
+                icon: "SettingsIcon",
+                url: '/beverage-sales/settings',
             },
         ]
     },

@@ -5,12 +5,17 @@ import {ProductInterface} from "@/modules/stock/domain/product.interface";
 import {MovementUnitEnum} from "@/modules/beverage-sales/domain/enums/movement-unit.enum";
 import {CartItemLine} from "@/modules/beverage-sales/domain/cart.types";
 import {Card} from "@/core/presentation/ui/card";
+import {Badge} from "@/core/presentation/ui/badge";
 import {Input} from "@/core/presentation/ui/input";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/core/presentation/ui/select";
 import {WaitingActivity} from "@/core/presentation/waiting-activity";
 import {SearchIcon, PlusIcon, MinusIcon, BeerIcon, PackageIcon, BoxesIcon} from "lucide-react";
 import {cn} from "@/core/infrastructure/utilities/utils";
-import {formatPrice, getBaseUnitPrice, getDisplayPrice} from "@/modules/beverage-sales/presentation/utilities/beverage-sales.util";
+import {
+    formatPrice,
+    getBaseUnitPrice,
+    getDisplayPrice
+} from "@/modules/beverage-sales/presentation/utilities/beverage-sales.util";
 
 interface ProductCatalogProps {
     products?: ProductInterface[];
@@ -35,7 +40,16 @@ const UNIT_LABELS: Record<MovementUnitEnum, string> = {
     [MovementUnitEnum.CASE]: 'Casier',
 };
 
-export function ProductCatalog({products, isLoading, searchTerm, onSearchChange, cartItems, onAdd, onUpdateQty, isReadOnly}: ProductCatalogProps) {
+export function ProductCatalog({
+                                   products,
+                                   isLoading,
+                                   searchTerm,
+                                   onSearchChange,
+                                   cartItems,
+                                   onAdd,
+                                   onUpdateQty,
+                                   isReadOnly
+                               }: ProductCatalogProps) {
     const [unit, setUnit] = useState<MovementUnitEnum>(MovementUnitEnum.UNIT);
 
     const filtered = products?.filter(p =>
@@ -53,7 +67,11 @@ export function ProductCatalog({products, isLoading, searchTerm, onSearchChange,
 
     const handleIncrement = (product: ProductInterface) => {
         if (isReadOnly) return;
+        const stock = product.stockQuantity ?? product.stock?.quantity;
+        if (product.isOutOfStock) return;
+        if (typeof stock === 'number' && stock <= 0) return;
         const qty = getQuantity(product.id);
+        if (typeof stock === 'number' && qty >= stock) return;
         if (qty === 0) {
             onAdd(product, unit, getBaseUnitPrice(product, unit));
         } else {
@@ -74,7 +92,8 @@ export function ProductCatalog({products, isLoading, searchTerm, onSearchChange,
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div className="flex items-baseline gap-3">
                     <h3 className="text-lg font-bold">Menu</h3>
-                    <span className="text-xs text-muted-foreground">{filtered?.length ?? 0} article{(filtered?.length ?? 0) > 1 ? 's' : ''}</span>
+                    <span
+                        className="text-xs text-muted-foreground">{filtered?.length ?? 0} article{(filtered?.length ?? 0) > 1 ? 's' : ''}</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="relative w-full md:w-64">
@@ -113,13 +132,32 @@ export function ProductCatalog({products, isLoading, searchTerm, onSearchChange,
                         const qty = getQuantity(product.id);
                         const displayPrice = getDisplayPrice(product, unit);
                         const stock = product.stockQuantity ?? product.stock?.quantity;
+                        const isOutOfStock = product.isOutOfStock ?? (typeof stock === 'number' && stock <= 0);
+                        const isDisabled = isOutOfStock || isReadOnly;
                         return (
-                            <Card key={product.id} className="flex-row gap-3 p-3 border-border/40 shadow-sm rounded-2xl">
-                                <div className="size-24 rounded-xl bg-muted flex items-center justify-center shrink-0 self-center">
+                            <Card key={product.id} className={cn(
+                                "flex-row gap-3 p-3 border-border/40 shadow-sm rounded-2xl transition-opacity",
+                                isOutOfStock && "opacity-50"
+                            )}>
+                                <div
+                                    className="size-24 rounded-xl bg-muted flex items-center justify-center shrink-0 self-center">
                                     <UnitIcon className="size-9 text-muted-foreground/30"/>
                                 </div>
                                 <div className="flex flex-col flex-1 min-w-0">
-                                    <h4 className="font-bold text-sm line-clamp-1">{product.name}</h4>
+                                    <div className="flex items-center gap-2">
+                                        <h4 className="font-bold text-sm line-clamp-1">{product.name}</h4>
+                                        <div className="flex flex-col flex-auto gap-0 items-end">
+                                            {isOutOfStock && (
+                                                <Badge variant="destructive"
+                                                       className="shrink-0 text-[10px] px-1.5 py-0 h-4">
+                                                    Rupture
+                                                </Badge>
+                                            )}
+                                            <div className="flex justify-end items-center gap-1 text-xl font-black">
+                                                {displayPrice > 0 ? formatPrice(displayPrice) : '—'}
+                                            </div>
+                                        </div>
+                                    </div>
                                     <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
                                         {product.description || product.categoryName || product.sku || UNIT_LABELS[unit]}
                                     </p>
@@ -127,34 +165,55 @@ export function ProductCatalog({products, isLoading, searchTerm, onSearchChange,
                                         {typeof stock === 'number' ? `${stock} en stock` : '\u00A0'}
                                     </p>
                                     <div className="flex items-center justify-between mt-auto pt-2">
-                                        <span className="text-sm font-black">
-                                            {displayPrice > 0 ? formatPrice(displayPrice) : '—'}
-                                        </span>
                                         <div className="flex items-center gap-2.5">
                                             <button
                                                 onClick={() => handleDecrement(product)}
                                                 disabled={qty === 0 || isReadOnly}
                                                 className={cn(
-                                                    "size-7 rounded-full border flex items-center justify-center transition-colors",
+                                                    "size-16 rounded-full border flex items-center justify-center transition-colors",
                                                     (qty === 0 || isReadOnly)
                                                         ? "border-border/40 text-muted-foreground/30 cursor-not-allowed"
                                                         : "border-border text-muted-foreground hover:border-destructive hover:text-destructive"
                                                 )}
                                             >
-                                                <MinusIcon className="size-3.5"/>
+                                                <MinusIcon className="size-7"/>
                                             </button>
-                                            <span className="text-sm font-bold w-4 text-center">{qty}</span>
+                                            <input
+                                                key={`cat-qty-${product.id}-${unit}-${qty}`}
+                                                type="number"
+                                                min={0}
+                                                max={stock ?? undefined}
+                                                defaultValue={qty}
+                                                className="w-12 text-center text-xl font-bold bg-transparent border-0 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                onBlur={(e) => {
+                                                    const raw = Number(e.target.value);
+                                                    const maxStock = typeof stock === 'number' ? stock : Infinity;
+                                                    const val = isNaN(raw) ? qty : Math.max(0, Math.min(raw, maxStock));
+                                                    if (val !== qty) {
+                                                        if (val === 0) {
+                                                            onUpdateQty(product.id!, 0);
+                                                        } else {
+                                                            if (qty === 0) onAdd(product, unit, getBaseUnitPrice(product, unit));
+                                                            onUpdateQty(product.id!, val);
+                                                        }
+                                                    }
+                                                    e.target.value = String(Math.max(1, val) || 1);
+                                                }}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+                                                }}
+                                            />
                                             <button
                                                 onClick={() => handleIncrement(product)}
-                                                disabled={isReadOnly}
+                                                disabled={isDisabled || (typeof stock === 'number' && qty >= stock)}
                                                 className={cn(
-                                                    "size-7 rounded-full flex items-center justify-center transition-colors",
-                                                    isReadOnly
+                                                    "size-16 rounded-full flex items-center justify-center transition-colors",
+                                                    (isDisabled || (typeof stock === 'number' && qty >= stock))
                                                         ? "bg-muted text-muted-foreground/30 cursor-not-allowed"
                                                         : "bg-primary text-primary-foreground hover:bg-primary/90"
                                                 )}
                                             >
-                                                <PlusIcon className="size-3.5"/>
+                                                <PlusIcon className="size-7"/>
                                             </button>
                                         </div>
                                     </div>

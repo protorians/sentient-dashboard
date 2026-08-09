@@ -22,6 +22,13 @@ export interface PosChartItem {
     value: number;
 }
 
+export interface PosSalesByDayPart {
+    dayPart: 'matin' | 'pause' | 'après-midi' | 'hors-horaires' | 'fermé';
+    label: string;
+    revenue: number;
+    orderCount: number;
+}
+
 export interface PosSalesAnalyticsInterface {
     summary: {
         totalRevenue: number;
@@ -34,4 +41,5 @@ export interface PosSalesAnalyticsInterface {
     topCustomers: PosTopCustomer[];
     revenueOverTime: PosAnalyticsTimeSeriesPoint[];
     ordersOverTime: PosAnalyticsTimeSeriesPoint[];
+    salesByDayPart: PosSalesByDayPart[];
 }

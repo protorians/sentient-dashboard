@@ -1,14 +1,66 @@
 "use client"
 
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {ProductInterface} from "@/modules/stock/domain/product.interface";
 import {BundleInterface} from "@/modules/beverage-sales/domain/bundle.interface";
 import {CartItemLine, CartBundleLine} from "@/modules/beverage-sales/domain/cart.types";
 import {MovementUnitEnum} from "@/modules/beverage-sales/domain/enums/movement-unit.enum";
 
+const CART_STORAGE_KEY = "beverage-sales:cart";
+const ACTIVE_ORDER_KEY = "beverage-sales:active-order-id";
+
+function loadStorage<T>(key: string, fallback: T): T {
+    if (typeof window === "undefined") return fallback;
+    try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+    } catch {
+        return fallback;
+    }
+}
+
+function saveStorage(key: string, value: unknown) {
+    if (typeof window === "undefined") return;
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+    } catch {
+        // ignore
+    }
+}
+
+function removeStorage(key: string) {
+    if (typeof window === "undefined") return;
+    try {
+        localStorage.removeItem(key);
+    } catch {
+        // ignore
+    }
+}
+
+function loadCart(): { items: CartItemLine[]; bundleLines: CartBundleLine[] } {
+    return loadStorage(CART_STORAGE_KEY, {items: [] as CartItemLine[], bundleLines: [] as CartBundleLine[]});
+}
+
+function saveCart(items: CartItemLine[], bundleLines: CartBundleLine[]) {
+    saveStorage(CART_STORAGE_KEY, {items, bundleLines});
+}
+
+export function loadActiveOrderId(): string | null {
+    return loadStorage<string | null>(ACTIVE_ORDER_KEY, null);
+}
+
+export function saveActiveOrderId(orderId: string | null) {
+    if (orderId) {
+        saveStorage(ACTIVE_ORDER_KEY, orderId);
+    } else {
+        removeStorage(ACTIVE_ORDER_KEY);
+    }
+}
+
 export interface UseCartReturn {
     items: CartItemLine[];
     bundleLines: CartBundleLine[];
+    orderId: string | null;
     addToCart: (product: ProductInterface, unit: MovementUnitEnum, unitPrice: number) => void;
     updateItemQty: (productId: string, quantity: number) => void;
     updateItemUnit: (productId: string, unit: MovementUnitEnum) => void;
@@ -17,12 +69,28 @@ export interface UseCartReturn {
     updateBundleQty: (bundleId: string, quantity: number) => void;
     removeBundleFromCart: (bundleId: string) => void;
     clearCart: () => void;
-    loadFromOrder: (items: CartItemLine[], bundleLines: CartBundleLine[]) => void;
+    loadFromOrder: (orderId: string, items: CartItemLine[], bundleLines: CartBundleLine[]) => void;
+    setOrderId: (orderId: string | null) => void;
 }
 
 export function useCart(): UseCartReturn {
-    const [items, setItems] = useState<CartItemLine[]>([]);
-    const [bundleLines, setBundleLines] = useState<CartBundleLine[]>([]);
+    const [items, setItems] = useState<CartItemLine[]>(() => loadCart().items);
+    const [bundleLines, setBundleLines] = useState<CartBundleLine[]>(() => loadCart().bundleLines);
+    const [orderId, setOrderId] = useState<string | null>(() => loadActiveOrderId());
+
+    useEffect(() => {
+        if (items.length === 0 && bundleLines.length === 0) {
+            if (typeof window !== "undefined") {
+                localStorage.removeItem(CART_STORAGE_KEY);
+            }
+        } else {
+            saveCart(items, bundleLines);
+        }
+    }, [items, bundleLines]);
+
+    useEffect(() => {
+        saveActiveOrderId(orderId);
+    }, [orderId]);
 
     const addToCart = (product: ProductInterface, unit: MovementUnitEnum, unitPrice: number) => {
         if (!product.id) return;
@@ -82,9 +150,11 @@ export function useCart(): UseCartReturn {
     const clearCart = () => {
         setItems([]);
         setBundleLines([]);
+        setOrderId(null);
     };
 
-    const loadFromOrder = (orderItems: CartItemLine[], orderBundleLines: CartBundleLine[]) => {
+    const loadFromOrder = (orderId: string, orderItems: CartItemLine[], orderBundleLines: CartBundleLine[]) => {
+        setOrderId(orderId);
         setItems(orderItems);
         setBundleLines(orderBundleLines);
     };
@@ -92,6 +162,7 @@ export function useCart(): UseCartReturn {
     return {
         items,
         bundleLines,
+        orderId,
         addToCart,
         updateItemQty,
         updateItemUnit,
@@ -101,5 +172,6 @@ export function useCart(): UseCartReturn {
         removeBundleFromCart,
         clearCart,
         loadFromOrder,
+        setOrderId,
     };
 }

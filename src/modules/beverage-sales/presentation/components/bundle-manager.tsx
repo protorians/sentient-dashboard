@@ -86,7 +86,7 @@ export function BundleManager({bundles, isLoading, products, isLoadingProducts, 
     );
 
     return (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 w-full">
             <div className="p-6 border-none shadow-sm">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-center gap-3">

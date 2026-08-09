@@ -21,7 +21,7 @@ export function BeverageSalesHeaderBranding() {
                 <h1 className="text-2xl font-bold tracking-tight">Vente de Boissons</h1>
                 <p className="text-muted-foreground text-sm flex items-center gap-1.5">
                     <WarehouseIcon className="size-3.5"/>
-                    Caisse dédiée au dépôt ({WarehouseTypeEnum.DEPOT}) · gros, semi-gros et détail
+                    Caisse dédiée au dépôt ({WarehouseTypeEnum.BEVERAGE_DEPOT}) · gros, semi-gros et détail
                 </p>
             </div>
         </div>

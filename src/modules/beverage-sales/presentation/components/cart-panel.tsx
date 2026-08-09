@@ -14,6 +14,7 @@ import {MovementUnitEnum} from "@/modules/beverage-sales/domain/enums/movement-u
 import {CartItemLine, CartBundleLine} from "@/modules/beverage-sales/domain/cart.types";
 import {PaymentMethodInterface} from "@/modules/beverage-sales/domain/payment-method.interface";
 import {Button} from "@/core/presentation/ui/button";
+import {Badge} from "@/core/presentation/ui/badge";
 import {Card} from "@/core/presentation/ui/card";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/core/presentation/ui/select";
 import {WaitingActivity} from "@/core/presentation/waiting-activity";
@@ -53,7 +54,7 @@ interface CartPanelProps {
     isLoadingPaymentMethods?: boolean;
     selectedPaymentMethodId?: string | null;
     onPaymentMethodChange?: (id: string | null) => void;
-    onAddPaymentMethod?: (name: string, type: string) => Promise<void>;
+    registerOpen?: boolean;
 }
 
 export function CartPanel({
@@ -78,7 +79,7 @@ export function CartPanel({
     isLoadingPaymentMethods,
     selectedPaymentMethodId,
     onPaymentMethodChange,
-    onAddPaymentMethod,
+    registerOpen = true,
 }: CartPanelProps) {
     const {open, close} = useModal();
 
@@ -111,10 +112,9 @@ export function CartPanel({
                     isLoadingPaymentMethods={props.isLoadingPaymentMethods}
                     selectedPaymentMethodId={props.selectedPaymentMethodId}
                     onPaymentMethodChange={props.onPaymentMethodChange}
-                    onAddPaymentMethod={props.onAddPaymentMethod}
-                    onConfirm={(amount) => {
-                        if (props.selectedPaymentMethodId) {
-                            onCheckout(amount, props.selectedPaymentMethodId);
+                    onConfirm={(amount, paymentMethodId) => {
+                        if (paymentMethodId) {
+                            onCheckout(amount, paymentMethodId);
                             close(modalId);
                         }
                     }}
@@ -137,7 +137,6 @@ export function CartPanel({
                 isLoadingPaymentMethods,
                 selectedPaymentMethodId,
                 onPaymentMethodChange,
-                onAddPaymentMethod,
             },
             {
                 title: activeOrder ? `Valider la commande ${activeOrder.orderNumber}` : "Valider la commande",
@@ -148,7 +147,7 @@ export function CartPanel({
                 className: "max-h-[calc(100dvh-2rem)]",
             }
         );
-    }, [open, close, products, bundles, items, bundleLines, customer, customerName, table, saleType, activeOrder, total, isSubmitting, paymentMethods, isLoadingPaymentMethods, selectedPaymentMethodId, onPaymentMethodChange, onAddPaymentMethod, onCheckout]);
+    }, [open, close, products, bundles, items, bundleLines, customer, customerName, table, saleType, activeOrder, total, isSubmitting, paymentMethods, isLoadingPaymentMethods, selectedPaymentMethodId, onPaymentMethodChange, onCheckout]);
 
     const getSaleTypeLabel = (type: OrderTypeEnum) => {
         switch (type) {
@@ -226,36 +225,65 @@ export function CartPanel({
                         {items.map(item => {
                             const product = products?.find(p => p.id === item.productId);
                             const lineTotal = product ? toBaseUnits(product, item.quantity, item.unit) * item.unitPrice : 0;
+                            const stock = product?.stockQuantity ?? product?.stock?.quantity;
+                            const isOutOfStock = product?.isOutOfStock ?? (typeof stock === 'number' && stock <= 0);
+                            const isItemDisabled = isReadOnly || isOutOfStock;
                             return (
-                                <div key={`${item.productId}-${item.unit}`} className="flex items-center gap-3">
+                                <div key={`${item.productId}-${item.unit}`} className={cn(
+                                    "flex items-center gap-3 transition-opacity",
+                                    isOutOfStock && "opacity-50"
+                                )}>
                                     <div className="size-14 rounded-xl bg-muted flex items-center justify-center shrink-0">
                                         <WineIcon className="size-6 text-muted-foreground/30"/>
                                     </div>
                                     <div className="flex flex-col flex-1 min-w-0">
-                                        <span className="text-sm font-bold truncate">{product?.name}</span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm font-bold truncate">{product?.name}</span>
+                                            {isOutOfStock && (
+                                                <Badge variant="destructive" className="shrink-0 text-[10px] px-1.5 py-0 h-4">
+                                                    Rupture
+                                                </Badge>
+                                            )}
+                                        </div>
                                         <div className="flex items-center gap-2 mt-1">
                                             <div className="flex items-center gap-2">
                                                 <button
                                                     onClick={() => onUpdateItemQty(item.productId, item.quantity - 1)}
-                                                    disabled={isReadOnly}
-                                                    className={isReadOnly
+                                                    disabled={isItemDisabled}
+                                                    className={isItemDisabled
                                                         ? "size-6 rounded-full border border-border/40 text-muted-foreground/30 flex items-center justify-center cursor-not-allowed"
                                                         : "size-6 rounded-full border border-border text-muted-foreground flex items-center justify-center hover:border-destructive hover:text-destructive transition-colors"}
                                                 >
                                                     <MinusIcon className="size-3"/>
                                                 </button>
-                                                <span className="text-xs font-bold w-4 text-center">{item.quantity}</span>
+                                                <input
+                                                    key={`qty-${item.productId}-${item.unit}-${item.quantity}`}
+                                                    type="number"
+                                                    min={0}
+                                                    max={stock ?? undefined}
+                                                    defaultValue={item.quantity}
+                                                    className="w-10 text-center text-xs font-bold bg-transparent border-0 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                    onBlur={(e) => {
+                                                        const raw = Number(e.target.value);
+                                                        const val = isNaN(raw) ? item.quantity : Math.max(0, Math.min(raw, stock ?? Infinity));
+                                                        onUpdateItemQty(item.productId, val);
+                                                        e.target.value = String(Math.max(1, val) || 1);
+                                                    }}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+                                                    }}
+                                                />
                                                 <button
                                                     onClick={() => onUpdateItemQty(item.productId, item.quantity + 1)}
-                                                    disabled={isReadOnly}
-                                                    className={isReadOnly
+                                                    disabled={isItemDisabled || (typeof stock === 'number' && item.quantity >= stock)}
+                                                    className={isItemDisabled || (typeof stock === 'number' && item.quantity >= stock)
                                                         ? "size-6 rounded-full bg-muted text-muted-foreground/30 flex items-center justify-center cursor-not-allowed"
                                                         : "size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors"}
                                                 >
                                                     <PlusIcon className="size-3"/>
                                                 </button>
                                             </div>
-                                            <Select value={item.unit} onValueChange={(v) => onUpdateItemUnit(item.productId, v as MovementUnitEnum)} disabled={isReadOnly}>
+                                            <Select value={item.unit} onValueChange={(v) => onUpdateItemUnit(item.productId, v as MovementUnitEnum)} disabled={isItemDisabled}>
                                                 <SelectTrigger size="sm" className="h-6 rounded-lg text-[10px] px-1.5 w-auto gap-1">
                                                     <SelectValue/>
                                                 </SelectTrigger>
@@ -291,7 +319,22 @@ export function CartPanel({
                                             >
                                                 <MinusIcon className="size-3"/>
                                             </button>
-                                            <span className="text-xs font-bold w-4 text-center">{line.quantity}</span>
+                                            <input
+                                                key={`bundle-qty-${line.bundleId}-${line.quantity}`}
+                                                type="number"
+                                                min={0}
+                                                defaultValue={line.quantity}
+                                                className="w-10 text-center text-xs font-bold bg-transparent border-0 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                onBlur={(e) => {
+                                                    const raw = Number(e.target.value);
+                                                    const val = isNaN(raw) ? line.quantity : Math.max(0, raw);
+                                                    onUpdateBundleQty(line.bundleId, val);
+                                                    e.target.value = String(Math.max(1, val) || 1);
+                                                }}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+                                                }}
+                                            />
                                             <button
                                                 onClick={() => onUpdateBundleQty(line.bundleId, line.quantity + 1)}
                                                 disabled={isReadOnly}
@@ -342,15 +385,21 @@ export function CartPanel({
 
                 {activeOrder?.status !== OrderStatusEnum.PAID ? (
                     <>
+                        {!registerOpen && (
+                            <div className="flex items-center justify-center h-11 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-400 text-xs font-semibold px-3 text-center">
+                                La caisse est fermée. Les ventes sont suspendues en dehors des horaires.
+                            </div>
+                        )}
                         <Button
-                            className="w-full h-12 rounded-xl text-base font-bold"
-                            disabled={(items.length === 0 && bundleLines.length === 0) || isSubmitting}
+                            className="w-full h-auto! py-4 rounded-xl text-base font-bold"
+                            disabled={(items.length === 0 && bundleLines.length === 0) || isSubmitting || !registerOpen}
                             onClick={openCheckout}
                         >
                             {isSubmitting ? <WaitingActivity size={20}/> : (
                                 <>
-                                    <CoinsIcon/>
-                                    {activeOrder ? `Valider la commande ${activeOrder.orderNumber}` : 'Traiter la transaction'}
+                                    {/*<CoinsIcon/>*/}
+                                    {activeOrder
+                                        ? 'Finaliser': 'Traiter la transaction'}
                                 </>
                             )}
                         </Button>

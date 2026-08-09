@@ -10,6 +10,7 @@ import {OrderInterface} from "@/modules/beverage-sales/domain/order.interface";
 import {BundleInterface} from "@/modules/beverage-sales/domain/bundle.interface";
 import {PosTableInterface} from "@/modules/beverage-sales/domain/pos-table.interface";
 import {WarehouseTypeEnum} from "@/modules/beverage-sales/domain/enums/warehouse-type.enum";
+import {OrderStatusEnum} from "@/modules/beverage-sales/domain/enums/order-status.enum";
 
 export interface EnrichedBundle extends BundleInterface {
     items: Array<BundleInterface["items"][number] & { product?: ProductInterface }>;
@@ -30,7 +31,7 @@ export interface UseBeverageSalesQueriesReturn {
     displayTables: PosTableInterface[] | undefined;
 }
 
-export function useBeverageSalesQueries(selectedTable: PosTableInterface | null, bundleSearch?: string): UseBeverageSalesQueriesReturn {
+export function useBeverageSalesQueries(selectedTable: PosTableInterface | null, bundleSearch?: string, orderStatus: OrderStatusEnum | null = OrderStatusEnum.PENDING): UseBeverageSalesQueriesReturn {
     const {data: warehouses} = useQuery<WarehouseInterface[]>({
         queryKey: ['stock', 'warehouses'],
         queryFn: async () => {
@@ -40,7 +41,7 @@ export function useBeverageSalesQueries(selectedTable: PosTableInterface | null,
     });
 
     const depotWarehouseId = useMemo(() => {
-        return warehouses?.find(w => w.type === WarehouseTypeEnum.DEPOT)?.id;
+        return warehouses?.find(w => w.type === WarehouseTypeEnum.BEVERAGE_DEPOT)?.id;
     }, [warehouses]);
 
     const {data: products, isLoading: isLoadingProducts} = useQuery<ProductInterface[]>({
@@ -53,6 +54,8 @@ export function useBeverageSalesQueries(selectedTable: PosTableInterface | null,
             return stockResponse.data?.data || [];
         },
         enabled: !!depotWarehouseId,
+        staleTime: 10_000,
+        refetchInterval: 15_000,
     });
 
     const {data: bundles, isLoading: isLoadingBundles} = useQuery<BundleInterface[]>({
@@ -75,9 +78,11 @@ export function useBeverageSalesQueries(selectedTable: PosTableInterface | null,
     });
 
     const {data: orders, isLoading: isLoadingOrders} = useQuery<OrderInterface[]>({
-        queryKey: ['beverage-sales', 'orders'],
+        queryKey: ['beverage-sales', 'orders', orderStatus],
         queryFn: async () => {
-            const response = await BeverageSalesApiService.getOrders({warehouseType: WarehouseTypeEnum.DEPOT, limit: 50});
+            const filters: Record<string, any> = {warehouseType: WarehouseTypeEnum.BEVERAGE_DEPOT, limit: 50};
+            if (orderStatus) filters.status = orderStatus;
+            const response = await BeverageSalesApiService.getOrders(filters);
             return response.data?.data || [];
         }
     });

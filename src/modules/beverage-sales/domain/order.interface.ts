@@ -25,6 +25,7 @@ export interface OrderInterface {
     orderNumber: string;
     orderType: OrderTypeEnum;
     status: OrderStatusEnum;
+    paidAt?: string | null;
     organizationId: string;
     warehouseId: string;
     warehouseType: WarehouseTypeEnum;
