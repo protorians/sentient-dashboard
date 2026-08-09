@@ -5,7 +5,7 @@ import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon
 import {useThemePreferColorSchemeStore} from "@/core/infrastructure/stores/theme.store"
 import {PreferColorSchemeEnum} from "@/core/domain/enums/theme.enum"
 
-const Toaster = ({ position = "bottom-center", ...props }: ToasterProps) => {
+const Toaster = ({ position = "top-center", ...props }: ToasterProps) => {
   const { colorScheme } = useThemePreferColorSchemeStore()
   const theme = colorScheme ?? PreferColorSchemeEnum.Light
 

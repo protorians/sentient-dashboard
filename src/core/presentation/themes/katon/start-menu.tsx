@@ -96,12 +96,13 @@ export function StartMenu() {
         <nav
             className={cn(
                 "flex flex-row md:flex-col items-center",
-                CommonClassName.glossyBorder,
-                CommonClassName.layer,
+                // CommonClassName.glossyBorder,
+                // CommonClassName.layer,
                 "p-2",
-                "max-h-[60vh] md:max-h-[60vh]",
-                "overflow-y-auto",
-                "scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
+                "max-h-16 sm:max-h-[60vh]",
+                // "overflow-x-auto",
+                // "sm:overflow-x-hidden sm:overflow-y-auto",
+                // "scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
             )}>
             {
                 defaultModulesNavConfig.map((module, index) => {

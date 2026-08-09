@@ -25,8 +25,12 @@ export const useModuleStore = create<ModuleState>()(
         addModule: (module) => setState((state) => ({
             modules: [...state.modules.filter(m => m.id !== module.id), module]
         })),
-        addModules: (modules: ModuleDeclarationInterface[]) =>
-            setState({modules: [...getState().modules, ...modules]}),
+        addModules: (newModules: ModuleDeclarationInterface[]) =>
+            setState((state) => {
+                const existingIds = new Set(state.modules.map(m => m.id))
+                const unique = newModules.filter(m => !existingIds.has(m.id))
+                return {modules: [...state.modules, ...unique]}
+            }),
         toggleModule: (id) => setState((state) => ({
             modules: state.modules.map((m) =>
                 m.id === id && !m.isDefault ? {...m, isEnabled: !m.isEnabled} : m

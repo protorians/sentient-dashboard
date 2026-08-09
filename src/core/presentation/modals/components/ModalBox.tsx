@@ -50,8 +50,8 @@ const ModalBox = ({modal}: ModalBoxProps) => {
                             onClick={() => !options?.locked && closeModal(id)}
                             disabled={options?.locked}
                             className={cn(
-                                "absolute top-0 right-0 p-1 m-2 rounded-full transition-colors text-foreground dark:text-zinc-400",
-                                options?.locked ? "opacity-50 cursor-not-allowed" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                                "absolute top-0 right-0 p-1 m-2 rounded-full transition-colors text-muted-foreground",
+                                options?.locked ? "opacity-50 cursor-not-allowed" : "hover:bg-muted"
                             )}
                         >
                             <XIcon className="size-7"/>

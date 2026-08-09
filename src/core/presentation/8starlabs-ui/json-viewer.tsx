@@ -63,7 +63,7 @@ const getTypeStyle = (type: DataType): string => {
     case "boolean":
       return "text-blue-600 dark:text-blue-400";
     case "null":
-      return "text-gray-500 dark:text-gray-400";
+      return "text-muted-foreground";
     default:
       return "";
   }

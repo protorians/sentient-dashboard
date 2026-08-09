@@ -191,7 +191,7 @@ export function PartitionBarSegmentValue({
   className
 }: PartitionBarSegmentValue) {
   return (
-    <div className={cn("w-fit text-slate-500 text-[80%]", className)}>
+    <div className={cn("w-fit text-muted-foreground text-[80%]", className)}>
       {children}
     </div>
   );

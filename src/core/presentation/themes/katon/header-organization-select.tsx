@@ -9,7 +9,7 @@ export function HeaderOrganizationSelect() {
     const organization = AuthUserService.getCurrentOrganization();
 
     return (
-        <div className="flex flex-row items-center justify-end pt-2">
+        <div className="hidden sm:flex flex-row items-center justify-end pt-2">
             {
                 organization && (
                     <Tooltip>

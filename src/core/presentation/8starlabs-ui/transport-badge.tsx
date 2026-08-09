@@ -184,7 +184,7 @@ export const TransportBadge = ({
               <span
                 key={code}
                 className={cn(
-                  "inline-flex items-center rounded font-semibold bg-gray-300 text-gray-700",
+                  "inline-flex items-center rounded font-semibold bg-muted text-muted-foreground",
                   sizeClasses[size]
                 )}
               >
@@ -232,7 +232,7 @@ export const TransportBadge = ({
       {showStationName && stationName && (
         <span
           className={cn(
-            "ml-2 font-medium text-slate-700 dark:text-slate-200",
+            "ml-2 font-medium text-muted-foreground",
             size === "xs" && "text-[10px]",
             size === "sm" && "text-xs",
             size === "md" && "text-sm",

@@ -14,13 +14,14 @@ import {
     CogIcon,
     CreditCardIcon,
     EllipsisVerticalIcon,
-    LogOutIcon, MoonIcon,
+    LogOutIcon, MoonIcon, ShieldCogIcon,
     SunIcon
 } from "lucide-react";
 import React from "react";
 import {Button} from "../../ui/button";
 import {useThemePreferColorSchemeStore} from "@/core/infrastructure/stores/theme.store";
 import {PreferColorSchemeEnum} from "@/core/domain/enums/theme.enum";
+import Link from "next/link";
 
 export function HeaderTasksConnectedUser() {
     const {colorScheme, toggleColorScheme} = useThemePreferColorSchemeStore()
@@ -72,17 +73,23 @@ export function HeaderTasksConnectedUser() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator/>
                 <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                        <CircleUserRoundIcon/>
-                        Mon compte
+                    <DropdownMenuItem asChild>
+                        <Link href="/account" className="flex w-full items-center">
+                            <CircleUserRoundIcon className="mr-2 h-4 w-4"/>
+                            <span>Mon compte</span>
+                        </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <CogIcon/>
-                        Paramètres
+                    <DropdownMenuItem asChild>
+                        <Link href="/account/security" className="flex w-full items-center">
+                            <ShieldCogIcon/>
+                            Mot de passe
+                        </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <BellIcon/>
-                        Notifications
+                    <DropdownMenuItem asChild>
+                        <Link href="/account/notifications" className="flex w-full items-center">
+                            <BellIcon/>
+                            Notifications
+                        </Link>
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator/>

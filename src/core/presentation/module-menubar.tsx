@@ -31,7 +31,7 @@ import {
 import {Button} from "@/core/presentation/ui/button";
 import {MenuIcon} from "lucide-react";
 import {useState} from "react";
-import {useRouter} from "next/navigation";
+import {useRouter, usePathname} from "next/navigation";
 import {cn} from "@/core/infrastructure/utilities/utils";
 import {HeaderMenubarSize} from "@/core/presentation/themes/katon/header-menubar";
 
@@ -44,6 +44,12 @@ const sizeMap: Record<HeaderMenubarSize, { trigger: string; item: string; icon: 
     xxl: { trigger: "text-lg h-12 px-5 py-0",       item: "text-lg px-5 py-2.5",   icon: 5,  mobileItem: "text-lg h-14" },
 };
 
+const activeClasses = {
+    desktop: "bg-primary text-primary-foreground",
+    mobileAccordion: "text-primary",
+    mobileButton: "secondary" as const, // variant for Button component
+};
+
 export interface ModuleMenubarProps {
     module: ModuleDeclarationInterface;
     size?: HeaderMenubarSize;
@@ -51,11 +57,25 @@ export interface ModuleMenubarProps {
 
 export function ModuleMenubar({module, size = 'md'}: ModuleMenubarProps) {
     const router = useRouter();
+    const pathname = usePathname();
     const [open, setOpen] = useState(false);
     const s = sizeMap[size];
 
     if (!module.menu)
         return null;
+
+    const isItemActive = (item: ModuleNavigationMenuItem): boolean => {
+        if (item.url && pathname === item.url) {
+            return true;
+        }
+        if (item.items) {
+            return item.items.some(subItem => {
+                if ('separator' in subItem) return false;
+                return isItemActive(subItem as ModuleNavigationMenuItem);
+            });
+        }
+        return false;
+    };
 
     const handleItemAction = (item: ModuleNavigationMenuItem) => {
         if (item.action) {
@@ -72,11 +92,16 @@ export function ModuleMenubar({module, size = 'md'}: ModuleMenubarProps) {
             }
 
             const itemWithItems = item as ModuleNavigationMenuItem;
+            const active = isItemActive(itemWithItems);
 
             if (itemWithItems.items && itemWithItems.items.length > 0) {
                 return (
                     <MenubarSub key={itemWithItems.label}>
-                        <MenubarSubTrigger className={cn("gap-2", s.item)}>
+                        <MenubarSubTrigger className={cn(
+                            "gap-2 rounded-4xl",
+                            s.item,
+                            active && activeClasses.desktop
+                        )}>
                             {itemWithItems.icon && <LucideIcon name={itemWithItems.icon} size={s.icon} className=""/>}
                             <span>{itemWithItems.label}</span>
                         </MenubarSubTrigger>
@@ -91,7 +116,11 @@ export function ModuleMenubar({module, size = 'md'}: ModuleMenubarProps) {
                 <MenubarItem
                     key={itemWithItems.label}
                     onClick={() => handleItemAction(itemWithItems)}
-                    className={cn("gap-2", s.item)}
+                    className={cn(
+                        "gap-2 rounded-4xl",
+                        s.item,
+                        active && activeClasses.desktop
+                    )}
                 >
                     {itemWithItems.icon && <LucideIcon name={itemWithItems.icon} size={s.icon} className=""/>}
                     <span>{itemWithItems.label}</span>
@@ -107,11 +136,16 @@ export function ModuleMenubar({module, size = 'md'}: ModuleMenubarProps) {
             }
 
             const itemWithItems = item as ModuleNavigationMenuItem;
+            const active = isItemActive(itemWithItems);
 
             if (itemWithItems.items && itemWithItems.items.length > 0) {
                 return (
                     <AccordionItem key={itemWithItems.label} value={itemWithItems.label} className="border-none">
-                        <AccordionTrigger className={cn("py-2 hover:no-underline", s.mobileItem)}>
+                        <AccordionTrigger className={cn(
+                            "py-2 rounded-4xl hover:no-underline",
+                            s.mobileItem,
+                            active && activeClasses.mobileAccordion
+                        )}>
                             <div className="flex items-center gap-2">
                                 {itemWithItems.icon && <LucideIcon name={itemWithItems.icon} size={s.icon}/>}
                                 <span>{itemWithItems.label}</span>
@@ -129,8 +163,8 @@ export function ModuleMenubar({module, size = 'md'}: ModuleMenubarProps) {
             return (
                 <Button
                     key={itemWithItems.label}
-                    variant="ghost"
-                    className={cn("w-full justify-start gap-2 px-2 font-semibold border-b rounded-none", s.mobileItem)}
+                    variant={active ? activeClasses.mobileButton : "ghost"}
+                    className={cn("w-full justify-start gap-2 px-2 font-semibold border-b", s.mobileItem)}
                     onClick={() => {
                         handleItemAction(itemWithItems);
                         setOpen(false);
@@ -145,23 +179,30 @@ export function ModuleMenubar({module, size = 'md'}: ModuleMenubarProps) {
 
     return (
         <>
-            <Menubar className="hidden md:flex border-none shadow-none bg-transparent px-1.5">
-                {module.menu.items.map((menu, index) => (
-                    <MenubarMenu key={menu.label || index}>
-                        <MenubarTrigger
-                            className={cn("gap-2", s.trigger)}
-                            {...(!menu.items?.length && menu.url ? { onClick: () => router.push(menu.url!) } : {})}
-                        >
-                            {menu.icon && <LucideIcon name={menu.icon} size={s.icon}/>}
-                            {menu.label}
-                        </MenubarTrigger>
-                        {menu.items && menu.items.length > 0 && (
-                            <MenubarContent className={"rounded-md!"}>
-                                {renderItems(menu.items)}
-                            </MenubarContent>
-                        )}
-                    </MenubarMenu>
-                ))}
+            <Menubar className="hidden md:flex border-none shadow-none bg-transparent px-1.5 animate-slide-in-down duration-150">
+                {module.menu.items.map((menu, index) => {
+                    const active = isItemActive(menu);
+                    return (
+                        <MenubarMenu key={menu.label || index}>
+                            <MenubarTrigger
+                                className={cn(
+                                    "gap-2 rounded-4xl",
+                                    s.trigger,
+                                    active && activeClasses.desktop
+                                )}
+                                {...(!menu.items?.length && menu.url ? {onClick: () => router.push(menu.url!)} : {})}
+                            >
+                                {menu.icon && <LucideIcon name={menu.icon} size={s.icon}/>}
+                                {menu.label}
+                            </MenubarTrigger>
+                            {menu.items && menu.items.length > 0 && (
+                                <MenubarContent className={"rounded-4xl!"}>
+                                    {renderItems(menu.items)}
+                                </MenubarContent>
+                            )}
+                        </MenubarMenu>
+                    );
+                })}
             </Menubar>
 
             <Sheet open={open} onOpenChange={setOpen}>
@@ -171,7 +212,7 @@ export function ModuleMenubar({module, size = 'md'}: ModuleMenubarProps) {
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="left"
-                              className="w-[300px]! rounded-lg m-3 h-[92dvh]! px-6 bg-background/70 backdrop-blur-lg">
+                              className="w-[300px]! rounded-4xl m-3 h-[92dvh]! px-6 bg-background/70 backdrop-blur-lg">
                     <SheetHeader className="pb-4">
                         <SheetTitle className="flex items-center gap-2">
                             <LucideIcon name={module.icon} size={5}/>
@@ -181,11 +222,16 @@ export function ModuleMenubar({module, size = 'md'}: ModuleMenubarProps) {
                     <div className="py-4 overflow-y-auto max-h-[calc(100vh-80px)]">
                         <Accordion type="multiple" className="w-full">
                             {module.menu.items.map((menu, index) => {
+                                const active = isItemActive(menu);
                                 if (menu.items && menu.items.length > 0) {
                                     return (
                                         <AccordionItem key={menu.label || index} value={menu.label || `item-${index}`}
                                                        className="border-b">
-                                            <AccordionTrigger className={cn("font-semibold hover:no-underline", s.mobileItem)}>
+                                            <AccordionTrigger className={cn(
+                                                "font-semibold hover:no-underline",
+                                                s.mobileItem,
+                                                active && activeClasses.mobileAccordion
+                                            )}>
                                                 <div className="flex items-center gap-2">
                                                     {menu.icon && <LucideIcon name={menu.icon} size={s.icon}/>}
                                                     <span>{menu.label}</span>
@@ -203,8 +249,8 @@ export function ModuleMenubar({module, size = 'md'}: ModuleMenubarProps) {
                                 return (
                                     <Button
                                         key={menu.label || index}
-                                        variant="ghost"
-                                        className={cn("w-full justify-start gap-2 px-0 font-semibold border-b rounded-none", s.mobileItem)}
+                                        variant={active ? activeClasses.mobileButton : "ghost"}
+                                        className={cn("w-full justify-start gap-2 px-0 font-semibold border-b rounded-4xl", s.mobileItem)}
                                         onClick={() => {
                                             handleItemAction(menu);
                                             setOpen(false);
