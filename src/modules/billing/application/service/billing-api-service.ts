@@ -10,6 +10,14 @@ export class BillingApiService extends ApiService {
         return await this.get('/billing/payment-methods');
     }
 
+    static async updatePaymentMethod(id: string, payload: any) {
+        return await this.put(`/billing/payment-methods/${id}`, payload);
+    }
+
+    static async deletePaymentMethod(id: string) {
+        return await this.delete(`/billing/payment-methods/${id}`);
+    }
+
     // Orders
     static async createOrder(payload: any) {
         return await this.post('/billing/orders', payload);
