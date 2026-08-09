@@ -16,6 +16,7 @@ import BeverageSalesModule from "@/modules/beverage-sales";
 import {useEffect} from "react";
 import {useModuleStore} from "@/core/infrastructure/stores/module.store";
 import usersActivitiesModule from "@/modules/user-activities";
+import accountModule from "@/modules/account";
 
 export function ModulesDefinition() {
     const {addModules, modules} = useModuleStore()
@@ -23,6 +24,7 @@ export function ModulesDefinition() {
     useEffect(() => {
         const fn = () => {
             addModules([
+                accountModule,
                 DashboardModule,
                 AccessControlModule,
                 UsersModule,
