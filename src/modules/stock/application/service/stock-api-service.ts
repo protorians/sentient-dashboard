@@ -12,7 +12,11 @@ import {
     UpdateProductCategoryInterface,
 } from "@/modules/stock/domain/product-category.interface";
 import {CreateStockMovementInterface, StockMovementInterface} from "@/modules/stock/domain/stock-movement.interface";
-import {WarehouseInterface, CreateWarehouseInterface} from "@/modules/stock/domain/warehouse.interface";
+import {
+    WarehouseInterface,
+    CreateWarehouseInterface,
+    UpdateWarehouseInterface,
+} from "@/modules/stock/domain/warehouse.interface";
 import {TransferStockInterface} from "@/modules/stock/domain/transfer-stock.interface";
 
 export class StockApiService extends ApiService {
@@ -22,6 +26,14 @@ export class StockApiService extends ApiService {
 
     static async createWarehouse(payload: CreateWarehouseInterface) {
         return await this.post<FetchResponseInterface<WarehouseInterface>>('/stock/warehouses', payload);
+    }
+
+    static async updateWarehouse(id: string, payload: UpdateWarehouseInterface) {
+        return await this.put<FetchResponseInterface<WarehouseInterface>>(`/stock/warehouses/${id}`, payload);
+    }
+
+    static async deleteWarehouse(id: string) {
+        return await this.delete<FetchResponseInterface<{ deleted: boolean }>>(`/stock/warehouses/${id}`);
     }
 
     static async getAll() {

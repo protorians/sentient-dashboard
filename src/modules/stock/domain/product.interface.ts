@@ -23,6 +23,7 @@ export interface ProductInterface {
     packPurchasePrice?: number | null;
     casePurchasePrice?: number | null;
     stockQuantity?: number;
+    isOutOfStock?: boolean;
     categoryName?: string;
     status?: boolean;
     organizationId?: string;

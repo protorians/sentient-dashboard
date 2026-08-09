@@ -15,3 +15,10 @@ export interface CreateWarehouseInterface {
     address?: string;
     type: WarehouseTypeEnum;
 }
+
+export interface UpdateWarehouseInterface {
+    name: string;
+    address?: string;
+    type: WarehouseTypeEnum;
+    status?: boolean;
+}

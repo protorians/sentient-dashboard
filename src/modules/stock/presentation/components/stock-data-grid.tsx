@@ -36,18 +36,32 @@ export function StockDataGrid() {
         queryFn: async () => {
             const responses = await StockApiService.getAll();
             const list = responses.data?.data || [];
-            const enriched = await Promise.all(
-                list.map(async (product) => {
-                    if (!product.id) return product;
+
+            const CONCURRENCY = 5;
+            const enrichedMap = new Map<number, ProductInterface>();
+            let cursor = 0;
+
+            const worker = async () => {
+                while (true) {
+                    const index = cursor++;
+                    if (index >= list.length) break;
+
+                    const product = list[index];
+                    if (!product.id) {
+                        enrichedMap.set(index, product);
+                        continue;
+                    }
                     try {
                         const stock = await StockApiService.getProductStock(product.id);
-                        return {...product, stock: stock.data?.data};
+                        enrichedMap.set(index, {...product, stock: stock.data?.data});
                     } catch {
-                        return product;
+                        enrichedMap.set(index, product);
                     }
-                })
-            );
-            return enriched;
+                }
+            };
+
+            await Promise.all(Array.from({length: Math.min(CONCURRENCY, list.length || 1)}, () => worker()));
+            return Array.from({length: list.length}, (_, i) => enrichedMap.get(i)!);
         },
         refetchInterval: AppConfig.APP_REFRESH_UI
     })
