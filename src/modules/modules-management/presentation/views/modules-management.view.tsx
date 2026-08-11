@@ -22,6 +22,7 @@ import {Input} from "@/core/presentation/ui/input"
 import {Label} from "@/core/presentation/ui/label"
 import {ModuleDeclarationInterface} from "@/core/domain/entities/module.interface";
 import {IconKey} from "@/core/presentation/icons/types";
+import {AnimatedContent} from "@/core/presentation/animated-content";
 
 export function ModulesManagementView() {
     const {modules, toggleModule, removeModule, addModule} = useModuleStore();
@@ -80,7 +81,7 @@ export function ModulesManagementView() {
                     </div>
                 </header>
 
-                <div className="flex flex-1 flex-col p-4 lg:p-6">
+                <AnimatedContent variant="enter" className="flex flex-1 flex-col p-4 lg:p-6">
                     <div className="flex justify-between items-center mb-6">
                         <div>
                             <h2 className="text-2xl font-bold tracking-tight">Modules du système</h2>
@@ -208,7 +209,7 @@ export function ModulesManagementView() {
                             </Card>
                         ))}
                     </div>
-                </div>
+                </AnimatedContent>
             </SidebarInset>
         </SidebarProvider>
     )

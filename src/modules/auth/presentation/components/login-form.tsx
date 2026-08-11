@@ -12,6 +12,7 @@ import {useRouter} from "next/navigation"
 import {useState} from "react"
 import {SignInDataset} from "@/modules/auth/infrastructure/dataset/sign-in.dataset"
 import {motion} from "framer-motion"
+import {elasticEnter} from "@/core/presentation/motion-utils"
 import {AuthApiService} from "@/modules/auth/application/service/auth-api-service";
 import {AuthUserService} from "@/modules/auth/application/service/auth-user.service";
 import {authUserConnectedStore} from "@/modules/auth/infrastructure/store/auth-user-connected.store";
@@ -67,10 +68,10 @@ export function LoginForm({className, ...props}: React.ComponentProps<"form">) {
 
     return (
         <motion.div
-            initial={{opacity: 0, x: -20}}
-            animate={{opacity: 1, x: 0}}
-            exit={{opacity: 0, x: 20}}
-            transition={{duration: 0.3}}
+            variants={elasticEnter()}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             className={cn("flex flex-col gap-6 w-full", className)}>
             <form onSubmit={handleSubmit} {...props}>
                 <FieldGroup className="gap-4">

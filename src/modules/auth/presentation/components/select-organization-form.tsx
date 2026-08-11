@@ -7,6 +7,7 @@ import {Loader2, Building2, CheckCircle2} from "lucide-react"
 import {useRouter, useSearchParams} from "next/navigation"
 import {useState} from "react"
 import {motion} from "framer-motion"
+import {elasticEnter} from "@/core/presentation/motion-utils"
 import {AuthUserService} from "@/modules/auth/application/service/auth-user.service";
 import {authUserConnectedStore} from "@/modules/auth/infrastructure/store/auth-user-connected.store";
 import {toast} from "sonner";
@@ -67,10 +68,10 @@ export function SelectOrganizationForm({className, ...props}: React.ComponentPro
 
     return (
         <motion.div
-            initial={{opacity: 0, x: -20}}
-            animate={{opacity: 1, x: 0}}
-            exit={{opacity: 0, x: 20}}
-            transition={{duration: 0.3}}
+            variants={elasticEnter()}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             className={cn("flex flex-col gap-6 w-full", className)}>
 
             <div className="flex flex-col gap-1 text-left w-full mb-4">

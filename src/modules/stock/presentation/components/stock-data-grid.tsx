@@ -37,31 +37,25 @@ export function StockDataGrid() {
             const responses = await StockApiService.getAll();
             const list = responses.data?.data || [];
 
-            const CONCURRENCY = 5;
-            const enrichedMap = new Map<number, ProductInterface>();
-            let cursor = 0;
-
-            const worker = async () => {
-                while (true) {
-                    const index = cursor++;
-                    if (index >= list.length) break;
-
-                    const product = list[index];
-                    if (!product.id) {
-                        enrichedMap.set(index, product);
-                        continue;
-                    }
+            const stockResults = await Promise.allSettled(
+                list.map(async (product: ProductInterface) => {
+                    if (!product.id) return {index: list.indexOf(product), product};
                     try {
                         const stock = await StockApiService.getProductStock(product.id);
-                        enrichedMap.set(index, {...product, stock: stock.data?.data});
+                        return {index: list.indexOf(product), product: {...product, stock: stock.data?.data}};
                     } catch {
-                        enrichedMap.set(index, product);
+                        return {index: list.indexOf(product), product};
                     }
-                }
-            };
+                })
+            );
 
-            await Promise.all(Array.from({length: Math.min(CONCURRENCY, list.length || 1)}, () => worker()));
-            return Array.from({length: list.length}, (_, i) => enrichedMap.get(i)!);
+            const enrichedMap = new Map<number, ProductInterface>();
+            stockResults.forEach((result) => {
+                if (result.status === 'fulfilled') {
+                    enrichedMap.set(result.value.index, result.value.product);
+                }
+            });
+            return Array.from({length: list.length}, (_, i) => enrichedMap.get(i) ?? list[i]);
         },
         refetchInterval: AppConfig.APP_REFRESH_UI
     })

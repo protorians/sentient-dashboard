@@ -15,8 +15,6 @@ import {
 } from "react"
 
 import { cn } from "@/core/infrastructure/utilities/utils"
-import { motion } from "framer-motion"
-import { elasticEnter, elasticExit } from "@/core/presentation/motion-utils"
 
 // Types
 type StepperOrientation = "horizontal" | "vertical"
@@ -460,18 +458,14 @@ function StepperContent({
   }
 
   return (
-    <motion.div
-      variants={elasticEnter()}
-      initial="initial"
-      animate="animate"
-      exit="exit"
+    <div
       data-slot="stepper-content"
       data-state={activeStep}
       className={cn("w-full", className, !isActive && forceMount && "hidden")}
       hidden={!isActive && forceMount}
     >
       {children}
-    </motion.div>
+    </div>
   )
 }
 

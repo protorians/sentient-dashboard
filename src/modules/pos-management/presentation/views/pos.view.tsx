@@ -37,6 +37,7 @@ import {cn} from "@/core/infrastructure/utilities/utils";
 import {WaitingActivity} from "@/core/presentation/waiting-activity";
 import {toast} from "sonner";
 import {Tabs, TabsList, TabsTrigger} from "@/core/presentation/ui/tabs";
+import {AnimatedContent} from "@/core/presentation/animated-content";
 
 interface CartItem {
     productId: string;
@@ -251,7 +252,8 @@ export default function PosView() {
     };
 
     return (
-        <div className="flex flex-col gap-6 p-4 md:p-6 bg-muted/20 min-h-screen">
+        <AnimatedContent variant="enter">
+            <div className="flex flex-col gap-6 p-4 md:p-6 bg-muted/20 min-h-screen">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight">Point de Vente</h1>
@@ -695,5 +697,6 @@ export default function PosView() {
                 )}
             </div>
         </div>
+        </AnimatedContent>
     );
 }

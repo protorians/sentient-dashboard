@@ -22,6 +22,7 @@ import {Header} from "@/core/presentation/themes/katon/header";
 import {Main} from "@/core/presentation/themes/katon/main";
 import {Footer} from "@/core/presentation/themes/katon/footer";
 import {Wrapper} from "@/core/presentation/themes/katon/wrapper";
+import {AnimatedContent} from "@/core/presentation/animated-content";
 
 export function AccessControlView() {
     const [roles, setRoles] = React.useState<AccessControlRow[]>([])
@@ -78,7 +79,7 @@ export function AccessControlView() {
             <Wrapper>
                 <Header/>
                 <Main className="">
-                    <div className="flex flex-1 flex-col p-4 lg:p-6">
+                    <AnimatedContent variant="enter" className="flex flex-1 flex-col p-4 lg:p-6">
                         <div className="@container/main flex flex-1 flex-col gap-4 md:gap-6">
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 md:gap-6">
                                 <div className="lg:col-span-4 lg:order-first flex flex-col gap-6">
@@ -229,7 +230,7 @@ export function AccessControlView() {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        </AnimatedContent>
                 </Main>
                 <Footer>
 

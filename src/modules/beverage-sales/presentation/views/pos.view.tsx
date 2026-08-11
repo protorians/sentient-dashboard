@@ -12,6 +12,7 @@ import {CustomerCombobox} from "@/modules/beverage-sales/presentation/components
 import {TableCreateDialog} from "@/modules/beverage-sales/presentation/components/table-create-dialog";
 import {Card} from "@/core/presentation/ui/card";
 import {RequireDepotSetup} from "@/modules/beverage-sales/presentation/components/require-depot-setup";
+import {AnimatedContent} from "@/core/presentation/animated-content";
 import {RegisterStatusBanner} from "@/modules/beverage-sales/presentation/components/register-status-banner";
 import {useRegisterStatus} from "@/modules/beverage-sales/presentation/hooks/use-register-status";
 import {BillingApiService} from "@/modules/billing/application/service/billing-api-service";
@@ -80,7 +81,7 @@ export default function PosView() {
 
     return (
         <RequireDepotSetup>
-            <div className="flex flex-col gap-6 w-full">
+            <AnimatedContent variant="enter" className="flex flex-col gap-6 w-full">
             <RegisterStatusBanner status={registerStatus} isLoading={isLoadingRegisterStatus}/>
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start w-full">
             <div className="xl:col-span-2 flex flex-col gap-6">
@@ -186,7 +187,7 @@ export default function PosView() {
                 />
             </div>
         </div>
-        </div>
+        </AnimatedContent>
         </RequireDepotSetup>
     );
 }

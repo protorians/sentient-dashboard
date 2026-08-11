@@ -29,6 +29,7 @@ import {Button} from "@/core/presentation/ui/button";
 import {Badge} from "@/core/presentation/ui/badge";
 import {Input} from "@/core/presentation/ui/input";
 import {RequireDepotSetup} from "@/modules/beverage-sales/presentation/components/require-depot-setup";
+import {AnimatedContent} from "@/core/presentation/animated-content";
 import {TopProductsByProfitTable} from "@/modules/beverage-sales/presentation/components/top-products-by-profit-table";
 import {TopProductsTable} from "@/modules/beverage-sales/presentation/components/top-products-table";
 import {SalesByProductTable} from "@/modules/beverage-sales/presentation/components/sales-by-product-table";
@@ -194,6 +195,7 @@ export default function BeverageSalesDashboardView() {
 
     return (
         <RequireDepotSetup>
+            <AnimatedContent variant="container" className={"w-full"}>
             <div className="flex flex-col gap-6 w-full">
                 <Card className="border-none shadow-sm rounded-2xl p-3">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -544,6 +546,7 @@ export default function BeverageSalesDashboardView() {
                     </TabsContent>
                 </Tabs>
             </div>
+            </AnimatedContent>
         </RequireDepotSetup>
     );
 }

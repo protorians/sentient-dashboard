@@ -6,6 +6,7 @@ import {AccountingApiService} from "@/modules/accounting/application/service/acc
 import {BeverageSalesApiService} from "@/modules/beverage-sales/application/service/beverage-sales-api-service";
 import {PosRequiredAccountsInterface} from "@/modules/beverage-sales/domain/pos-required-accounts.interface";
 import {SettingsLayout} from "@/modules/beverage-sales/presentation/components/settings-layout";
+import {AnimatedContent} from "@/core/presentation/animated-content";
 import {Button} from "@/core/presentation/ui/button";
 import {Badge} from "@/core/presentation/ui/badge";
 import {Label} from "@/core/presentation/ui/label";
@@ -183,6 +184,7 @@ export default function AccountingSettingsView() {
 
     return (
         <SettingsLayout.Section>
+            <AnimatedContent variant="enter">
             <SettingsLayout.Header
                 title="Paramètres comptables"
                 description="Configurez les comptes comptables par défaut pour la facturation automatique."
@@ -354,6 +356,7 @@ export default function AccountingSettingsView() {
                     </CardContent>
                 </Card>
             )}
+            </AnimatedContent>
         </SettingsLayout.Section>
     );
 }

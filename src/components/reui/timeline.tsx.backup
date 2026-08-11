@@ -9,9 +9,8 @@ import {
   useState,
 } from "react"
 import { Slot } from "radix-ui"
-import { motion } from "motion/react"
+
 import { cn } from "@/core/infrastructure/utilities/utils"
-import { elasticEnter } from "@/core/presentation/motion-utils"
 
 // Types
 type TimelineContextValue = {
@@ -161,7 +160,7 @@ function TimelineIndicator({
 }
 
 // TimelineItem
-interface TimelineItemProps extends React.ComponentPropsWithoutRef<typeof motion.div> {
+interface TimelineItemProps extends HTMLAttributes<HTMLDivElement> {
   step: number
 }
 
@@ -169,10 +168,7 @@ function TimelineItem({ step, className, ...props }: TimelineItemProps) {
   const { activeStep } = useTimeline()
 
   return (
-    <motion.div
-      variants={elasticEnter()}
-      initial="initial"
-      animate="animate"
+    <div
       className={cn(
         "group/timeline-item has-[+[data-completed]]:**:data-[slot=timeline-separator]:bg-primary relative flex flex-1 flex-col gap-0.5 group-data-[orientation=horizontal]/timeline:mt-8 group-data-[orientation=horizontal]/timeline:not-last:pe-8 group-data-[orientation=vertical]/timeline:ms-8 group-data-[orientation=vertical]/timeline:not-last:pb-6",
         className

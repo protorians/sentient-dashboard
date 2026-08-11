@@ -7,6 +7,7 @@ import {StockApiService} from "@/modules/stock/application/service/stock-api-ser
 import {WarehouseInterface} from "@/modules/stock/domain/warehouse.interface";
 import {WarehouseTypeEnum} from "@/modules/beverage-sales/domain/enums/warehouse-type.enum";
 import {SettingsLayout} from "@/modules/beverage-sales/presentation/components/settings-layout";
+import {AnimatedContent} from "@/core/presentation/animated-content";
 import {
     WarehouseFormDialog,
     WarehouseFormData
@@ -139,6 +140,7 @@ export default function WarehousesSettingsView() {
 
     return (
         <SettingsLayout.Section>
+            <AnimatedContent variant="enter">
             <SettingsLayout.Header
                 title="Dépôts"
                 description="Gérez les entrepôts de type BEVERAGE_DEPOT utilisés par la caisse."
@@ -213,6 +215,7 @@ export default function WarehousesSettingsView() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+            </AnimatedContent>
         </SettingsLayout.Section>
     );
 }

@@ -27,6 +27,7 @@ import {NotificationCategory, useNotifications} from "@/modules/notifications/pr
 import {NotificationsApiService} from "@/modules/notifications/application/service/notifications-api-service";
 import {NotificationInterface} from "@/modules/notifications/domain/entities/notification.interface";
 import {MainWrapper} from "@/core/presentation/themes/katon/main-wrapper";
+import {AnimatedContent} from "@/core/presentation/animated-content";
 
 function NotificationsPagination({
                                      pageCount,
@@ -175,39 +176,41 @@ export function NotificationsView() {
             <Wrapper>
                 <Header/>
                 <Main className="flex flex-col p-6 gap-6">
-                    <MainWrapper>
+                    <AnimatedContent variant="enter">
+                        <MainWrapper>
 
-                        <div className="flex flex-row items-center">
-                            <div className="flex flex-row flex-auto overflow-hidden items-center gap-3">
-                            <span
-                                className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                                <BellIcon/>
-                            </span>
-                                <div>
-                                    <h1 className="text-2xl font-bold truncate text-ellipsis">Notifications</h1>
-                                    <p className="text-sm text-muted-foreground">Vos notifications et celles de votre
-                                        organisation</p>
+                            <div className="flex flex-row items-center">
+                                <div className="flex flex-row flex-auto overflow-hidden items-center gap-3">
+                                <span
+                                    className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                                    <BellIcon/>
+                                </span>
+                                    <div>
+                                        <h1 className="text-2xl font-bold truncate text-ellipsis">Notifications</h1>
+                                        <p className="text-sm text-muted-foreground">Vos notifications et celles de votre
+                                            organisation</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <Tabs defaultValue="user">
-                            <TabsList>
-                                <TabsTrigger value="user">Utilisateur</TabsTrigger>
-                                <TabsTrigger value="organization">Organisation</TabsTrigger>
-                            </TabsList>
+                            <Tabs defaultValue="user">
+                                <TabsList>
+                                    <TabsTrigger value="user">Utilisateur</TabsTrigger>
+                                    <TabsTrigger value="organization">Organisation</TabsTrigger>
+                                </TabsList>
 
-                            <div className="mt-4">
-                                <TabsContent value="user">
-                                    <NotificationsList category="user"/>
-                                </TabsContent>
-                                <TabsContent value="organization">
-                                    <NotificationsList category="organization"/>
-                                </TabsContent>
-                            </div>
-                        </Tabs>
+                                <div className="mt-4">
+                                    <TabsContent value="user">
+                                        <NotificationsList category="user"/>
+                                    </TabsContent>
+                                    <TabsContent value="organization">
+                                        <NotificationsList category="organization"/>
+                                    </TabsContent>
+                                </div>
+                            </Tabs>
 
-                    </MainWrapper>
+                        </MainWrapper>
+                    </AnimatedContent>
                 </Main>
             </Wrapper>
             <Footer/>

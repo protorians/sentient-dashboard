@@ -13,6 +13,7 @@ import {formatPrice} from "@/modules/beverage-sales/presentation/utilities/bever
 import {Button} from "@/core/presentation/ui/button";
 import {Input} from "@/core/presentation/ui/input";
 import {RequireDepotSetup} from "@/modules/beverage-sales/presentation/components/require-depot-setup";
+import {AnimatedContent} from "@/core/presentation/animated-content";
 import {TopProductsByProfitTable} from "@/modules/beverage-sales/presentation/components/top-products-by-profit-table";
 
 type PeriodKey = 'yesterday' | 'day' | 'week' | 'month' | 'year' | 'custom';
@@ -77,6 +78,7 @@ export default function ReportsView() {
 
     return (
         <RequireDepotSetup>
+            <AnimatedContent variant="enter">
             <div className="flex flex-col gap-6 w-full">
                 <div className="flex items-center gap-2 flex-wrap">
                     <Button
@@ -237,6 +239,7 @@ export default function ReportsView() {
                     </Card>
                 )}
             </div>
+            </AnimatedContent>
         </RequireDepotSetup>
     );
 }
