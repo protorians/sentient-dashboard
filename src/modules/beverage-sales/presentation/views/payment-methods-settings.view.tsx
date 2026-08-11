@@ -7,6 +7,7 @@ import {BillingApiService} from "@/modules/billing/application/service/billing-a
 import {PaymentMethodInterface} from "@/modules/beverage-sales/domain/payment-method.interface";
 import {PAYMENT_METHOD_TYPE_LABELS} from "@/modules/beverage-sales/domain/enums/payment-method-type.enum";
 import {SettingsLayout} from "@/modules/beverage-sales/presentation/components/settings-layout";
+import {AnimatedContent} from "@/core/presentation/animated-content";
 import {
     PaymentMethodFormDialog,
     PaymentMethodFormData,
@@ -152,6 +153,7 @@ export default function PaymentMethodsSettingsView() {
 
     return (
         <SettingsLayout.Section>
+            <AnimatedContent variant="enter">
             <SettingsLayout.Header
                 title="Modes de paiement"
                 description="Configurez les moyens de paiement disponibles à la caisse."
@@ -225,6 +227,7 @@ export default function PaymentMethodsSettingsView() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+            </AnimatedContent>
         </SettingsLayout.Section>
     );
 }

@@ -8,6 +8,7 @@ import {useBeverageSalesQueries} from "@/modules/beverage-sales/presentation/hoo
 import {useBeverageSalesMutations} from "@/modules/beverage-sales/presentation/hooks/use-beverage-sales-mutations";
 import {BundleManager} from "@/modules/beverage-sales/presentation/components/bundle-manager";
 import {RequireDepotSetup} from "@/modules/beverage-sales/presentation/components/require-depot-setup";
+import {AnimatedContent} from "@/core/presentation/animated-content";
 
 export default function KitsView() {
     const [bundleSearch, setBundleSearch] = React.useState<string>("");
@@ -38,6 +39,7 @@ export default function KitsView() {
 
     return (
         <RequireDepotSetup>
+            <AnimatedContent variant="enter" className={"w-full"}>
             <BundleManager
             bundles={enrichedBundles}
             isLoading={isLoadingBundles}
@@ -48,6 +50,7 @@ export default function KitsView() {
             onDelete={handleDeleteBundle}
             onSearchChange={setBundleSearch}
         />
+            </AnimatedContent>
         </RequireDepotSetup>
     );
 }

@@ -25,7 +25,7 @@ import {
 import Link from "next/link"
 import {useEffect, useState} from "react"
 import {SignUpDataset} from "@/modules/auth/infrastructure/dataset/sign-up.dataset"
-import {motion, AnimatePresence} from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import {AuthApiService} from "@/modules/auth/application/service/auth-api-service"
 import {ApiService} from "@/core/infrastructure/utilities/api-service"
 import {toast} from "sonner"

@@ -9,6 +9,7 @@ import {
     PosWeekDay,
 } from "@/modules/beverage-sales/domain/pos-preferences.interface";
 import {SettingsLayout} from "@/modules/beverage-sales/presentation/components/settings-layout";
+import {AnimatedContent} from "@/core/presentation/animated-content";
 import {Button} from "@/core/presentation/ui/button";
 import {Label} from "@/core/presentation/ui/label";
 import {Input} from "@/core/presentation/ui/input";
@@ -281,6 +282,7 @@ export default function RegisterSettingsView() {
 
     return (
         <SettingsLayout.Section>
+            <AnimatedContent variant="enter">
             <SettingsLayout.Header
                 title={
                     <span className="inline-flex items-center gap-2.5">
@@ -567,6 +569,7 @@ export default function RegisterSettingsView() {
                     </div>
                 </div>
             )}
+            </AnimatedContent>
         </SettingsLayout.Section>
     );
 }

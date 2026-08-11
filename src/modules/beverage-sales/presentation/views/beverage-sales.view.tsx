@@ -20,6 +20,7 @@ import {Button} from "@/core/presentation/ui/button";
 import {WaitingActivity} from "@/core/presentation/waiting-activity";
 import {DepotSetupDialog} from "@/modules/beverage-sales/presentation/components/depot-setup-dialog";
 import {useRouter} from "next/navigation";
+import {AnimatedContent} from "@/core/presentation/animated-content";
 
 export default function BeverageSalesView() {
     const router = useRouter();
@@ -91,7 +92,8 @@ export default function BeverageSalesView() {
     }
 
     return (
-        <div className="flex flex-col gap-6 p-4 md:p-6 bg-muted/20 min-h-screen">
+        <AnimatedContent variant="enter">
+            <div className="flex flex-col gap-6 p-4 md:p-6 bg-muted/20 min-h-screen">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <div className="">
@@ -228,5 +230,6 @@ export default function BeverageSalesView() {
                 />
             )}
         </div>
+        </AnimatedContent>
     );
 }

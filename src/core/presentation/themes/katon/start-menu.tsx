@@ -50,7 +50,7 @@ export function StartMenuItem(module: ModuleNavigationInterface) {
                 module.dropdown
                     ? (
                         <LegacySheet
-                            trigger={<div className={cn(itemClassName, "cursor-pointer")}>{renderChildren()}</div>}
+                            trigger={<div className={cn(itemClassName, "cursor-pointer items-center justify-center")}>{renderChildren()}</div>}
                             side={module.dropdown.side ?? "left"}
                             className={cn(
                                 "bg-background/90",
