@@ -1,80 +1,77 @@
 import {ApiService} from "@/core/infrastructure/utilities/api-service";
+import {CategoryVm, CreateCategoryInterface, CreatePostInterface, UpdateCategoryInterface, UpdatePostInterface} from "@/modules/blogging/domain/blogging.interface";
 
 export class BloggingApiService extends ApiService {
-    // Posts
-    static async createPost(payload: any) {
-        return await this.post('/posts/', payload);
+    static async createPost(payload: CreatePostInterface) {
+        return await this.post('/posts/', payload as unknown as Record<string, unknown>);
     }
 
-    static async getAllPosts() {
-        return await this.get('/posts/');
+    static async getAllPosts(options?: Record<string, unknown>) {
+        return await this.get('/posts/', options);
     }
 
-    static async searchPosts(query: string) {
-        return await this.get('/posts/search', { q: query });
+    static async searchPosts(query: string, options?: Record<string, unknown>) {
+        return await this.get('/posts/search', { q: query, ...options });
     }
 
-    static async getPostsByCategory(categoryId: string) {
-        return await this.get(`/posts/category/${categoryId}`);
+    static async getPostsByCategory(categoryId: string, options?: Record<string, unknown>) {
+        return await this.get(`/posts/category/${categoryId}`, options);
     }
 
-    static async getAnalytics() {
-        return await this.get('/posts/analytics');
+    static async getAnalytics(options?: Record<string, unknown>) {
+        return await this.get('/posts/analytics', options);
     }
 
     static async getPostById(id: string) {
         return await this.get(`/posts/${id}`);
     }
 
-    static async updatePost(id: string, payload: any) {
-        return await this.put(`/posts/${id}`, payload);
+    static async updatePost(id: string, payload: UpdatePostInterface) {
+        return await this.put(`/posts/${id}`, payload as unknown as Record<string, unknown>);
     }
 
     static async deletePost(id: string) {
         return await this.delete(`/posts/${id}`);
     }
 
-    static async commitPost(id: string, payload: any) {
-        return await this.post(`/posts/${id}/commit`, payload);
-    }
-
     static async publishPost(id: string) {
-        return await this.patch(`/posts/${id}/publish`);
+        return await this.post(`/posts/${id}/publish`);
     }
 
     static async unpublishPost(id: string) {
-        return await this.patch(`/posts/${id}/unpublish`);
+        return await this.post(`/posts/${id}/unpublish`);
     }
 
-    // Collaborators
-    static async addCollaborator(id: string, userId: string) {
-        return await this.post(`/posts/${id}/collaborators/${userId}`);
+    static async commitPost(id: string, payload: Record<string, unknown>) {
+        return await this.post(`/posts/${id}/commit`, payload);
     }
 
-    static async removeCollaborator(id: string, userId: string) {
-        return await this.delete(`/posts/${id}/collaborators/${userId}`);
+    static async addCollaborator(postId: string, userId: string) {
+        return await this.post(`/posts/${postId}/collaborators/${userId}`);
     }
 
-    // Media
-    static async addMedia(id: string, mediaId: string) {
-        return await this.post(`/posts/${id}/media/${mediaId}`);
+    static async removeCollaborator(postId: string, userId: string) {
+        return await this.delete(`/posts/${postId}/collaborators/${userId}`);
     }
 
-    static async removeMedia(id: string, mediaId: string) {
-        return await this.delete(`/posts/${id}/media/${mediaId}`);
+    static async addMedia(postId: string, mediaId: string) {
+        return await this.post(`/posts/${postId}/media/${mediaId}`);
     }
 
-    // Categories Management
-    static async getCategories() {
-        return await this.get('/posts/manage/categories');
+    static async removeMedia(postId: string, mediaId: string) {
+        return await this.delete(`/posts/${postId}/media/${mediaId}`);
     }
 
-    static async createCategory(payload: any) {
-        return await this.post('/posts/manage/categories', payload);
+    static async getCategories(options?: Record<string, unknown>) {
+        return await this.get('/posts/manage/categories', options);
     }
 
-    static async updateCategory(id: string, payload: any) {
-        return await this.put(`/posts/manage/categories/${id}`, payload);
+    static async createCategory(payload: CreateCategoryInterface) {
+        return await this.post('/posts/manage/categories', payload as unknown as Record<string, unknown>);
+    }
+
+    static async updateCategory(id: string, payload: UpdateCategoryInterface) {
+        return await this.put(`/posts/manage/categories/${id}`, payload as unknown as Record<string, unknown>);
     }
 
     static async deleteCategory(id: string) {

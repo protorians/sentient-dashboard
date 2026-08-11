@@ -1,6 +1,7 @@
 import {BloggingApiService} from "@/modules/blogging/application/service/blogging-api-service";
 import {ModuleDeclarationInterface} from "@/core/domain/entities/module.interface";
 import {BloggingWidget} from "@/modules/blogging/presentation/widgets/blogging.widget";
+import {bloggingAnalyticsRoutine} from "@/modules/blogging/infrastructure/routines/blogging-analytics.routine";
 
 const bloggingModule: ModuleDeclarationInterface = {
     id: 'blog',
@@ -15,6 +16,9 @@ const bloggingModule: ModuleDeclarationInterface = {
     service: {
         fetch: BloggingApiService
     },
+    routines: [
+        bloggingAnalyticsRoutine,
+    ],
     uri: '/blog',
     isEnabled: true,
     isDefault: true,
