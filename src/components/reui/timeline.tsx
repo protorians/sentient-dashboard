@@ -161,7 +161,7 @@ function TimelineIndicator({
 }
 
 // TimelineItem
-interface TimelineItemProps extends HTMLAttributes<HTMLDivElement> {
+interface TimelineItemProps extends React.ComponentPropsWithoutRef<typeof motion.div> {
   step: number
 }
 
