@@ -1,6 +1,7 @@
 import {BillingApiService} from "@/modules/billing/application/service/billing-api-service";
 import {ModuleDeclarationInterface} from "@/core/domain/entities/module.interface";
 import {BillingWidget} from "@/modules/billing/presentation/widgets/billing.widget";
+import {billingAnalyticsRoutine} from "@/modules/billing/infrastructure/routines/billing-analytics.routine";
 
 const billingModule: ModuleDeclarationInterface = {
     id: 'billing',
@@ -15,6 +16,9 @@ const billingModule: ModuleDeclarationInterface = {
     service: {
         fetch: BillingApiService
     },
+    routines: [
+        billingAnalyticsRoutine
+    ],
     uri: '/billing',
     isEnabled: true,
     isDefault: true,

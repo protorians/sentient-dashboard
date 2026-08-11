@@ -1,6 +1,8 @@
+"use client"
 import * as React from "react"
 import {CreditCardIcon} from "lucide-react"
 import {ModuleWidget} from "@/core/presentation/module-widget"
+import {billingAnalyticsRoutine} from "@/modules/billing/infrastructure/routines/billing-analytics.routine"
 
 export interface BillingWidgetProps {
     data?: {
@@ -12,6 +14,13 @@ export interface BillingWidgetProps {
 }
 
 export function BillingWidget({ data, loading }: BillingWidgetProps) {
+    const {dataset: analytics} = billingAnalyticsRoutine.dataset()
+    const summary = analytics?.summary
+
+    const totalInvoiced = data?.totalInvoiced ?? summary?.totalInvoiced ?? 0
+    const pendingPayments = data?.pendingPayments ?? summary?.pendingPayments ?? 0
+    const revenueTrend = data?.revenueTrend ?? summary?.revenueTrend ?? 0
+
     return (
         <ModuleWidget
             title={
@@ -22,8 +31,8 @@ export function BillingWidget({ data, loading }: BillingWidgetProps) {
             }
             description="Finances et paiements"
             stats={[
-                { label: 'Facturé', amount: data?.totalInvoiced ?? 0, devise: 'XOF', trend: data?.revenueTrend ?? 0 },
-                { label: 'En attente', amount: data?.pendingPayments ?? 0 }
+                { label: 'Facturé', amount: totalInvoiced, devise: 'XOF', trend: revenueTrend },
+                { label: 'En attente', amount: pendingPayments }
             ]}
             className="h-full"
         />

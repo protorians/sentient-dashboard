@@ -1,54 +1,64 @@
 import {ApiService} from "@/core/infrastructure/utilities/api-service";
+import {FetchResponseInterface} from "@/core/domain/typing/response";
+import {
+    CreatePaymentMethodInterface,
+    PaymentMethodInterface,
+    UpdatePaymentMethodInterface,
+} from "@/modules/billing/domain/payment-method.interface";
+import {CreateOrderInterface, OrderInterface} from "@/modules/billing/domain/order.interface";
+import {CreateInvoiceInterface, InvoiceInterface, MarkInvoicePaidInterface} from "@/modules/billing/domain/invoice.interface";
+import {BillingAnalyticsInterface} from "@/modules/billing/domain/billing-analytics.interface";
 
 export class BillingApiService extends ApiService {
-    // Payment Methods
-    static async addPaymentMethod(payload: any) {
-        return await this.post('/billing/payment-methods', payload);
+    static async addPaymentMethod(payload: CreatePaymentMethodInterface) {
+        return await this.post<FetchResponseInterface<PaymentMethodInterface>>('/billing/payment-methods', payload);
     }
 
     static async getPaymentMethods() {
-        return await this.get('/billing/payment-methods');
+        return await this.get<FetchResponseInterface<any>>('/billing/payment-methods');
     }
 
-    static async updatePaymentMethod(id: string, payload: any) {
-        return await this.put(`/billing/payment-methods/${id}`, payload);
+    static async getPaymentMethodById(id: string) {
+        return await this.get<FetchResponseInterface<PaymentMethodInterface>>(`/billing/payment-methods/${id}`);
+    }
+
+    static async updatePaymentMethod(id: string, payload: UpdatePaymentMethodInterface) {
+        return await this.put<FetchResponseInterface<PaymentMethodInterface>>(`/billing/payment-methods/${id}`, payload);
     }
 
     static async deletePaymentMethod(id: string) {
-        return await this.delete(`/billing/payment-methods/${id}`);
+        return await this.delete<FetchResponseInterface<{ deleted: boolean }>>(`/billing/payment-methods/${id}`);
     }
 
-    // Orders
-    static async createOrder(payload: any) {
-        return await this.post('/billing/orders', payload);
+    static async createOrder(payload: CreateOrderInterface) {
+        return await this.post<FetchResponseInterface<OrderInterface>>('/billing/orders', payload);
     }
 
     static async getOrders() {
-        return await this.get('/billing/orders');
+        return await this.get<FetchResponseInterface<any>>('/billing/orders');
     }
 
     static async getOrderById(id: string) {
-        return await this.get(`/billing/orders/${id}`);
+        return await this.get<FetchResponseInterface<OrderInterface>>(`/billing/orders/${id}`);
     }
 
-    // Invoices
-    static async createInvoice(payload: any) {
-        return await this.post('/billing/invoices', payload);
+    static async createInvoice(payload: CreateInvoiceInterface) {
+        return await this.post<FetchResponseInterface<InvoiceInterface>>('/billing/invoices', payload);
     }
 
     static async getInvoices() {
-        return await this.get('/billing/invoices');
+        return await this.get<FetchResponseInterface<any>>('/billing/invoices');
     }
 
     static async getInvoiceById(id: string) {
-        return await this.get(`/billing/invoices/${id}`);
+        return await this.get<FetchResponseInterface<InvoiceInterface>>(`/billing/invoices/${id}`);
     }
 
-    static async payInvoice(id: string, payload: any) {
-        return await this.post(`/billing/invoices/${id}/pay`, payload);
+    static async payInvoice(id: string, payload: MarkInvoicePaidInterface) {
+        return await this.post<FetchResponseInterface<InvoiceInterface>>(`/billing/invoices/${id}/pay`, payload);
     }
 
     static async getAnalytics() {
-        return await this.get('/billing/analytics');
+        return await this.get<FetchResponseInterface<BillingAnalyticsInterface>>('/billing/analytics');
     }
 }
